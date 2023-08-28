@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "l3GhmO2/5xB3A+7+m5mtBtKi8yybWBFgRzZqpBVghbDuKZCJp086I7EpFRf69wjmmDtZ3e6XUo69ziLzWIIpkw==",
+  "dgSpecHash": "4WgBKabg6FotVoOTzXc6+NaIan9avtlwG33UxT+puswrJ9gBQeQxOXR5ya35G/FS2j8ABF1pLH++QlwBi+sP2A==",
   "success": true,
   "projectFilePath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\webapi\\webapi.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\IVG\\.nuget\\packages\\filuet.infrastructure.abstractions\\1.0.75\\filuet.infrastructure.abstractions.1.0.75.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.5\\microsoft.aspnetcore.openapi.7.0.5.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\IVG\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",

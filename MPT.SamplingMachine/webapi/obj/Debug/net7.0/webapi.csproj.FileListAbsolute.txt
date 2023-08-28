@@ -32,3 +32,4 @@ D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.pdb
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.genruntimeconfig.cache
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\ref\webapi.dll
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.sourcelink.json
+D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\bin\Debug\net7.0\Filuet.Infrastructure.Abstractions.dll
