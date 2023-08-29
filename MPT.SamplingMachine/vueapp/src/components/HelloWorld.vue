@@ -6,24 +6,24 @@
 
         <div v-if="post" class="content">
 
-            <div id="carouselExampleFade" class="carousel slide carousel-fade">
+            <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/181px-Cat_August_2010-4.jpg" class="d-block w-100" width="600" height="400" alt="...">
                         <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="setLanguage(lang)" v-for="lang in languages" :key="lang.code" role="button">{{lang.value}}</div>
                     </div>
-                    <div class="carousel-item">
+                    <div class="carousel-item" id="home-screen">
                         <img src="https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png" class="d-block w-100" alt="...">
                     </div>
-                    <div class="carousel-item">
+                    <div class="carousel-item" id="agreement-screen">
                         <img src="https://images.hindustantimes.com/img/2022/08/07/550x309/cat_1659882617172_1659882628989_1659882628989.jpg" class="d-block w-100" alt="...">
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#globalCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#globalCarousel" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
@@ -94,7 +94,10 @@
             },
             setLanguage(lang) {
                 console.warn(lang.code);
+                // $("#globalCarousel")
+                //     .carousel($("#globalCarousel > .carousel-inner > .carousel-item")
+                //         .index($("#agreement-screen")));
             }
-        },
+        }
     });
 </script>
