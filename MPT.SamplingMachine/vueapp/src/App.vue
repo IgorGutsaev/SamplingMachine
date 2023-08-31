@@ -1,20 +1,22 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!--   <img alt="Vue logo" src="./assets/logo.png"> -->
+    <Sampling msg="OgmentO sampling machine" />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+    import Sampling from './components/SamplingPage.vue' 
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+    export default {
+      name: 'App',
+      components: {
+        Sampling
+      }
+    }
 </script>
 
 <style>
+    @import url('css/style.css');
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -24,10 +24,10 @@ module.exports = {
             cert: fs.readFileSync(certFilePath),
         },
         proxy: {
-            '^/weatherforecast': {
+            '^/settings/languages': {
                 target: 'https://localhost:7244/'
             },
-            '^/settings/languages': {
+            '^/catalog': {
                 target: 'https://localhost:7244/'
             }
         },
