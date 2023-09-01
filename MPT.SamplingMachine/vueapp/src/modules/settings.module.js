@@ -3,6 +3,10 @@ export default {
         currentLanguage: {
             type: Object,
             required: false
+        },
+        maxSamplesCountPerSession: {
+            type: Number,
+            required: true
         }
-    },
+    }
 }

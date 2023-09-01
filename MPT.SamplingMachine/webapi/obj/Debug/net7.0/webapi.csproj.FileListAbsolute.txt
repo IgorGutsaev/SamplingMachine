@@ -33,3 +33,5 @@ D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.genr
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\ref\webapi.dll
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.sourcelink.json
 D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\bin\Debug\net7.0\Filuet.Infrastructure.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.Properties.Resources.resources
+D:\Repos\SamplingMachine\MPT.SamplingMachine\webapi\obj\Debug\net7.0\webapi.csproj.GenerateResource.cache
