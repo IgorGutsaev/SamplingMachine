@@ -4,7 +4,8 @@ export default {
             type: Object,
             required: false
         },
-        maxSamplesCountPerSession: {
+        // reflects max samples count per session
+        credit: {
             type: Number,
             required: true
         }

@@ -21,6 +21,7 @@ public class CatalogController : ControllerBase
                     new KeyValuePair<string, string>(Language.English.GetCode(), "Abyssinian"),
                     new KeyValuePair<string, string>(Language.Hindi.GetCode(), "एबिसिनियन बिल्ली") }),
                 Sku = "Aby",
+                Credit = 1,
                 MaxCountPerSession = 2,
                 TotalCount = 10,
                 Picture = Properties.Resources.Abyssinian },
@@ -28,6 +29,7 @@ public class CatalogController : ControllerBase
                     new KeyValuePair<string, string>(Language.English.GetCode(), "Oriental"),
                     new KeyValuePair<string, string>(Language.Hindi.GetCode(), "ओरिएंटल बिल्ली") }),
                 Sku = "Ori",
+                Credit = 2,
                 MaxCountPerSession = 1,
                 TotalCount = 5,
                 Picture = Properties.Resources.Oriental },
@@ -35,6 +37,7 @@ public class CatalogController : ControllerBase
                     new KeyValuePair<string, string>(Language.English.GetCode(), "Savannah"),
                     new KeyValuePair<string, string>(Language.Hindi.GetCode(), "सवाना बिल्ली") }),
                 Sku = "Sav",
+                Credit = 3,
                 MaxCountPerSession = 1,
                 TotalCount = 3,
                 Picture = Properties.Resources.Savannah }

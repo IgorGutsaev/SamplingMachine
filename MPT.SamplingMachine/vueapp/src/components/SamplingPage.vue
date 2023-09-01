@@ -60,6 +60,7 @@
             // fetch the data when the view is created and the data is
             // already being observed
             this.fetchData();
+            KioskSettings.credit = 3;
         },
         watch: {
             // call again the method if the route changes

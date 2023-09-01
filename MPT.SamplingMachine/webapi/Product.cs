@@ -8,6 +8,8 @@ namespace webapi
         public string Sku { get; set; }
         [JsonPropertyName("names")]
         public Dictionary<string, string> Names { get; set; }
+        [JsonPropertyName("credit")]
+        public int Credit { get; set; }
         [JsonPropertyName("maxCountPerSession")]
         public int MaxCountPerSession { get; set; }
         [JsonPropertyName("totalCount")]
