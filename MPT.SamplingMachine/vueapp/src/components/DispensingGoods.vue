@@ -1,5 +1,7 @@
 <template>
     <div class="post">
+        <p class="h3">Take your products</p>
+        <img src="../assets/arrow-down.gif" width="250" />
     </div>
 </template>
 
@@ -7,6 +9,7 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
+    import Sampling from './SamplingPage.vue'
 
     export default defineComponent({
         data() {
@@ -15,6 +18,7 @@
             };
         },
         components: {
+            KioskSettings
         },
         created() {
             this.fetchData();
@@ -25,8 +29,15 @@
         },
         methods: {
             fetchData() {
-                this.loading = true;
+                this.loading = false;
             }
-        }       
+        },
+        extract() {
+            if (KioskSettings.isEmulation) {
+                let promise = new Promise((resolve, reject) => {
+                    setTimeout(() => Sampling.toExit(), 5000)
+                });
+            }
+        }
     });
 </script>

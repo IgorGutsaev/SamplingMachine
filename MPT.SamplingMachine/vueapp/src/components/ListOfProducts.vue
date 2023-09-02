@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="" role="button">Receive</div>
+        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-if="this.creditUsed > 0" v-on:click="issueProducts" role="button">Issue products</div>
     </div>
 </template>
 
@@ -27,6 +27,8 @@
     import CatalogModule from '/src/modules/catalog.module.js'
     import KioskSettings from '/src/modules/settings.module.js'
     import ShoppingCart from '/src/modules/cart.module.js'
+    import Sampling from './SamplingPage.vue'
+    import Dispensing from './DispensingGoods.vue'
 
     export default defineComponent({
         data() {
@@ -103,6 +105,10 @@
                 else pic.addClass("grayscale");
 
                 return isAvailable;
+            },
+            issueProducts() {
+                Sampling.toDispensing();
+                Dispensing.extract();
             }
         }
     });

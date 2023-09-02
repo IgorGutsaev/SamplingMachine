@@ -5,6 +5,7 @@
         </div>
 
         <div v-if="languages" class="content">
+            <i class="fa-regular fa-phone">gfdhgfh</i>
             <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
@@ -23,8 +24,10 @@
                         <ListOfProducts v-bind:currentLang="currentLang" />
                     </div>
                     <div class="carousel-item" id="dispensing-screen">
-                        <img src="https://modkat.com/cdn/shop/articles/breedsguide_800x.jpg?v=1631395157" class="d-block w-100">
-                        <DispensingGoods />
+                        <Dispensing />
+                    </div>
+                    <div class="carousel-item" id="exit-screen">
+                        <EndSession />
                     </div>
                 </div>
             </div>
@@ -40,6 +43,7 @@
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
     import Dispensing from './DispensingGoods.vue'
+    import EndSession from './EndSession.vue'
 
     export default defineComponent({
         data() {
@@ -52,7 +56,9 @@
         components: {
             Terms,
             Identification,
-            ListOfProducts
+            ListOfProducts,
+            Dispensing,
+            EndSession
         },
         props: {
         },
@@ -61,6 +67,7 @@
             // already being observed
             this.fetchData();
             KioskSettings.credit = 3;
+            KioskSettings.isEmulation = true;
         },
         watch: {
             // call again the method if the route changes
@@ -75,6 +82,22 @@
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#catalog-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+        },
+        toDispensing() {
+            $("#globalCarousel .carousel-item.active").removeClass("active");
+            $("#dispensing-screen").addClass("active");
+            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+        },
+        toExit() {
+            $("#globalCarousel .carousel-item.active").removeClass("active");
+            $("#exit-screen").addClass("active");
+            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+
+            let promise = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    location.reload();
+                }, 2000)
+            });
         },
         methods: {
             fetchData() {
