@@ -43,7 +43,7 @@
             currentLang: {
                 type: String,
                 required: true
-            },
+            }
         },
         components: {
             CatalogModule,
@@ -107,6 +107,7 @@
                 return isAvailable;
             },
             issueProducts() {
+                this.$emit('homeButtonEnabled', false)
                 Sampling.toDispensing();
                 Dispensing.extract();
             }

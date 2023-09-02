@@ -1,11 +1,19 @@
 <template>
     <div class="post">
         <div v-if="loading" class="loading">
-            Please wait...
+            <font-awesome-icon :icon="['fas', 'spinner']" size="3x" spin />
         </div>
 
         <div v-if="languages" class="content">
-            <i class="fa-regular fa-phone">gfdhgfh</i>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12 d-flex justify-content-between">
+                        <h4>OgmentO</h4>
+                        <div v-if="homeButtonEnabled"><font-awesome-icon icon="house" size="xl" v-on:click="goHome" /></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
@@ -21,7 +29,7 @@
                         <Identification />
                     </div>
                     <div class="carousel-item" id="catalog-screen">
-                        <ListOfProducts v-bind:currentLang="currentLang" />
+                        <ListOfProducts v-bind:currentLang="currentLang" @homeButtonEnabled="changeHomeButton" />
                     </div>
                     <div class="carousel-item" id="dispensing-screen">
                         <Dispensing />
@@ -50,7 +58,8 @@
             return {
                 loading: false,
                 languages: null,
-                currentLang: false
+                currentLang: false,
+                homeButtonEnabled: false
             };
         },
         components: {
@@ -83,11 +92,6 @@
             $("#catalog-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
-        toDispensing() {
-            $("#globalCarousel .carousel-item.active").removeClass("active");
-            $("#dispensing-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
-        },
         toExit() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#exit-screen").addClass("active");
@@ -98,6 +102,11 @@
                     location.reload();
                 }, 2000)
             });
+        },
+        toDispensing() {
+            $("#globalCarousel .carousel-item.active").removeClass("active");
+            $("#dispensing-screen").addClass("active");
+            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         methods: {
             fetchData() {
@@ -119,6 +128,13 @@
                 $("#globalCarousel .carousel-item.active").removeClass("active");
                 $("#agreement-screen").addClass("active");
                 console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+                this.homeButtonEnabled = true;
+            },
+            goHome() {
+                location.reload();
+            },
+            changeHomeButton(enabled) {
+                this.homeButtonEnabled = enabled;
             }
         }
     });
