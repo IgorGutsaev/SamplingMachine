@@ -40,7 +40,15 @@ public class CatalogController : ControllerBase
                 Credit = 3,
                 MaxCountPerSession = 1,
                 TotalCount = 3,
-                Picture = Properties.Resources.Savannah }
+                Picture = Properties.Resources.Savannah },
+            new Product { Names = new Dictionary<string, string>(new KeyValuePair<string, string>[] {
+                    new KeyValuePair<string, string>(Language.English.GetCode(), "Russian blue"),
+                    new KeyValuePair<string, string>(Language.Hindi.GetCode(), "रूसी नीला") }),
+                Sku = "Rus",
+                Credit = 1,
+                MaxCountPerSession = 3,
+                TotalCount = 10,
+                Picture = Properties.Resources.RussianBlue }
         };
 
     private readonly ILogger<CatalogController> _logger;

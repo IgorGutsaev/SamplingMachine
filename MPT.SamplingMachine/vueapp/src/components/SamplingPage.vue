@@ -6,10 +6,10 @@
 
         <div v-if="languages" class="content">
             <div class="container-fluid">
-                <div class="row">
+                <div class="row mb-1">
                     <div class="col-lg-12 d-flex justify-content-between">
-                        <h4>OgmentO</h4>
-                        <div v-if="homeButtonEnabled"><font-awesome-icon icon="house" size="xl" v-on:click="goHome" /></div>
+                        <img alt="OgmentO" src="../assets/logo.png" width="24" />
+                        <div v-if="homeButtonEnabled"><font-awesome-icon icon="house" style="color: darkgrey" size="xl" v-on:click="goHome" /></div>
                     </div>
                 </div>
             </div>

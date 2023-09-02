@@ -79,6 +79,15 @@ namespace webapi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAe8AAAHvCAIAAADy68CaAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhedP3pliRJji/4+Warr7FlZGZVdQ+7D4dnXmDe/x3ID/wwvIe3l6rOzMgIX23zjb8/oKbhmX2JsFAXhUAgAAQCgaiqqR3+H//H/+Og4Ojo6LWgTw8PDx3HUzCWiyrlpunjgdbHzy9HL0eHh68vL4ev0EezyXw6mWzW28V8MZvMdLGYLSYnk+vr699++2Uxn/3w04/z2eLL199/+/Lby+vr8vRsMpkeTaYn0+m//cd/bHePl5fvTs/Pnh53//i3f5+dnPzf/uVfnp+ff/vty8nJyQ8/fFouTx8eHr59/fr09PTTTz9Bqv2Xf/3X2elysjz9/Je/LufLx83qabv7x7//+//7//X//O2//nF3c3N0+DqfT+eTycvLy263psnx8cmOSiT2 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RussianBlue {
+            get {
+                return ResourceManager.GetString("RussianBlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAVgAAAFYCAIAAACZDnMXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P3nt+RWluUJmoQGTD7pz7WTdDIogqEzIyMrszqn1pq/e9Z8mKnuqapUEQwq10+aNgAGk/PbB89JZtV0r5rudH+MCL9ubs8MBnFxxD77XIVq5U+wVH9Q61pNX3Y7Xjt+4b1a1Xv567vyrryF8toIZXcYJ696TYVtjWaz3qhXdtXVarNaFdvtFgv9Edpn/frvn1pByHUJu1JFxrVqvS735z+b3oHAu/I2S6Necz230ZDb88ImS+N0nGajISM1iKgIAoQCZcT60ZU/JSDAzyklH0CYhrt4fhVpN+vcCDKu1PTrO0bwrrypUhphE++3r9ge/k7UL01REEBYEhBUXcdxXYedt9vNdrMxFNjttjsM9EdonXKqP5UiCRoKlI6OzzfrVXRQ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Savannah {
