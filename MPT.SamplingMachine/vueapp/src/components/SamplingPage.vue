@@ -78,7 +78,9 @@
             this.fetchData();
             
             KioskSettings.credit = 3;
+            KioskSettings.idleTimeoutSec = 5;
             KioskSettings.isEmulation = true;
+            KioskSettings.canLogOff = false;
         },
         watch: {
             // call again the method if the route changes
@@ -131,13 +133,14 @@
                 $("#globalCarousel .carousel-item.active").removeClass("active");
                 $("#agreement-screen").addClass("active");
                 console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
-                this.homeButtonEnabled = true;
+                this.changeHomeButton(true);
             },
             goHome() {
                 location.reload();
             },
             changeHomeButton(enabled) {
                 this.homeButtonEnabled = enabled;
+                KioskSettings.canLogOff = enabled;
             }
         }
     });

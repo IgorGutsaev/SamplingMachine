@@ -17,7 +17,10 @@ const i18n = createI18n({
                 takeYourProducts: 'अपने उत्पाद ले लो',
                 goodBuy: 'अच्छी खरीद!',
                 formatNumber: 'प्रारूप: xxxxxxxxxx',
-                formatCode: 'प्रारूप: xxxx'
+                formatCode: 'प्रारूप: xxxx',
+                idleModalTitle: 'क्या आप अभी भी यहीं हैं?',
+                exit: 'बाहर निकलना',
+                yes: 'हाँ'
             },
             buttons: {
                 next: 'अगला',
@@ -42,7 +45,10 @@ const i18n = createI18n({
                 takeYourProducts: 'Take your products',
                 goodBuy: 'Good buy!',
                 formatNumber: 'format: xxxxxxxxxx',
-                formatCode: 'format: xxxx'
+                formatCode: 'format: xxxx',
+                idleModalTitle: 'Are you still here?',
+                exit: 'Exit',
+                yes: 'Yes'
             },
             buttons: {
                 next: 'Next',

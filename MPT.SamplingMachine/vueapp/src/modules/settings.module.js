@@ -8,6 +8,14 @@ export default {
         credit: {
             type: Number,
             required: true
+        },
+        idleTimeoutSec: {
+            type: Number,
+            required: true
+        },
+        canLogOff: {
+            type: Boolean,
+            required: true
         }
     }
 }
