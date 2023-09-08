@@ -78,7 +78,7 @@
             this.fetchData();
             
             KioskSettings.credit = 3;
-            KioskSettings.idleTimeoutSec = 5;
+            KioskSettings.idleTimeoutSec = 60;
             KioskSettings.isEmulation = true;
             KioskSettings.canLogOff = false;
         },

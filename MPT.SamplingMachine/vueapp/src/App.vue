@@ -32,49 +32,66 @@
     export default {
         name: 'App',
         components: {
-          Sampling,
-          KioskSettings
+            Sampling,
+            KioskSettings
         },
-        props: {
-            qrCountdown: 15
+        data() {
+            idleTimer: null;
+            exitPopupOpened: false;
+        },
+        created() {
+            let startIdleTimer = () => {
+                if (KioskSettings.canLogOff && !this.exitPopupOpened)
+                {
+                    $('#idleModal').show();
+                    let self = this;
+                    self.exitPopupOpened = true;
+                    let exitCountdown = 15;
+                    console.log(exitCountdown + ' sec to exit');
+
+                    let countdown = setTimeout(function tick() {
+                        countdown = setTimeout(tick, 1000);
+                        exitCountdown--;
+
+                        if (exitCountdown % 5 == 0)
+                            console.log(exitCountdown + ' sec to exit');
+
+                        if (!self.exitPopupOpened) {
+                            clearInterval(countdown);
+                            console.log('Auto exit canceled by the customer');
+                        }
+
+                        if (exitCountdown <= 0) {
+                            clearInterval(countdown);
+                            exitCountdown = 0;
+                            location.reload();
+                            console.log('Timeout exit');
+                        }
+                    }, 1000);
+                }
+            };
+
+            let resetTimer = () => {
+                clearInterval(this.idleTimer);
+                this.idleTimer = setInterval(startIdleTimer, KioskSettings.idleTimeoutSec * 1000);
+            };
+
+            window.onload = resetTimer;
+            window.onmousemove = resetTimer;
+            window.onmousedown = resetTimer;
+            window.ontouchstart = resetTimer;
+            window.onclick = resetTimer;
+            window.onkeypress = resetTimer;
         },
         methods: {
             exit() {
                 location.reload();
+                console.log('The customer pressed exit');
             },
             proceed() {
                 $('#idleModal').hide();
+                this.exitPopupOpened = false;
             }
-        }
-    }
-
-    let idleTimer;
-          
-    function resetTimer() {
-        clearInterval(idleTimer);
-        idleTimer = setInterval(startIdleTimer, KioskSettings.idleTimeoutSec * 1000);
-    }
-          
-    window.onload = resetTimer;
-    window.onmousemove = resetTimer;
-    window.onmousedown = resetTimer;
-    window.ontouchstart = resetTimer;
-    window.onclick = resetTimer;
-    window.onkeypress = resetTimer;
-          
-    function startIdleTimer() {
-        if (KioskSettings.canLogOff)
-        {
-            $('#idleModal').show();
-
-            let countdown = setTimeout(function tick() {
-                countdown = setTimeout(tick, 1000);
-                this.qrCountdown--;
-                if (qrCountdown <= 0) {
-                    clearInterval(countdown);
-                    this.qrCountdown = 0;
-                }
-            }, 1000);
         }
     }
 </script>
