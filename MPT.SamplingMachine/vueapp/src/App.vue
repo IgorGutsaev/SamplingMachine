@@ -9,7 +9,7 @@
                     <div class="modal-footer container">
                         <div class="row" style="width: 100%">
                             <div class="col-6">
-                                <button type="button" class="btn btn-danger" v-on:click="exit">{{$t('titles.exit')}}</button>
+                                <button type="button" class="btn btn-danger" v-on:click="exit">{{$t('titles.exit')}} {{this.qrCountdown}}</button>
                             </div>
                             <div class="col-6">
                                 <button type="button" class="btn btn-success" v-on:click="proceed">{{$t('titles.yes')}}</button>
@@ -34,6 +34,9 @@
         components: {
           Sampling,
           KioskSettings
+        },
+        props: {
+            qrCountdown: 15
         },
         methods: {
             exit() {
@@ -61,7 +64,18 @@
           
     function startIdleTimer() {
         if (KioskSettings.canLogOff)
+        {
             $('#idleModal').show();
+
+            let countdown = setTimeout(function tick() {
+                countdown = setTimeout(tick, 1000);
+                this.qrCountdown--;
+                if (qrCountdown <= 0) {
+                    clearInterval(countdown);
+                    this.qrCountdown = 0;
+                }
+            }, 1000);
+        }
     }
 </script>
 
