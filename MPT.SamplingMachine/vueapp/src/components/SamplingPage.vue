@@ -1,6 +1,6 @@
 <template>
     <div class="post">
-        <div v-if="loading" class="loading">
+        <div v-if="loading" class="loading" id="mainSpinner">
             <font-awesome-icon :icon="['fas', 'spinner']" size="3x" spin />
         </div>
 
@@ -52,6 +52,7 @@
     import Identification from './CustomerIdentification.vue'
     import Dispensing from './DispensingGoods.vue'
     import EndSession from './EndSession.vue'
+    import i18n from '../i18n'
 
     export default defineComponent({
         data() {
@@ -75,6 +76,7 @@
             // fetch the data when the view is created and the data is
             // already being observed
             this.fetchData();
+            
             KioskSettings.credit = 3;
             KioskSettings.isEmulation = true;
         },
@@ -124,6 +126,7 @@
                 this.currentLang = lang.code;
                 KioskSettings.currentLanguage = lang;
                 console.info("Selected language: " + KioskSettings.currentLanguage.code);
+                i18n.global.locale = KioskSettings.currentLanguage.code;
 
                 $("#globalCarousel .carousel-item.active").removeClass("active");
                 $("#agreement-screen").addClass("active");

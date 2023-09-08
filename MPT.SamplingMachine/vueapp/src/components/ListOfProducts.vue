@@ -4,8 +4,8 @@
     </div>
 
     <div v-if="products" class="content">
-        <span v-if="this.credit > 1 && this.credit > this.creditUsed" class="badge text-bg-warning">Credit: {{this.credit - this.creditUsed}}</span>
-        <span v-if="this.credit > 1 && this.credit === this.creditUsed" class="badge text-bg-danger">Credit: {{this.credit - this.creditUsed}}</span>
+        <span v-if="this.credit > 1 && this.credit > this.creditUsed" class="badge text-bg-warning">{{$t('titles.credit')}}: {{this.credit - this.creditUsed}}</span>
+        <span v-if="this.credit > 1 && this.credit === this.creditUsed" class="badge text-bg-danger">{{$t('titles.credit')}}: {{this.credit - this.creditUsed}}</span>
         <!-- <div v-for="product in products.filter(x => x.totalCount > 0)"... -->
 
 
@@ -15,18 +15,18 @@
                     <div class="card">
                         <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
                         <div class="card-body">
-                            <p class="h6">{{product.names[currentLang]}}</p>
+                            <p style="font-size: 0.8em">{{product.names[currentLang]}}</p>
                             <button type="button" class="btn btn-primary btn-sm position-relative" v-if="product.count > 0" v-on:click="removeFromCart(product)">
-                                Remove
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{$t('buttons.remove')}}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                                     {{product.count}}
-                                    <span class="visually-hidden">unread messages</span>
+                                    <span class="visually-hidden">{{$t('titles.itemsCount')}}</span>
                                 </span>
                             </button>
 
-                            <a href="#" class="btn btn-primary btn-sm" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{product.count > 0 ? 'More': 'Add'}}</a>
-                            <p class="text-secondary" v-if="product.totalCount == 0">Out of stock</p>
-                            <div class="text-danger" v-if="product.count == 0 && product.credit > (this.credit - this.creditUsed)">Insufficient credit</div>
+                            <a href="#" class="btn btn-primary btn-sm" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a>
+                            <p class="text-secondary" v-if="product.totalCount == 0">{{$t('titles.outOfStock')}}</p>
+                            <div class="text-danger" v-if="product.count == 0 && product.credit > (this.credit - this.creditUsed)">{{$t('titles.lackOfCredit')}}</div>
                         </div>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
         </div>
 
 
-        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-if="this.creditUsed > 0" v-on:click="issueProducts" role="button">Issue products</div>
+        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-if="this.creditUsed > 0" v-on:click="issueProducts" role="button">{{$t('buttons.dispense')}}</div>
     </div>
 </template>
 
@@ -57,6 +57,7 @@
                 productChunks: []
             };
         },
+        emits: ["homeButtonEnabled"],
         props: {
             currentLang: {
                 type: String,
@@ -105,10 +106,23 @@
                 if (product.count <= 0)
                     return;
 
-                product.count--;
-                this.creditUsed -= product.credit;
+                while (product.count > 0) {
+                    product.count--;
+                    
+                    // remove from shopping cart
+                    if (ShoppingCart.items.filter(x => x.sku == product.sku).length > 0) {
+                        let cartItem = ShoppingCart.items.filter(x => x.sku == product.sku)[0];
+                        cartItem.count--;
 
-                console.info("Cart changed: " + JSON.stringify(ShoppingCart.items));
+                        if (cartItem.count == 0)
+                            ShoppingCart.items = ShoppingCart.items.filter(item => item.sku !== cartItem.sku);
+                    }
+
+                    // release credit
+                    this.creditUsed -= product.credit;
+                }
+
+                console.info(ShoppingCart.items.length == 0 ? "Cart is empty" : "Cart changed: " + JSON.stringify(ShoppingCart.items));
             },
             addToCart(product) {
                 product.count++;

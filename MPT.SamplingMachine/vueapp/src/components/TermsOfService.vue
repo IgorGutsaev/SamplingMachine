@@ -1,6 +1,6 @@
 <template>
     <div class="post">
-        <p class="h3">Terms</p>
+        <p class="h3">{{ $t('titles.terms') }}</p>
         <p class="h4">Service provider</p>
         <p><small>Ogmento services are provided by, and you're contracting with:</small></p>
         <p><small>Ogmento LLC</small></p>
@@ -14,11 +14,11 @@
         <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" v-model="accepted">
             <label class="form-check-label" for="flexCheckDefault">
-                I accept the Terms of service and Privacy Policy
+                {{ $t('titles.termsConfirmation') }}
             </label>
         </div>
 
-        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" :class="{ 'disabled': !this.accepted }" v-on:click="toIdentification" role="button">Next</div>
+        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" :class="{ 'disabled': !this.accepted }" v-on:click="toIdentification" role="button">{{$t('buttons.next')}}</div>
     </div>
 </template>
 
@@ -26,6 +26,7 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import Sampling from './SamplingPage.vue'
+//    import { RouterLink } from 'vue-router'
 
     export default defineComponent({
         data() {

@@ -1,7 +1,7 @@
 <template>
     <div class="post">
-        <p class="h3">Take your products</p>
-        <img src="../assets/arrow-down.gif" width="250" />
+        <p class="h3">{{$t('titles.takeYourProducts')}}</p>
+        <img id="arrow" src="../assets/arrow-down.gif" />
     </div>
 </template>
 

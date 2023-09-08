@@ -1,6 +1,6 @@
 <template>
     <div class="post">
-        <p class="h3">Good buy!</p>
+        <p class="h3 centered">{{$t('titles.goodBuy')}}</p>
     </div>
 </template>
 

@@ -1,18 +1,18 @@
 <template>
     <form class="was-validated">
         <div class="post" v-if="!smsRequested">
-            <p class="h3">Your phone number:</p>
+            <p class="h3">{{$t('titles.phoneNumber')}}</p>
             <div class="mb-3">
-                <input class="form-control is-invalid" id="validationTextarea" pattern="^\d{10}$" value="1234567890" placeholder="format: xxxxxxxxxx" required/>
-                <div class="valid-feedback"><div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="sendSMS" role="button">Send SMS</div></div>
+                <input class="form-control is-invalid" id="validationTextarea" pattern="^\d{10}$" value="1234567890" :placeholder="$t('titles.formatNumber')" required />
+                <div class="valid-feedback"><div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="sendSMS" role="button">{{$t('buttons.sendSMS')}}</div></div>
             </div>
         </div>
 
         <div class="post" v-if="smsRequested">
-            <p class="h3">PIN code:</p>
+            <p class="h3">{{$t('titles.pinCode')}}</p>
             <div class="mb-3">
-                <input class="form-control is-invalid" id="validationTextarea" pattern="^\d{4}$" value="1234" placeholder="format: xxxx" required/>
-                <div class="valid-feedback"><div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="toCatalog" role="button">Confirm</div></div>
+                <input class="form-control is-invalid" id="validationTextarea" pattern="^\d{4}$" value="1234" :placeholder="$t('titles.formatCode')" required />
+                <div class="valid-feedback"><div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="toCatalog" role="button">{{$t('buttons.confirm')}}</div></div>
             </div>
         </div>
     </form>
