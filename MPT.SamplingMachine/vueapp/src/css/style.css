@@ -34,3 +34,8 @@ img.grayscale {
     display: table;
     transition: opacity .3s ease;
 }
+
+.big-checkbox {
+    width: 30px !important;
+    height: 30px !important;
+}
