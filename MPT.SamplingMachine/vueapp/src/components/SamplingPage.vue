@@ -22,10 +22,12 @@
                     </div>
                     <div class="carousel-item" id="agreement-screen">
                         <img src="https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png" class="d-block w-100">
+                        <br>
                         <Terms />
                     </div>
                     <div class="carousel-item" id="identification-screen">
                         <img src="https://images.hindustantimes.com/img/2022/08/07/550x309/cat_1659882617172_1659882628989_1659882628989.jpg" class="d-block w-100">
+                        <br>
                         <Identification />
                     </div>
                     <div class="carousel-item" id="catalog-screen">
