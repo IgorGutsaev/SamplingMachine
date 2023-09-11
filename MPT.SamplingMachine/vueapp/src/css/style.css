@@ -39,3 +39,42 @@ img.grayscale {
     width: 30px !important;
     height: 30px !important;
 }
+
+.credit {
+    position: fixed;
+    top: 0.75em;
+}
+
+.jumbotron {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.lmButton {
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+}
+
+.card {
+    --bs-card-spacer-y: 0.25rem !important;
+}
+
+.prod-carousel-button {
+    filter: invert(100%);
+    position: fixed !important;
+    top: unset !important;
+    bottom: 1em !important;
+}
+
+.dispense-button {
+    position: fixed !important;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    top: unset !important;
+    bottom: 0.5em !important;
+}
+
+.product-title {
+    font-size: 0.8em;
+    margin-bottom: 0.5rem !important
+}

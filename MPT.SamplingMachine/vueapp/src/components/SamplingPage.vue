@@ -79,7 +79,7 @@
             // already being observed
             this.fetchData();
             
-            KioskSettings.credit = 3;
+            KioskSettings.credit = 5;
             KioskSettings.idleTimeoutSec = 60;
             KioskSettings.isEmulation = true;
             KioskSettings.canLogOff = false;
@@ -97,6 +97,7 @@
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#catalog-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+        $($("#productCarousel .carousel-item")[0]).addClass("active");
         },
         toExit() {
             $("#globalCarousel .carousel-item.active").removeClass("active");

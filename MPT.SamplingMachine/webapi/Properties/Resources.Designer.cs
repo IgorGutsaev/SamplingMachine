@@ -61,11 +61,74 @@ namespace webapi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAbgAAAG4CAIAAAC4qGXkAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P35j2TJlt+JhYdv4R57Ru61Za1v7252s9lkk90jCRDJGQoQBpAg/SIIgjQjskkK+j8EzW8zEAQIgiBgJAEDcDikIGHYmkaT7G72+rrfq3qvlleVWZVVmRmZGbvvW+jz/R671697LBmZlVlVr5vfsLhuduzYsWPHzI6ZXb/uXvrZzz5cWFhYLJVKvBRQJDheOi5wRC7XY70scC3yIy3FiJcXU4z4YplrqaRreRG6xBJMR4riIef4eKICZ2Iqf4rSjA7SzUKOj6Xj8WRCC4LurGO/ogPRyWg0HAwGo9FYJYM0GXMZ+w8CJBo1Hk8Gwz7JlZWVWrU6RqYMhzQXIZsXJIcFVFtWe1z5DwWJmUIRFZgcSzcX5moO4ViCI5KEOWWTZSkK [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAIAAABEtEjdAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P3peiQ5kqaJmulqK+nuEZGZXVVdlUvNXZzp7npmpu//As6veWZOV1VmhLuTtFUXO+8nAoWpqS0kfYmIzPSPSjWIQLADAgF0G/8f//3/MxpiPB6nnAMlHOyIaEfjNjglnYwPR+F2nLSjJBAjuZKDhImUM4KNyUKOLYlxF7ExDsSltHCa/OhwkpNMKR1zMk4S5AIhKLXgFAbZHuJwuOXbHtq+d6qUjmnJy6iQzw6R7FXJEIRVnZnb5VMICh1LPaacx/DnSSR9TpqMU2pplGWZvJKkzMs8z9umhYSZZubLj4nhxRmxJFVd5dnEAiVIWiRpkpwkDXB42EgiL+8zuG+E1zBnd7TtsdvAbtv6QF/qQDfpN4jq/7SBnBwkMUCiujkXgJP0 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Abyssinian {
             get {
                 return ResourceManager.GetString("Abyssinian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe1P1bkyxLlt+H5f1Stfc+ffo2M4BRHwszoHAX8KLPJpHUm0BSJpJGMxlMb6LpnRSNJg0wg+4+e1dV3lO/33+5R0ZW1d7nnJ4GRK2KinBfvm6+3H25e2Rk5PS//L//P6fT6WQEZoIp/FB6vV5ns9nkmkKwwHUyy5VSiiCgIGTT+XzeuCbXWQSEcMpFlmTnsznKZiBmlF8WsxlcyEEs5Zfr5HL173y9XCIZWSXoer3IAAXyvVyRyznCZwtkcEyQT17D0HU6nasel8sFJXNthwvbxDZrrybgRTFYpJflsHBdzOfT2ex8PoMhi9rT6YRdsCAfLbBitWm9kfpKGhEjKLR4KzWCFLSKdCDT6H8OFD++y/UO0kY/BhcbcaBDztkmaWZcccb0 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Angora {
+            get {
+                return ResourceManager.GetString("Angora", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAdkAAAHZCAIAAABFJdZVAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P1XkyVJmiWImSkzfonTIEmLdVeTYTsQCCDAG4AniOAPYLG/YCCygz+EJwAPK2A7s7KCXWBnure7Z3qquotmVSWJzODOLjduamY4n9p1DyfXabhHRmb5CYvrZmpqyvXoUTU1Vft/+Py59Xaw6T/93Bj2FR5face2WhzLi9tG5+5duW6A0N8l4PodetC2VnO11IGtS2O6yqX2rVK/RQBvBzdzqTn21InYH0uL48lyoiS3KO/Le50dOAaDo1/8M8c1sDIWZw0PTUzdOo4zNW3Fs/hPwTttfgS6sfKpVY8cN0e86Tj77Dl+wRT2lxer8OZBiuYbmyZpl+eHOHaXbnW3T1sCjp6loOKhU269uaS4mBPCUUhY9+ce97jHPe7xLeKei+9x [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Bengal {
+            get {
+                return ResourceManager.GetString("Bengal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAXwAAAF8CAIAAABDhZedAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P33kyTJlecJOuc8eCTPyqzMLAZUFWg1753ekfthZP+B3f9l/qg7kbsTmd2Vm240AbqB4pU8g0c4J2Zu5vw+36eegURVF2bQADKiIK7p6WFupqb69JHve0/NTC26WCwiq7Iqq7Iqr6vEln9XZVVWZVVeS1mBzqqsyqq81rICnVVZlVV5rWUFOquyKqvyWssKdFZlVVbltZYV6KzKqqzKay0r0FmVVVmV11pWoLMqq7Iqr7WsQGdVVmVVXmtZgc6qrMqqvNayAp1VWZVVea1lBTqrsiqr8lrLCnRWZVVW5bWWFeisyqqsymstK9BZlVVZlddaVqCzKquyKq+1rEBnVVZlVV5rWYHOqqzKqrzWsgKdVVmVVXmtZQU6q7Iqq/Jaywp0 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Birman {
+            get {
+                return ResourceManager.GetString("Birman", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAXsAAAF7CAIAAAC8XLxcAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P3nkyVJut6JHRFxtBapKrNUq2k1c0fu3AsCF7hLAl+45O7yA0mzNa4taeRX7ieYwQy4wF9Ao9FsbZcEzWgQC+6Ci3uBe3HFiJ6Z7tHdPdPTWlSXSp15tD4RR/H3uGdGn86sqq7p7uqZGvRbpyI9PDxcvv7483p4eITn83now7JYLMLhMEfrOPH9sNhLNhin1mE9zwcIPO9f7F2K8e6320s2GKfWYT2Dq4H/3QLg5C9uPKgKUxvhSIRqmS4W80jY8X3CSqbTaSwWI9hgMNzZ2en1evl8wXUdbzxaW1vLpLMTfxaLx6JRx0YfjUZwhsILxUj0J3n5INuEMb6cEiRiEvmQ2JAcrePE98NiL9lg1se6rf+ZANbn1xJ7l6K7++32kg3G [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Bombay {
+            get {
+                return ResourceManager.GetString("Bombay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P33k11Hkid6ptYSWgMEQFUssrpkz7zunbF5Y293zPaPWVt7b3q6p3tm/6b95dmzHdHTPa2quhSLEiChZQokUmuxHw8/9+TNm5kgSKKqwCKclwd+PDw8PPyEf4/HySvaF5fW2tt32tra2tvbHQuz09betrMdrP93dqLVMZmkZj6JhIU00tHRUdRDB1/aK/v1sdIvTc+m7W2uUN9Og0m6shwWmqhqK1R6BWWv5r4Hku66OKZZPCb5VEiD2bQVtLmxsb5ZaGlpaXV1lSi8LOSf0smgelRT7izkzCC12cOoReEL9fdTy8Rr35I2TWBzk5DbTnc9b+gnn6d0aglPUm4uGSJU5hWUvGOqpSRPTSCZYj4DU7U60xDHQmGtHJNIsm+jU6XJ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string British {
+            get {
+                return ResourceManager.GetString("British", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAaIAAAGiCAIAAAAqaVU4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P1pk6RHkif4xeF3eNxHnjgLqLu6u7p7dincQ4SyK6TwFb8ARfiCIuQ7fgHO8MPw5cq+WsoKl7LTuzM9093T0/d0FQqFK+/MuO9w97j5U1MPRyAzASQKCSAS5YqApT1mampqZqr/R+25fLR3eDpyic7Pz/u5r0WEfEbO6OhoP/f59CI83xp9sSpfquqXMryUWf4C+oYn83z0C0fw9Xu/Usbwe0gvCQeeQ0wn0jOZyH3TjpA01v93SEMa0pC+pzSEuSENaUjfc/oMzH1zkeqX0iu0SflSVX/PN1zD/eaQrhoNo7khDWlI33N6mTDnNP551OcY0pCGNKRvnYbR3JCGNKTvOQXMnV9QFv0O9PsTsg0j08+jtAHUPx7SkK4MDaO5IQ1p [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Burmilla {
+            get {
+                return ResourceManager.GetString("Burmilla", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAIAAABEtEjdAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P1nkyRJliWKubsx5yxoZiStLN7VvGeW4e17kMUTfMTOzn7A33sCfIMAIlgR4EEggLwevN3Znekh3T09VV08eWZw58zM3HHOvWrm5izCIzIiM6u6TmiYqym9elX16FUzc/P0//R//p9SqVQmncZxEePJRD0T8ehRPGP1AOl0xvhmoWkmY5MFiLNfCLEMQLKEWf9UniRW1ZiUKonF9iZLnitNC0mKtxRzuSLMlJxO6H9FetWzScbM49D3AxxPTk5brdbx0VGj2Tw8PDw5OW6cNvzAtyxbUyaOy7V0GUwiUWaBwPQ5+iBWtTGJxXJ0lEq9EyuTjlNkLChHXVrSTOxMyrXSrpXy7Aw8dkbSp8YyVJdUTXEmUjD9oqX0BKUhOIQL08E4 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Munchkin {
+            get {
+                return ResourceManager.GetString("Munchkin", resourceCulture);
             }
         }
         
@@ -93,6 +156,24 @@ namespace webapi.Properties {
         internal static string Savannah {
             get {
                 return ResourceManager.GetString("Savannah", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAiYAAAImCAIAAADorNYRAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P1Xlx9HkiZ4J5DQGiRBTVYVu7pqqkecme2ZvZmb+TTb+0n34t1z9mL6TPeIrimKogBIaJHIRCby/bk/ns7IiL9KBVHFp1ne5uZmj5l7RJj9IxVO/V//1/+1tgy7u7vGU6dOZToPMw34xj1gYzq07KuL+eMY4+4SjKanT59u0qEwYhM3odt8FoarjCMMlZH70kHBvbMdlKo7ruKygLxkcLRdrIjFUbJ6IMx0mccj7mhp9YixHGY+1Lx8+bLqlt+fMyMmMSQzT6Yre5RVcCDjEXqShGlKw9UI0M26y9B3aNkx0x3ogWbqPjTLccWyqfYsXYWl2++cMA20GDHLOIw+hTQkM7Lc2dmZ3idLQ8cdIUtyxiwNkb2P2GI/Uo6mC9Athy6F [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Scottish {
+            get {
+                return ResourceManager.GetString("Scottish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAk4AAAJOCAIAAADOOx+iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhevP33l2RZcueJRbjWKtxDp67M0q0b3WjMAFiowZKD3cEAHMzuYjkD7ix2xA97Dg/Jc0j+T+Th8pcd7pAY6EZPV6vqqsqsrMzI0Do8XGsPfr5m73l4pOjus8rixvP7rrBrZteu2bX3nj9f/FI2urCwcLXIYWGycKX8VPmX4OpqcTINKmg0XYxYdnp1pS4/AyI36xcXF39uFwda2qcGopPlr2HqlQbzCGd552gGkYWb5yFEriJ08V6TuT4mhAgsU4FYGI5KyiaGxxteqVKU0H26sDhVMxeLwBmfXk0jiwteDEdABDDWFiPko8bmdS87nfEuiNKGDnMlV3PtZ8BMcHRGXoL5vvMQnZPJjTaw8jpw5IGqvG44ZgmuqRe9onIqumF51sok [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Siberian {
+            get {
+                return ResourceManager.GetString("Siberian", resourceCulture);
             }
         }
     }

@@ -46,8 +46,8 @@
             return {
                 // loading: false
                 smsRequested: false,
-                phoneNumber: '',
-                pin: ''
+                phoneNumber: '1234567890',
+                pin: '1234'
             };
         },
         components:{
