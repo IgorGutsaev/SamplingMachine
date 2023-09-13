@@ -7,6 +7,16 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "vueapp", "vueapp\vueapp.esp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webapi", "webapi\webapi.csproj", "{26C1A670-FF99-44A3-B52D-8C576EC392D4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{D8F26E75-E111-44EF-AABE-7EE2C849C5D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.API.Dto", "Backend\Dto\MPT.Vending.API.Dto.csproj", "{8E813077-95B3-48AF-89A7-EA507963FCB0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Products.Abstractions", "Backend\Domains\Products\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj", "{35F380AB-5C3F-4669-AF92-679BC7D31ADC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "Backend\API\API.csproj", "{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPT.SamplingMachine.ApiClient", "Backend\ApiClient\MPT.SamplingMachine.ApiClient.csproj", "{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +33,31 @@ Global
 		{26C1A670-FF99-44A3-B52D-8C576EC392D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26C1A670-FF99-44A3-B52D-8C576EC392D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26C1A670-FF99-44A3-B52D-8C576EC392D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E813077-95B3-48AF-89A7-EA507963FCB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E813077-95B3-48AF-89A7-EA507963FCB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E813077-95B3-48AF-89A7-EA507963FCB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E813077-95B3-48AF-89A7-EA507963FCB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F380AB-5C3F-4669-AF92-679BC7D31ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F380AB-5C3F-4669-AF92-679BC7D31ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35F380AB-5C3F-4669-AF92-679BC7D31ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35F380AB-5C3F-4669-AF92-679BC7D31ADC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E813077-95B3-48AF-89A7-EA507963FCB0} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
+		{35F380AB-5C3F-4669-AF92-679BC7D31ADC} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
+		{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
+		{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DB410981-1BD4-4F39-8197-C8154C9276D7}

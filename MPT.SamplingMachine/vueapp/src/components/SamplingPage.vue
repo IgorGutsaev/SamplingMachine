@@ -49,6 +49,7 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
+    import CatalogModule from '/src/modules/catalog.module.js'
     import Terms from './TermsOfService.vue'
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
@@ -66,6 +67,7 @@
             };
         },
         components: {
+            CatalogModule,
             Terms,
             Identification,
             ListOfProducts,
@@ -81,7 +83,6 @@
             
             KioskSettings.credit = 5;
             KioskSettings.idleTimeoutSec = 60;
-            KioskSettings.isEmulation = true;
             KioskSettings.canLogOff = false;
         },
         watch: {
@@ -119,10 +120,35 @@
             fetchData() {
                 this.loading = true;
 
-                fetch('settings/languages')
+                fetch('kiosk')
                     .then(r => r.json())
-                    .then(json => {
-                        this.languages = json;
+                    .then(kiosk => {
+
+                        // set products
+                        CatalogModule.products = kiosk.productLinks.map((l) => {
+                            return {
+                                maxCountPerSession: l.maxCountPerSession,
+                                totalCount: l.totalCount,
+                                credit: l.credit,
+                                sku: l.product.sku,
+                                names: l.product.names,
+                                picture: l.product.picture };
+                        });
+
+                        // get localized list of languages
+                        fetch('settings/languages', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                              },
+                              body: JSON.stringify(kiosk.languages)
+                            })
+                            .then(r => r.json())
+                            .then(json => {
+                                this.languages = json;
+                                return;
+                            });
+
                         this.loading = false;
                         return;
                     });

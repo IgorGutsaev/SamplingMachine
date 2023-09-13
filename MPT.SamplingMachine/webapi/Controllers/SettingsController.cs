@@ -13,12 +13,12 @@ public class SettingsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("Languages")]
-    public IEnumerable<dynamic> GetLanguages()
-        => new [] { 
-            new { value = Language.Hindi.GetName(), code = Language.Hindi.GetCode() }, 
-            new { value = Language.English.GetName(), code = Language.English.GetCode() }
-        };
+    [HttpPost("languages")]
+    public IEnumerable<dynamic> GetLanguages([FromBody] IEnumerable<Language> languages)
+    {
+         foreach (var l in languages)
+            yield return new { value = l.GetName(), code = l.GetCode() };
+    }
 
     private readonly ILogger<SettingsController> _logger;
 }

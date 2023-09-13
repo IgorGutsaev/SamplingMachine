@@ -27,7 +27,7 @@ module.exports = {
             '^/settings/languages': {
                 target: 'https://localhost:7244/'
             },
-            '^/catalog': {
+            '^/kiosk': {
                 target: 'https://localhost:7244/'
             }
         },

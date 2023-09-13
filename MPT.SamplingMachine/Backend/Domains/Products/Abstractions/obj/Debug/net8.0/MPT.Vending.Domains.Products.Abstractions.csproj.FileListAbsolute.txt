@@ -1,0 +1,12 @@
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.deps.json
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.AssemblyInfoInputs.cache
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.AssemblyInfo.cs
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.csproj.CoreCompileInputs.cache
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.sourcelink.json
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\refint\MPT.Vending.Domains.Products.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\Backend\Domains\Products\Abstractions\obj\Debug\net8.0\ref\MPT.Vending.Domains.Products.Abstractions.dll

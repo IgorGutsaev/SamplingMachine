@@ -3,7 +3,7 @@
             Please wait...
         </div>
 
-        <div v-if="products" class="content">
+        <div v-if="!loading" class="content">
             <span v-if="this.credit > 1 && this.credit > this.creditUsed && this.products.length > 1" class="badge text-bg-warning credit">{{$t('titles.credit')}}: {{this.credit - this.creditUsed}}</span>
             <span v-if="this.credit > 1 && this.credit === this.creditUsed && this.products.length > 1" class="badge text-bg-danger credit">{{$t('titles.credit')}}: {{this.credit - this.creditUsed}}</span>
 
@@ -11,31 +11,31 @@
                 <div class="carousel-inner">
                     <div v-for="(page, index) in productChunks" v-bind:key="index" class="carousel-item">
 
-                            <div class="container-fluid">
-                                <div class="row mt-4" v-for="chunk in pageChunks(page)">
-                                    <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-12' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
-                                        <div class="card">
-                                            <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
-                                            <div class="card-body">
-                                                <p class="product-title">{{product.names[currentLang]}}</p>
-                                                <!-- hide +/- buttons, out of stock and lack of credit label if there's a single product -->
-                                                <button type="button" class="btn btn-primary btn-sm position-relative lmButton" v-if="product.count > 0 && products.length > 1" v-on:click="removeFromCart(product)">
-                                                    {{$t('buttons.remove')}}
-                                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
-                                                        {{product.count}}
-                                                        <span class="visually-hidden">{{$t('titles.itemsCount')}}</span>
-                                                    </span>
-                                                </button>
+                        <div class="container-fluid">
+                            <div class="row mt-4" v-for="chunk in pageChunks(page)">
+                                <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-12' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
+                                    <div class="card">
+                                        <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
+                                        <div class="card-body">
+                                            <p class="product-title">{{product.names.find(x => x.lang == currentLang)?.value}}</p>
+                                            <!-- hide +/- buttons, out of stock and lack of credit label if there's a single product -->
+                                            <button type="button" class="btn btn-primary btn-sm position-relative lmButton" v-if="product.count > 0 && products.length > 1" v-on:click="removeFromCart(product)">
+                                                {{$t('buttons.remove')}}
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                                                    {{product.count}}
+                                                    <span class="visually-hidden">{{$t('titles.itemsCount')}}</span>
+                                                </span>
+                                            </button>
 
-                                                <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product) && products.length > 1" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a>
+                                            <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product) && products.length > 1" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a>
 
-                                                <p class="text-secondary" v-if="product.totalCount == 0 && products.length > 1">{{$t('titles.outOfStock')}}</p>
-                                                <div class="text-danger" v-if="product.count == 0 && product.credit > (this.credit - this.creditUsed) && products.length > 1">{{$t('titles.lackOfCredit')}}</div>
-                                            </div>
+                                            <p class="text-secondary" v-if="product.totalCount == 0 && products.length > 1">{{$t('titles.outOfStock')}}</p>
+                                            <div class="text-danger" v-if="product.count == 0 && product.credit > (this.credit - this.creditUsed) && products.length > 1">{{$t('titles.lackOfCredit')}}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
                 </div>
                 <button v-if="products.length > 9" class="carousel-control-prev prod-carousel-button" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
@@ -95,31 +95,36 @@
         methods: {
             fetchData() {
                 this.loading = true;
-                fetch('catalog')
-                    .then(r => r.json())
-                    .then(json => {
-                        CatalogModule.products = json;
-                        this.products = CatalogModule.products.filter(x => x.credit <= KioskSettings.credit);
-                        this.products.forEach(function (x) {
-                            x.count = 0;
-                        });
 
-                        this.credit = KioskSettings.credit;
+                let self = this;
+                let check = function() {
+                    setTimeout(function () {
+                        if (CatalogModule.products === null)
+                          check();
+                        else {
+                            self.products = CatalogModule.products.filter(x => x.credit <= KioskSettings.credit);
+                            self.products.forEach(function (x) {
+                                x.count = 0;
+                            });
+
+                            self.credit = KioskSettings.credit;
                         
-                        let chunkIndex = 0;
-                        for (let i = 0; i < this.products.length; i += 9) { // max 9 products per page
-                            this.productChunks[chunkIndex] = this.products.slice(i, i + 9);
-                            chunkIndex++;
-                        }
+                            let chunkIndex = 0;
+                            self.productChunks = [];
+                            for (let i = 0; i < self.products.length; i += 9) { // max 9 products per page
+                                self.productChunks[chunkIndex] = self.products.slice(i, i + 9);
+                                chunkIndex++;
+                            }
 
-                        //$.map(this.products, function (x) { return { name: x.names.find(x => x.lang == KioskSettings.currentLanguage.code).value, sku: x.sku } });
-                        console.info("Total products available: " + CatalogModule.products.length);
+                            if (self.products.length == 1) // add product automatically if it's the only one in the list
+                                self.addToCart(self.products[0]);
 
-                        if (this.products.length == 1) // add product automatically if it's the only one in the list
-                            this.addToCart(this.products[0]);
-                        this.loading = false;
-                        return;
-                    });
+                            self.loading = false;
+                    }
+                  }, 500);
+                };
+                
+                check();
             },
             removeFromCart(product) {
                 if (product.count <= 0)
