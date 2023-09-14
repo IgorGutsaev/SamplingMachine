@@ -88,7 +88,7 @@ namespace API.Controllers
                         Product = new ProductDto {
                             Sku = "Bir",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Birman"), LocalizedValue.Bind(Language.Hindi, "बिरमन") },
-                            Picture = Properties.Resources.British
+                            Picture = Properties.Resources.Birman
                         }
                     },
                     new KioskProductLink {
