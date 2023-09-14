@@ -1,0 +1,43 @@
+﻿@page "/kiosks"
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@attribute [StreamRendering(true)]
+@inject SamplingMachineApiClient _client;
+
+<PageTitle>Kiosks</PageTitle>
+
+<h1>Kiosks</h1>
+
+<p>List of kiosks</p>
+
+@if (kiosks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kiosk in kiosks)
+            {
+                <tr>
+                    <td>@kiosk.UID</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<KioskDto> kiosks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kiosks = await _client.GetKiosksAsync();
+    }
+}

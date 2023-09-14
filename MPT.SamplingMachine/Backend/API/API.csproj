@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Domains\Products\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj" />
+    <ProjectReference Include="..\Domains\Products\Services\MPT.Vending.Domains.Products.Services.csproj" />
     <ProjectReference Include="..\Dto\MPT.Vending.API.Dto.csproj" />
   </ItemGroup>
 

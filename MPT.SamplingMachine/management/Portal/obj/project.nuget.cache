@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "aLfPJMcG+f6Cq3xeNqixHqsxlLjJfRiCpHeoiks4zM3lC+iHwIhYlHYxw5SJmwS3ZuIPtRVooMSSEotbPo9ijA==",
+  "success": true,
+  "projectFilePath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\management\\Portal\\Portal.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\IVG\\.nuget\\packages\\filuet.infrastructure.abstractions\\1.0.78\\filuet.infrastructure.abstractions.1.0.78.nupkg.sha512",
+    "C:\\Users\\IVG\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

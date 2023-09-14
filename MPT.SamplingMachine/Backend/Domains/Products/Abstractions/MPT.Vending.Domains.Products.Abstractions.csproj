@@ -5,5 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Dto\MPT.Vending.API.Dto.csproj" />
+  </ItemGroup>
 	
 </Project>

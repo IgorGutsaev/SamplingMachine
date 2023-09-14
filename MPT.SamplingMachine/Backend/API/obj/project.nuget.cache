@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kb+ExKjGlG3RpVy88ryGXcmHm/D0ptb618xmqhgXNt4XaAeinLZOhLCHPtnWovRnIowNCja950e+d/pVpb9Y1Q==",
+  "dgSpecHash": "jx/Bl/AGmPSyNuDbUK7TEGPX5fbHt0UO+IaPyrcz4RbapmMHNwYkqD9TJkIXdvWEyuL+Ef2CbBab31cI8KnRIQ==",
   "success": true,
-  "projectFilePath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\API\\API.csproj",
+  "projectFilePath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\IVG\\.nuget\\packages\\filuet.infrastructure.abstractions\\1.0.78\\filuet.infrastructure.abstractions.1.0.78.nupkg.sha512",
     "C:\\Users\\IVG\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.11\\microsoft.aspnetcore.openapi.7.0.11.nupkg.sha512",

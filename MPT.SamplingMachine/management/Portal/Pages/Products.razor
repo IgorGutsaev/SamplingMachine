@@ -1,0 +1,53 @@
+﻿@page "/products"
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@using System.Text.Json;
+@using System.Diagnostics;
+@using System.Drawing;
+@using System.Web;
+@using System.Drawing.Imaging;
+@attribute [StreamRendering(true)]
+@inject SamplingMachineApiClient _client;
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+<p>List of products</p>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sku</th>
+                <th>Picture</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Sku</td>
+
+                    <td>
+                        <img src="data:image/*;base64,@product.Picture" width="100" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<ProductDto> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await _client.GetProductsAsync();
+    }
+}

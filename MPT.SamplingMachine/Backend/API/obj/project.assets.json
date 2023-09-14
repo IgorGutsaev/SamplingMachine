@@ -148,6 +148,32 @@
         "runtime": {
           "bin/placeholder/MPT.Vending.API.Dto.dll": {}
         }
+      },
+      "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/MPT.Vending.Domains.Products.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MPT.Vending.Domains.Products.Abstractions.dll": {}
+        }
+      },
+      "MPT.Vending.Domains.Products.Services/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MPT.Vending.Domains.Products.Abstractions": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/MPT.Vending.Domains.Products.Services.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MPT.Vending.Domains.Products.Services.dll": {}
+        }
       }
     }
   },
@@ -547,11 +573,23 @@
       "type": "project",
       "path": "../Dto/MPT.Vending.API.Dto.csproj",
       "msbuildProject": "../Dto/MPT.Vending.API.Dto.csproj"
+    },
+    "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
+      "type": "project",
+      "path": "../Domains/Products/Abstractions/MPT.Vending.Domains.Products.Abstractions.csproj",
+      "msbuildProject": "../Domains/Products/Abstractions/MPT.Vending.Domains.Products.Abstractions.csproj"
+    },
+    "MPT.Vending.Domains.Products.Services/1.0.0": {
+      "type": "project",
+      "path": "../Domains/Products/Services/MPT.Vending.Domains.Products.Services.csproj",
+      "msbuildProject": "../Domains/Products/Services/MPT.Vending.Domains.Products.Services.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "MPT.Vending.API.Dto >= 1.0.0",
+      "MPT.Vending.Domains.Products.Abstractions >= 1.0.0",
+      "MPT.Vending.Domains.Products.Services >= 1.0.0",
       "Microsoft.AspNetCore.OpenApi >= 7.0.11",
       "Swashbuckle.AspNetCore >= 6.5.0"
     ]
@@ -564,11 +602,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\API\\API.csproj",
+      "projectUniqueName": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\API\\API.csproj",
+      "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\API\\API.csproj",
       "packagesPath": "C:\\Users\\IVG\\.nuget\\packages\\",
-      "outputPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\API\\obj\\",
+      "outputPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -592,8 +630,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\Dto\\MPT.Vending.API.Dto.csproj": {
-              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\Backend\\Dto\\MPT.Vending.API.Dto.csproj"
+            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Abstractions\\MPT.Vending.Domains.Products.Abstractions.csproj": {
+              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Abstractions\\MPT.Vending.Domains.Products.Abstractions.csproj"
+            },
+            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Services\\MPT.Vending.Domains.Products.Services.csproj": {
+              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Services\\MPT.Vending.Domains.Products.Services.csproj"
+            },
+            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Dto\\MPT.Vending.API.Dto.csproj": {
+              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Dto\\MPT.Vending.API.Dto.csproj"
             }
           }
         }

@@ -9,6 +9,8 @@
       "API/1.0.0": {
         "dependencies": {
           "MPT.Vending.API.Dto": "1.0.0",
+          "MPT.Vending.Domains.Products.Abstractions": "1.0.0",
+          "MPT.Vending.Domains.Products.Services": "1.0.0",
           "Microsoft.AspNetCore.OpenApi": "7.0.11",
           "Swashbuckle.AspNetCore": "6.5.0"
         },
@@ -93,6 +95,22 @@
         "runtime": {
           "MPT.Vending.API.Dto.dll": {}
         }
+      },
+      "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0"
+        },
+        "runtime": {
+          "MPT.Vending.Domains.Products.Abstractions.dll": {}
+        }
+      },
+      "MPT.Vending.Domains.Products.Services/1.0.0": {
+        "dependencies": {
+          "MPT.Vending.Domains.Products.Abstractions": "1.0.0"
+        },
+        "runtime": {
+          "MPT.Vending.Domains.Products.Services.dll": {}
+        }
       }
     }
   },
@@ -166,6 +184,16 @@
       "hashPath": "swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
     },
     "MPT.Vending.API.Dto/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MPT.Vending.Domains.Products.Services/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
