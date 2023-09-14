@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MPT.SamplingMachine.ApiClient")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eecc218a216af4a4a1de5c65a39de9c0156810e0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0df42c8c90fe678553311ec41ed629afc33f58a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("MPT.SamplingMachine.ApiClient")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MPT.SamplingMachine.ApiClient")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

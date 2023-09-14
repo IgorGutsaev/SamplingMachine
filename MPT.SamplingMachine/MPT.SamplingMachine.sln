@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Product
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "Backend\API\API.csproj", "{5072BCDE-6B2B-43B1-BC58-E12B8CC028EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPT.SamplingMachine.ApiClient", "Backend\ApiClient\MPT.SamplingMachine.ApiClient.csproj", "{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.SamplingMachine.ApiClient", "Backend\ApiClient\MPT.SamplingMachine.ApiClient.csproj", "{A8B2FE9C-6561-4CAF-98AE-5A5111359FB7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{93670505-CF02-4452-8AF1-FCEA0001E5DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
