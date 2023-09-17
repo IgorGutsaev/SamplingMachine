@@ -12,4 +12,8 @@
     <ProjectReference Include="..\..\backend\Domains\Products\Services\MPT.Vending.Domains.Products.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>

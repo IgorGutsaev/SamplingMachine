@@ -1,8 +1,11 @@
 ﻿@page "/kiosks"
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
+@using Portal.StateContainers;
 @attribute [StreamRendering(true)]
+@inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
+@inject KioskStateContainer kioskStateContainer
 
 <PageTitle>Kiosks</PageTitle>
 
@@ -26,7 +29,9 @@ else
             @foreach (var kiosk in kiosks)
             {
                 <tr>
-                    <td>@kiosk.UID</td>
+                    <td>
+                        <button class="btn btn-light" @onclick="() => EditKiosk(kiosk.UID)">@kiosk.UID</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -39,5 +44,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         kiosks = await _client.GetKiosksAsync();
+    }
+
+    private void EditKiosk(string uid)
+    {
+        kioskStateContainer.SetValue(kiosks.First(x => x.UID == uid));
+        navigationManager.NavigateTo($"/kiosk/{uid}");
     }
 }

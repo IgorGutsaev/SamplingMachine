@@ -24,7 +24,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 10,
+                        RemainingQuantity = 10,
                         Product = new ProductDto {
                             Sku = "Aby",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Abyssinian"), LocalizedValue.Bind(Language.Hindi, "एबिसिनियन") },
@@ -34,7 +34,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 5,
+                        RemainingQuantity = 5,
                         Product = new ProductDto {
                             Sku = "Ori",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Oriental"), LocalizedValue.Bind(Language.Hindi, "ओरिएंटल") },
@@ -44,7 +44,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 3,
+                        RemainingQuantity = 3,
                         Product = new ProductDto {
                             Sku = "Sav",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Savannah"), LocalizedValue.Bind(Language.Hindi, "सवाना") },
@@ -54,7 +54,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 3,
-                        TotalCount = 10,
+                        RemainingQuantity = 10,
                         Product = new ProductDto {
                             Sku = "Rus",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Russian blue"), LocalizedValue.Bind(Language.Hindi, "रूसी नीला") },
@@ -64,7 +64,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 1,
+                        RemainingQuantity = 1,
                         Product = new ProductDto {
                             Sku = "Ben",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bengal"), LocalizedValue.Bind(Language.Hindi, "बंगाल") },
@@ -74,7 +74,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 5,
-                        TotalCount = 6,
+                        RemainingQuantity = 6,
                         Product = new ProductDto {
                             Sku = "Ang",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Angora"), LocalizedValue.Bind(Language.Hindi, "अंगोरा") },
@@ -84,7 +84,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 3,
+                        RemainingQuantity = 3,
                         Product = new ProductDto {
                             Sku = "Bir",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Birman"), LocalizedValue.Bind(Language.Hindi, "बिरमन") },
@@ -94,7 +94,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 2,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Bom",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bombay"), LocalizedValue.Bind(Language.Hindi, "बॉम्बे") },
@@ -104,7 +104,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 4,
+                        RemainingQuantity = 4,
                         Product = new ProductDto {
                             Sku = "Brt",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "British Shorthair"), LocalizedValue.Bind(Language.Hindi, "ब्रिटिश शॉर्टहेयर") },
@@ -114,7 +114,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 1,
+                        RemainingQuantity = 1,
                         Product = new ProductDto {
                             Sku = "Mnc",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Munchkin"), LocalizedValue.Bind(Language.Hindi, "मंचकिन") },
@@ -124,7 +124,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Sbr",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Siberian"), LocalizedValue.Bind(Language.Hindi, "साइबेरियाई") },
@@ -134,7 +134,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 4,
+                        RemainingQuantity = 4,
                         Product = new ProductDto {
                             Sku = "Sco",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Scottish fold"), LocalizedValue.Bind(Language.Hindi, "स्कॉटिश मोड़") },
@@ -144,7 +144,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Bur",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Burmilla"), LocalizedValue.Bind(Language.Hindi, "बर्मिला") },
@@ -169,7 +169,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 10,
+                        RemainingQuantity = 10,
                         Product = new ProductDto {
                             Sku = "Aby",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Abyssinian"), LocalizedValue.Bind(Language.Hindi, "एबिसिनियन") },
@@ -179,7 +179,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 5,
+                        RemainingQuantity = 5,
                         Product = new ProductDto {
                             Sku = "Ori",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Oriental"), LocalizedValue.Bind(Language.Hindi, "ओरिएंटल") },
@@ -189,7 +189,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 3,
+                        RemainingQuantity = 3,
                         Product = new ProductDto {
                             Sku = "Sav",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Savannah"), LocalizedValue.Bind(Language.Hindi, "सवाना") },
@@ -199,7 +199,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 3,
-                        TotalCount = 10,
+                        RemainingQuantity = 10,
                         Product = new ProductDto {
                             Sku = "Rus",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Russian blue"), LocalizedValue.Bind(Language.Hindi, "रूसी नीला") },
@@ -209,7 +209,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 1,
+                        RemainingQuantity = 1,
                         Product = new ProductDto {
                             Sku = "Ben",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bengal"), LocalizedValue.Bind(Language.Hindi, "बंगाल") },
@@ -219,7 +219,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 5,
-                        TotalCount = 6,
+                        RemainingQuantity = 6,
                         Product = new ProductDto {
                             Sku = "Ang",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Angora"), LocalizedValue.Bind(Language.Hindi, "अंगोरा") },
@@ -229,7 +229,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 3,
+                        RemainingQuantity = 3,
                         Product = new ProductDto {
                             Sku = "Bir",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Birman"), LocalizedValue.Bind(Language.Hindi, "बिरमन") },
@@ -239,7 +239,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 2,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Bom",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bombay"), LocalizedValue.Bind(Language.Hindi, "बॉम्बे") },
@@ -249,7 +249,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 4,
+                        RemainingQuantity = 4,
                         Product = new ProductDto {
                             Sku = "Brt",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "British Shorthair"), LocalizedValue.Bind(Language.Hindi, "ब्रिटिश शॉर्टहेयर") },
@@ -259,7 +259,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 3,
                         MaxCountPerSession = 1,
-                        TotalCount = 1,
+                        RemainingQuantity = 1,
                         Product = new ProductDto {
                             Sku = "Mnc",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Munchkin"), LocalizedValue.Bind(Language.Hindi, "मंचकिन") },
@@ -269,7 +269,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Sbr",
                             Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Siberian"), LocalizedValue.Bind(Language.Hindi, "साइबेरियाई") },
@@ -279,7 +279,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 1,
                         MaxCountPerSession = 2,
-                        TotalCount = 4,
+                        RemainingQuantity = 4,
                         Product = new ProductDto {
                             Sku = "Sco",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Scottish fold"), LocalizedValue.Bind(Language.Hindi, "स्कॉटिश मोड़") },
@@ -289,7 +289,7 @@ namespace API.Controllers
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,
-                        TotalCount = 2,
+                        RemainingQuantity = 2,
                         Product = new ProductDto {
                             Sku = "Bur",
                             Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Burmilla"), LocalizedValue.Bind(Language.Hindi, "बर्मिला") },

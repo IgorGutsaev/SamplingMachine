@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MPT.Vending.Domains.Products.Abstractions")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d7d69e17c3dcc89f58f8efde545a483be65ac3c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MPT.Vending.Domains.Products.Abstractions")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MPT.Vending.Domains.Products.Abstractions")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

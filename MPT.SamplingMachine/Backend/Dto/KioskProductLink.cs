@@ -6,8 +6,8 @@ namespace MPT.Vending.API.Dto
     {
         [JsonPropertyName("maxCountPerSession")]
         public int MaxCountPerSession { get; set; }
-        [JsonPropertyName("totalCount")]
-        public int TotalCount { get; set; }
+        [JsonPropertyName("remainingQuantity")]
+        public int RemainingQuantity { get; set; }
         [JsonPropertyName("credit")]
         public int Credit { get; set; }
         [JsonPropertyName("product")]

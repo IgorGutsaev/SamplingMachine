@@ -1,0 +1,92 @@
+﻿@page "/kiosk/{uid}"
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@using System.Text.Json;
+@using System.Diagnostics;
+@using System.Drawing;
+@using System.Web;
+@using System.Drawing.Imaging;
+@using Portal.StateContainers;
+@attribute [StreamRendering(true)]
+@inject NavigationManager navigationManager
+@inject SamplingMachineApiClient _client;
+@inject KioskStateContainer kioskStateContainer
+@inject ProductStateContainer productStateContainer
+
+<PageTitle>Kiosk</PageTitle>
+
+<h1>@uid</h1>
+
+@if (kiosk == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">Show logoff popup after</label>
+        <select class="form-select" id="inputGroupSelect01">
+            <option selected>Choose...</option>
+            <option value="1">1 minute</option>
+            <option value="2">2 minutes</option>
+            <option value="3">3 minutes</option>
+        </select>
+    </div>
+
+    <h5>Products</h5>
+
+    <button type="button" class="btn btn-primary">Add</button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sku</th>
+                <th>Credit</th>
+                <th>Max quantity in order</th>
+                <th>Remaining quantity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var link in kiosk.ProductLinks)
+            {
+                <tr>
+                    <td>
+                        <button class="btn btn-light" @onclick="() => EditProduct(link.Product.Sku)">@link.Product.Sku</button>
+                    </td>
+                    <td>
+                        @link.Credit
+                    </td>
+                    <td>
+                        @link.MaxCountPerSession
+                    </td>
+                    <td>
+                        @link.RemainingQuantity
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-warning">Disable</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string uid { get; set; }
+
+    private KioskDto kiosk;
+    private int idleTimeoutMin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kiosk = kioskStateContainer.Value;
+    }
+
+    private void EditProduct(string sku)
+    {
+        productStateContainer.SetValue(kiosk.ProductLinks.First(x => x.Product.Sku == sku).Product);
+        navigationManager.NavigateTo($"/product/{sku}");
+    }
+}

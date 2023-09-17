@@ -1,15 +1,14 @@
 using Filuet.Infrastructure.Abstractions.Converters;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MPT.SamplingMachine.ApiClient;
-using Portal.Data;
+using Portal.StateContainers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<KioskStateContainer>();
+builder.Services.AddSingleton<ProductStateContainer>();
 
 builder.Services.AddControllers()
      .AddJsonOptions(opts =>
@@ -21,8 +20,6 @@ builder.Services.AddControllers()
      });
 
 builder.Services.AddSingleton(sp => new SamplingMachineApiClient("https://localhost:7189/"));
-
-
 
 var app = builder.Build();
 

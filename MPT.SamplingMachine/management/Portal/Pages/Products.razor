@@ -1,13 +1,11 @@
 ﻿@page "/products"
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
-@using System.Text.Json;
-@using System.Diagnostics;
-@using System.Drawing;
-@using System.Web;
-@using System.Drawing.Imaging;
+@using Portal.StateContainers;
 @attribute [StreamRendering(true)]
+@inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
+@inject ProductStateContainer productStateContainer
 
 <PageTitle>Products</PageTitle>
 
@@ -32,8 +30,9 @@ else
             @foreach (var product in products)
             {
                 <tr>
-                    <td>@product.Sku</td>
-
+                    <td>
+                        <button class="btn btn-light" @onclick="() => EditProduct(product.Sku)">@product.Sku</button>
+                    </td>
                     <td>
                         <img src="data:image/*;base64,@product.Picture" width="100" />
                     </td>
@@ -49,5 +48,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         products = await _client.GetProductsAsync();
+    }
+
+    private void EditProduct(string sku)
+    {
+        productStateContainer.SetValue(products.First(x => x.Sku == sku));
+        navigationManager.NavigateTo($"/product/{sku}");
     }
 }

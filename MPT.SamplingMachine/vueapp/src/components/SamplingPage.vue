@@ -128,7 +128,7 @@
                         CatalogModule.products = kiosk.productLinks.map((l) => {
                             return {
                                 maxCountPerSession: l.maxCountPerSession,
-                                totalCount: l.totalCount,
+                                remainingQuantity: l.remainingQuantity,
                                 credit: l.credit,
                                 sku: l.product.sku,
                                 names: l.product.names,

@@ -29,7 +29,7 @@
 
                                             <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product) && products.length > 1" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a>
 
-                                            <p class="text-secondary" v-if="product.totalCount == 0 && products.length > 1">{{$t('titles.outOfStock')}}</p>
+                                            <p class="text-secondary" v-if="product.remainingQuantity == 0 && products.length > 1">{{$t('titles.outOfStock')}}</p>
                                             <div class="text-danger" v-if="product.count == 0 && product.credit > (this.credit - this.creditUsed) && products.length > 1">{{$t('titles.lackOfCredit')}}</div>
                                         </div>
                                     </div>
@@ -161,7 +161,7 @@
             },
             productAvailable(product) {
                 // show Add button if 1) stock is not empty 2) no limitation violation 3) credit is sufficient
-                let isAvailable = product.totalCount > 0 && (product.maxCountPerSession > product.count || !product.count) && ((this.credit - this.creditUsed) >= product.credit);
+                let isAvailable = product.remainingQuantity > 0 && (product.maxCountPerSession > product.count || !product.count) && ((this.credit - this.creditUsed) >= product.credit);
 
                 let pic = $(".pic#" + product.sku);
                 if (isAvailable)
