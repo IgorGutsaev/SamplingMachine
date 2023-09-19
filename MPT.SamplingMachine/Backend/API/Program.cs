@@ -1,4 +1,6 @@
 using Filuet.Infrastructure.Abstractions.Converters;
+using MPT.Vending.Domains.Kiosks.Abstractions;
+using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Products.Abstractions;
 using MPT.Vending.Domains.Products.Services;
 
@@ -16,6 +18,7 @@ builder.Services.AddControllers()
      });
 
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IKioskService, KioskService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

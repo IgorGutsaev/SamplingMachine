@@ -77,3 +77,7 @@ D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Ve
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Products.Services.dll
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Products.Abstractions.pdb
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Products.Services.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Services.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\API\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Services.pdb

@@ -1,0 +1,16 @@
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.deps.json
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\bin\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\bin\Debug\net8.0\MPT.Vending.API.Dto.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\bin\Debug\net8.0\MPT.Vending.API.Dto.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.csproj.AssemblyReference.cache
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.AssemblyInfoInputs.cache
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.AssemblyInfo.cs
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.csproj.CoreCompileInputs.cache
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.sourcelink.json
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.csproj.CopyComplete
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\refint\MPT.Vending.Domains.Kiosks.Abstractions.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Abstractions.pdb
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Abstractions\obj\Debug\net8.0\ref\MPT.Vending.Domains.Kiosks.Abstractions.dll

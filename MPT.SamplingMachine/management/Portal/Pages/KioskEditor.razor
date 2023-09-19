@@ -8,6 +8,7 @@
 @using System.Drawing.Imaging;
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
 @inject KioskStateContainer kioskStateContainer
@@ -35,7 +36,16 @@ else
 
     <h5>Products</h5>
 
-    <button type="button" class="btn btn-primary">Add</button>
+    @if (productsToLink != null && productsToLink.Any())
+    {
+        <button type="button" class="btn btn-primary">Add</button>
+    }
+    else
+    {
+        <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Nothing to add">
+            <button class="btn btn-primary" style="pointer-events: none;" type="button" disabled>Add</button>
+        </span>
+    }
 
     <table class="table">
         <thead>
@@ -64,7 +74,15 @@ else
                         @link.RemainingQuantity
                     </td>
                     <td>
-                        <button type="button" class="btn btn-warning">Disable</button>
+                        @if (!link.Disabled)
+                        {
+                            <button type="button" class="btn btn-warning" @onclick="() => DisableProduct(link.Product.Sku)">Disable</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-success" @onclick="() => EnableProduct(link.Product.Sku)">Enable</button>
+                            <button type="button" class="btn btn-danger" @onclick="() => DeleteProductLink(link.Product.Sku)">Delete</button>
+                        }
                     </td>
                 </tr>
             }
@@ -78,15 +96,47 @@ else
 
     private KioskDto kiosk;
     private int idleTimeoutMin;
+    private IEnumerable<ProductDto> products;
+    private IEnumerable<ProductDto> productsToLink;
 
     protected override async Task OnInitializedAsync()
     {
         kiosk = kioskStateContainer.Value;
+        products = await _client.GetProductsAsync();
+        productsToLink = products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
     }
 
     private void EditProduct(string sku)
     {
         productStateContainer.SetValue(kiosk.ProductLinks.First(x => x.Product.Sku == sku).Product);
         navigationManager.NavigateTo($"/product/{sku}");
+    }
+
+    private async void DisableProduct(string sku)
+    {
+        await _client.DisableProductLinkAsync(kiosk.UID, sku);
+        kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = true;
+        this.StateHasChanged();
+    }
+
+    private async void EnableProduct(string sku)
+    {
+        await _client.DisableProductLinkAsync(kiosk.UID, sku);
+        kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
+        this.StateHasChanged();
+    }
+
+    private async void DeleteProductLink(string sku)
+    {
+        await _client.DeleteProductLinkAsync(kiosk.UID, sku);
+        kiosk.ProductLinks = kiosk.ProductLinks.Where(x => x.Product.Sku != sku);
+        productsToLink = products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
+
+        this.StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        JSRuntime.InvokeVoidAsync("ui.activateTooltips");
     }
 }

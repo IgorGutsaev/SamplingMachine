@@ -149,6 +149,33 @@
           "bin/placeholder/MPT.Vending.API.Dto.dll": {}
         }
       },
+      "MPT.Vending.Domains.Kiosks.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/MPT.Vending.Domains.Kiosks.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MPT.Vending.Domains.Kiosks.Abstractions.dll": {}
+        }
+      },
+      "MPT.Vending.Domains.Kiosks.Services/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0",
+          "MPT.Vending.Domains.Kiosks.Abstractions": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/MPT.Vending.Domains.Kiosks.Services.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MPT.Vending.Domains.Kiosks.Services.dll": {}
+        }
+      },
       "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -574,6 +601,16 @@
       "path": "../Dto/MPT.Vending.API.Dto.csproj",
       "msbuildProject": "../Dto/MPT.Vending.API.Dto.csproj"
     },
+    "MPT.Vending.Domains.Kiosks.Abstractions/1.0.0": {
+      "type": "project",
+      "path": "../Domains/Kiosks/Abstractions/MPT.Vending.Domains.Kiosks.Abstractions.csproj",
+      "msbuildProject": "../Domains/Kiosks/Abstractions/MPT.Vending.Domains.Kiosks.Abstractions.csproj"
+    },
+    "MPT.Vending.Domains.Kiosks.Services/1.0.0": {
+      "type": "project",
+      "path": "../Domains/Kiosks/Services/MPT.Vending.Domains.Kiosks.Services.csproj",
+      "msbuildProject": "../Domains/Kiosks/Services/MPT.Vending.Domains.Kiosks.Services.csproj"
+    },
     "MPT.Vending.Domains.Products.Abstractions/1.0.0": {
       "type": "project",
       "path": "../Domains/Products/Abstractions/MPT.Vending.Domains.Products.Abstractions.csproj",
@@ -588,6 +625,8 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "MPT.Vending.API.Dto >= 1.0.0",
+      "MPT.Vending.Domains.Kiosks.Abstractions >= 1.0.0",
+      "MPT.Vending.Domains.Kiosks.Services >= 1.0.0",
       "MPT.Vending.Domains.Products.Abstractions >= 1.0.0",
       "MPT.Vending.Domains.Products.Services >= 1.0.0",
       "Microsoft.AspNetCore.OpenApi >= 7.0.11",
@@ -630,6 +669,12 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
+            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Kiosks\\Abstractions\\MPT.Vending.Domains.Kiosks.Abstractions.csproj": {
+              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Kiosks\\Abstractions\\MPT.Vending.Domains.Kiosks.Abstractions.csproj"
+            },
+            "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Kiosks\\Services\\MPT.Vending.Domains.Kiosks.Services.csproj": {
+              "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Kiosks\\Services\\MPT.Vending.Domains.Kiosks.Services.csproj"
+            },
             "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Abstractions\\MPT.Vending.Domains.Products.Abstractions.csproj": {
               "projectPath": "D:\\Repos\\SamplingMachine\\MPT.SamplingMachine\\backend\\Domains\\Products\\Abstractions\\MPT.Vending.Domains.Products.Abstractions.csproj"
             },

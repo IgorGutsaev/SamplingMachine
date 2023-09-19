@@ -3,16 +3,24 @@ using System.Text.Json;
 
 namespace MPT.SamplingMachine.ApiClient
 {
-    public class SamplingMachineApiClient
+    public class SamplingMachineApiClient : IDisposable
     {
         private readonly string _url;
+        private readonly HttpClient _client;
 
         public SamplingMachineApiClient(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException(nameof(url));
 
+            _client = new HttpClient();
+
             _url = url;
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
 
         #region kiosks
@@ -24,8 +32,7 @@ namespace MPT.SamplingMachine.ApiClient
         public async Task<KioskDto> GetKioskAsync(string uid)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            using HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks?uid={uid}"));
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks?uid={uid}"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<KioskDto>(result);
         }
@@ -33,10 +40,26 @@ namespace MPT.SamplingMachine.ApiClient
         public async Task<IEnumerable<KioskDto>> GetKiosksAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            using HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/all"));
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/all"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<KioskDto>>(result);
+        }        
+        
+        public async Task DisableProductLinkAsync(string kioskUid, string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
+        }
+
+        public async Task EnableProductLinkAsync(string kioskUid, string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
+        }
+        public async Task DeleteProductLinkAsync(string kioskUid, string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"));
         }
         #endregion
 
@@ -44,8 +67,15 @@ namespace MPT.SamplingMachine.ApiClient
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            using HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri(new Uri(_url), $"/api/products/all"));
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products/all"));
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<ProductDto>>(result);
+        }
+
+        public async Task<IEnumerable<ProductDto>> DisableProductAsync(string kioskUid, string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/disable"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<ProductDto>>(result);
         }
