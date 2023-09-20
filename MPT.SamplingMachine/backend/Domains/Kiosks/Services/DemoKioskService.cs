@@ -1,9 +1,10 @@
 ﻿using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
+using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
-    public class KioskService : IKioskService
+    public class DemoKioskService : IKioskService
     {
         public KioskDto Get(string uid)
         {
@@ -28,11 +29,30 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
         }
 
+        public void AddProductLink(string kioskUid, string sku)
+        {
+            DemoData.Link(kioskUid, sku);
+        }
+
         public void DeleteProductLink(string kioskUid, string sku)
         {
             if (DemoData._kiosks.Any(x => x.UID == kioskUid) && DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Any(x => x.Product.Sku == sku))
                 DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks =
                     DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Where(x => x.Product.Sku != sku);
+        }
+
+        public void SetCredit(string kioskUid, string sku, int credit)
+        {
+            KioskProductLink link = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
+            if (link != null)
+                link.Credit = credit;
+        }
+
+        public void SetMaxCountPerSession(string kioskUid, string sku, int limit)
+        {
+            KioskProductLink link = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
+            if (link != null)
+                link.MaxCountPerSession = limit;
         }
     }
 }

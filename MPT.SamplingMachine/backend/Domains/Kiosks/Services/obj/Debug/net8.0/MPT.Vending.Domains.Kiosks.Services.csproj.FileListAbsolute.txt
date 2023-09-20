@@ -18,3 +18,5 @@ D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\obj
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\obj\Debug\net8.0\refint\MPT.Vending.Domains.Kiosks.Services.dll
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\obj\Debug\net8.0\MPT.Vending.Domains.Kiosks.Services.pdb
 D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\obj\Debug\net8.0\ref\MPT.Vending.Domains.Kiosks.Services.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\bin\Debug\net8.0\MPT.Vending.Domains.SharedContext.dll
+D:\Repos\SamplingMachine\MPT.SamplingMachine\backend\Domains\Kiosks\Services\bin\Debug\net8.0\MPT.Vending.Domains.SharedContext.pdb

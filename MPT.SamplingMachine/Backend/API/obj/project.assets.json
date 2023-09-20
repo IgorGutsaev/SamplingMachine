@@ -167,7 +167,8 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "MPT.Vending.API.Dto": "1.0.0",
-          "MPT.Vending.Domains.Kiosks.Abstractions": "1.0.0"
+          "MPT.Vending.Domains.Kiosks.Abstractions": "1.0.0",
+          "MPT.Vending.Domains.SharedContext": "1.0.0"
         },
         "compile": {
           "bin/placeholder/MPT.Vending.Domains.Kiosks.Services.dll": {}
@@ -200,6 +201,19 @@
         },
         "runtime": {
           "bin/placeholder/MPT.Vending.Domains.Products.Services.dll": {}
+        }
+      },
+      "MPT.Vending.Domains.SharedContext/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/MPT.Vending.Domains.SharedContext.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MPT.Vending.Domains.SharedContext.dll": {}
         }
       }
     }
@@ -620,6 +634,11 @@
       "type": "project",
       "path": "../Domains/Products/Services/MPT.Vending.Domains.Products.Services.csproj",
       "msbuildProject": "../Domains/Products/Services/MPT.Vending.Domains.Products.Services.csproj"
+    },
+    "MPT.Vending.Domains.SharedContext/1.0.0": {
+      "type": "project",
+      "path": "../Domains/Common/SharedContext/MPT.Vending.Domains.SharedContext.csproj",
+      "msbuildProject": "../Domains/Common/SharedContext/MPT.Vending.Domains.SharedContext.csproj"
     }
   },
   "projectFileDependencyGroups": {

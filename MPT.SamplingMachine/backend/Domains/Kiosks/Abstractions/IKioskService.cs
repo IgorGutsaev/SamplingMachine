@@ -8,6 +8,9 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
         IEnumerable<KioskDto> GetAll();
         void DisableProductLink(string kioskUid, string sku);
         void EnableProductLink(string kioskUid, string sku);
+        void AddProductLink(string kioskUid, string sku);
         void DeleteProductLink(string kioskUid, string sku);
+        void SetCredit(string kioskUid, string sku, int credit);
+        void SetMaxCountPerSession(string kioskUid, string sku, int limit);
     }
 }

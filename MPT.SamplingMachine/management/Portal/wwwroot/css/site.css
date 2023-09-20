@@ -92,3 +92,7 @@ a, .btn-link {
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
+
+.smallicon {
+    font-size: 10px !important;
+}

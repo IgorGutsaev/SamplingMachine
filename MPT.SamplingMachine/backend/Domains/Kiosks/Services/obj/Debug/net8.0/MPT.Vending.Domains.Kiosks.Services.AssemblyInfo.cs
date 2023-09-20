@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MPT.Vending.Domains.Kiosks.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d349eaaa819ebe99b03e5e1b65842a3eb84aa1a7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75ca73640cac52b9f4fa56173efcdd4957cfd446")]
 [assembly: System.Reflection.AssemblyProductAttribute("MPT.Vending.Domains.Kiosks.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MPT.Vending.Domains.Kiosks.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

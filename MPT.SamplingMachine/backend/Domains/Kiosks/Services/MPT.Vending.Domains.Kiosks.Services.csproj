@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Dto\MPT.Vending.API.Dto.csproj" />
+    <ProjectReference Include="..\..\Common\SharedContext\MPT.Vending.Domains.SharedContext.csproj" />
     <ProjectReference Include="..\Abstractions\MPT.Vending.Domains.Kiosks.Abstractions.csproj" />
   </ItemGroup>
 

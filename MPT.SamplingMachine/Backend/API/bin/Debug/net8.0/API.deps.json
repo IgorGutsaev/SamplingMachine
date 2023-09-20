@@ -109,7 +109,8 @@
       "MPT.Vending.Domains.Kiosks.Services/1.0.0": {
         "dependencies": {
           "MPT.Vending.API.Dto": "1.0.0",
-          "MPT.Vending.Domains.Kiosks.Abstractions": "1.0.0"
+          "MPT.Vending.Domains.Kiosks.Abstractions": "1.0.0",
+          "MPT.Vending.Domains.SharedContext": "1.0.0"
         },
         "runtime": {
           "MPT.Vending.Domains.Kiosks.Services.dll": {}
@@ -129,6 +130,14 @@
         },
         "runtime": {
           "MPT.Vending.Domains.Products.Services.dll": {}
+        }
+      },
+      "MPT.Vending.Domains.SharedContext/1.0.0": {
+        "dependencies": {
+          "MPT.Vending.API.Dto": "1.0.0"
+        },
+        "runtime": {
+          "MPT.Vending.Domains.SharedContext.dll": {}
         }
       }
     }
@@ -223,6 +232,11 @@
       "sha512": ""
     },
     "MPT.Vending.Domains.Products.Services/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MPT.Vending.Domains.SharedContext/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

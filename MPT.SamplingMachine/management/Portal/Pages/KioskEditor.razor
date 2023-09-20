@@ -1,4 +1,6 @@
 ﻿@page "/kiosk/{uid}"
+@using Filuet.Infrastructure.Abstractions.Enums;
+@using Filuet.Infrastructure.Abstractions.Helpers;
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using System.Text.Json;
@@ -24,14 +26,66 @@
 }
 else
 {
-    <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupSelect01">Show logoff popup after</label>
-        <select class="form-select" id="inputGroupSelect01">
-            <option selected>Choose...</option>
-            <option value="1">1 minute</option>
-            <option value="2">2 minutes</option>
-            <option value="3">3 minutes</option>
-        </select>
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Out of service</label>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">Show logoff popup after</label>
+                    <select class="form-select" id="inputGroupSelect01">
+                        <option selected>Choose...</option>
+                        <option value="1">1 minute</option>
+                        <option value="2">2 minutes</option>
+                        <option value="3">3 minutes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <label class="input-group-text" for="inputGroupSelect01">Credit</label>
+                    <input type="text" class="form-control" placeholder="Credit" aria-label="Max credit" value="@kiosk.Credit" disabled>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit > 1) kiosk.Credit--; }"><i class="oi oi-minus smallicon" aria-hidden="true"/></button>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit < 10) kiosk.Credit++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Languages" aria-label="Languages" value="@string.Join(", ", kiosk.Languages.Select(x => x.GetName()))" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="tuneLanguagesBtn" data-bs-toggle="modal" data-bs-target="#tuneLanguagesModal">Tune</button>
+                </div>
+
+                <!-- Modal: tune languages -->
+                <div class="modal fade" id="tuneLanguagesModal" tabindex="-1" aria-labelledby="tuneLanguagesModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tuneLanguagesModalLabel">Select languages</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @foreach(var language in EnumHelpers.GetValues<Language>())
+                                {
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@kiosk.Languages.Contains(language)">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">@language.GetName()</label>
+                                    </div>
+                                }
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
     <h5>Products</h5>
@@ -42,12 +96,12 @@ else
             Add
         </button>
 
-        <!-- Modal -->
+        <!-- Modal: add product -->
         <div class="modal fade" id="addLinkModal" tabindex="-1" aria-labelledby="addLinkModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addLinkModalLabel">Add product link</h5>
+                        <h5 class="modal-title" id="addLinkModalLabel">Link product</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -66,7 +120,7 @@ else
                                             @product.Sku
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-success" @onclick="() => AddProductLink(product.Sku)">Add</button>
+                                            <button type="button" class="btn btn-success" @onclick="() => AddProductLinkAsync(product.Sku)">Link</button>
                                         </td>
                                     </tr>
                                 }
@@ -74,7 +128,7 @@ else
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -91,6 +145,7 @@ else
         <thead>
             <tr>
                 <th>Sku</th>
+                <th>Name</th>
                 <th>Credit</th>
                 <th>Max quantity in order</th>
                 <th>Remaining quantity</th>
@@ -105,13 +160,19 @@ else
                         <button class="btn btn-light" @onclick="() => EditProduct(link.Product.Sku)">@link.Product.Sku</button>
                     </td>
                     <td>
-                        <div>
-                            <input type="number" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); DoStuff(link.Product.Sku, link.Credit); }">
-                        </div>
-                        
+                        <a data-toggle="tooltip" data-bs-html="true" title="<img src='data:image/*;base64,@link.Product.Picture' width='150' />">
+                            @link.Product.Names.FirstOrDefault().Value
+                        </a>
                     </td>
                     <td>
-                        @link.MaxCountPerSession
+                        <div>
+                            <input type="number" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); SetCredit(link.Product.Sku, link.Credit); }">
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="number" min="1" max="10" value="@link.MaxCountPerSession" @oninput="(e) => { link.MaxCountPerSession = Convert.ToInt32(e.Value); SetMaxCountPerSession(link.Product.Sku, link.MaxCountPerSession); }">
+                        </div>
                     </td>
                     <td>
                         @link.RemainingQuantity
@@ -124,7 +185,7 @@ else
                         else
                         {
                             <button type="button" class="btn btn-success" @onclick="() => EnableProduct(link.Product.Sku)">Enable</button>
-                            <button type="button" class="btn btn-danger" @onclick="() => DeleteProductLink(link.Product.Sku)">Delete</button>
+                            <button type="button" class="btn btn-danger" @onclick="() => UnlinkProduct(link.Product.Sku)">Unlink</button>
                         }
                     </td>
                 </tr>
@@ -141,11 +202,6 @@ else
     private int idleTimeoutMin;
     private IEnumerable<ProductDto> products;
     private IEnumerable<ProductDto> productsToLink;
-
-    protected void DoStuff(string sku, int credit)
-    {
-        Console.WriteLine("It is definitely: " + sku + " credit: " + credit);
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -174,20 +230,34 @@ else
         this.StateHasChanged();
     }
 
-    private async void DeleteProductLink(string sku)
+    private async void UnlinkProduct(string sku)
     {
         await _client.DeleteProductLinkAsync(kiosk.UID, sku);
         kiosk.ProductLinks = kiosk.ProductLinks.Where(x => x.Product.Sku != sku);
         productsToLink = products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
 
         this.StateHasChanged();
-    }    
-    
-    private async void AddProductLink(string sku)
+    }
+
+    private async Task AddProductLinkAsync(string sku)
     {
+        await _client.AddProductLinkAsync(kiosk.UID, sku);
+        var links = kiosk.ProductLinks.ToList();
+        links.Insert(0, new KioskProductLink { Credit = 1, MaxCountPerSession = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku) });
+        kiosk.ProductLinks = links;
+        productsToLink = productsToLink.Where(x => x.Sku != sku);
+
+        if (!productsToLink.Any())
+            await JSRuntime.InvokeVoidAsync("ui.hideModalManually", "addLinkModal");
 
         this.StateHasChanged();
     }
+
+    private async Task SetCredit(string sku, int credit)
+        => await _client.SetCreditAsync(kiosk.UID, sku, credit);
+
+    private async Task SetMaxCountPerSession(string sku, int maxCountPerSession)
+        => await _client.SetMaxCountPerSession(kiosk.UID, sku, maxCountPerSession);
 
     protected override void OnAfterRender(bool firstRender)
     {

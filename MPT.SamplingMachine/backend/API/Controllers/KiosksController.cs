@@ -34,6 +34,18 @@ namespace API.Controllers
         public void DeleteProductLink(string kioskUid, string sku)
             => _kioskService.DeleteProductLink(kioskUid, sku);
 
+        [HttpPut("link")]
+        public void AddProductLink(string kioskUid, string sku)
+            => _kioskService.AddProductLink(kioskUid, sku);
+
+        [HttpPost("credit")]
+        public void SetCredit(string kioskUid, string sku, int credit)
+            => _kioskService.SetCredit(kioskUid, sku, credit);        
+        
+        [HttpPost("limit")]
+        public void SetMaxCountPerSession(string kioskUid, string sku, int limit)
+            => _kioskService.SetMaxCountPerSession(kioskUid, sku, limit);
+
         private readonly IKioskService _kioskService;
         private readonly ILogger<KiosksController> _logger;
     }

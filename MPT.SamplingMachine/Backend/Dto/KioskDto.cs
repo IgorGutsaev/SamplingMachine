@@ -12,6 +12,8 @@ namespace MPT.Vending.API.Dto
         public string UID { get; set; }
         [JsonPropertyName("languages")]
         public IEnumerable<Language> Languages { get; set; }
+        [JsonPropertyName("credit")]
+        public int Credit { get; set; }
         [JsonPropertyName("idleTimeout")]
         public TimeSpan IdleTimeout { get; set; }
         [JsonPropertyName("productLinks")]

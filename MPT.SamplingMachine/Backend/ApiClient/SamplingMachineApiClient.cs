@@ -23,6 +23,7 @@ namespace MPT.SamplingMachine.ApiClient
             _client.Dispose();
         }
 
+     
         #region kiosks
         /// <summary>
         /// Get kiosk
@@ -56,10 +57,29 @@ namespace MPT.SamplingMachine.ApiClient
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
         }
+
         public async Task DeleteProductLinkAsync(string kioskUid, string sku)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"));
+        }
+
+        public async Task AddProductLinkAsync(string kioskUid, string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"), null);
+        }
+
+        public async Task SetCreditAsync(string kioskUid, string sku, int credit)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/credit?kioskUid={kioskUid}&sku={sku}&credit={credit}"), null);
+        }        
+        
+        public async Task SetMaxCountPerSession(string kioskUid, string sku, int maxCountPerSession)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/limit?kioskUid={kioskUid}&sku={sku}&limit={maxCountPerSession}"), null);
         }
         #endregion
 

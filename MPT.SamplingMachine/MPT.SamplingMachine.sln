@@ -27,9 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portal", "management\Portal
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kiosks", "kiosks", "{349D41EF-58F6-48BA-88F2-12691B656CE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPT.Vending.Domains.Kiosks.Abstractions", "backend\Domains\Kiosks\Abstractions\MPT.Vending.Domains.Kiosks.Abstractions.csproj", "{FD5A0A6C-81F5-448E-8BFA-6501A6BB864E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Kiosks.Abstractions", "backend\Domains\Kiosks\Abstractions\MPT.Vending.Domains.Kiosks.Abstractions.csproj", "{FD5A0A6C-81F5-448E-8BFA-6501A6BB864E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPT.Vending.Domains.Kiosks.Services", "backend\Domains\Kiosks\Services\MPT.Vending.Domains.Kiosks.Services.csproj", "{7D358209-863F-4894-8229-3077F7EC89BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Kiosks.Services", "backend\Domains\Kiosks\Services\MPT.Vending.Domains.Kiosks.Services.csproj", "{7D358209-863F-4894-8229-3077F7EC89BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{B75FBB29-C4C5-47F6-99A6-77D050F7F115}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.SharedContext", "backend\Domains\Common\SharedContext\MPT.Vending.Domains.SharedContext.csproj", "{31E1B40F-F4F5-415A-A3B8-1221B49775CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +83,10 @@ Global
 		{7D358209-863F-4894-8229-3077F7EC89BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D358209-863F-4894-8229-3077F7EC89BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D358209-863F-4894-8229-3077F7EC89BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E1B40F-F4F5-415A-A3B8-1221B49775CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E1B40F-F4F5-415A-A3B8-1221B49775CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E1B40F-F4F5-415A-A3B8-1221B49775CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E1B40F-F4F5-415A-A3B8-1221B49775CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +102,8 @@ Global
 		{349D41EF-58F6-48BA-88F2-12691B656CE0} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
 		{FD5A0A6C-81F5-448E-8BFA-6501A6BB864E} = {349D41EF-58F6-48BA-88F2-12691B656CE0}
 		{7D358209-863F-4894-8229-3077F7EC89BF} = {349D41EF-58F6-48BA-88F2-12691B656CE0}
+		{B75FBB29-C4C5-47F6-99A6-77D050F7F115} = {D8F26E75-E111-44EF-AABE-7EE2C849C5D5}
+		{31E1B40F-F4F5-415A-A3B8-1221B49775CC} = {B75FBB29-C4C5-47F6-99A6-77D050F7F115}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DB410981-1BD4-4F39-8197-C8154C9276D7}
