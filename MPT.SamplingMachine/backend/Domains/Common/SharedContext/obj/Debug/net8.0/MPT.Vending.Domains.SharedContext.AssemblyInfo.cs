@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MPT.Vending.Domains.SharedContext")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75ca73640cac52b9f4fa56173efcdd4957cfd446")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93412087a21f5fbaec14d2087b52880d418143e7")]
 [assembly: System.Reflection.AssemblyProductAttribute("MPT.Vending.Domains.SharedContext")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MPT.Vending.Domains.SharedContext")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

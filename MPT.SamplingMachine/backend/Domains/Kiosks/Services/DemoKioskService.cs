@@ -1,6 +1,8 @@
-﻿using MPT.Vending.API.Dto;
+﻿using Filuet.Infrastructure.Abstractions.Enums;
+using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.SharedContext;
+using System.Xml.Linq;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
@@ -16,6 +18,41 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public IEnumerable<KioskDto> GetAll()
             => DemoData._kiosks;
+
+        public KioskDto Add(string uid)
+        {
+            if (string.IsNullOrWhiteSpace(uid))
+                throw new ArgumentException("Kiosk uid is mandatory");
+
+            if (DemoData._kiosks.Any(x => x.UID == uid))
+                throw new ArgumentException("A kiosk with the same name already exists");
+
+            KioskDto result = new KioskDto {
+                UID = uid, Credit= 1,
+                IdleTimeout = TimeSpan.FromMinutes(3),
+                Languages= new Language[] { Language.English}
+            };
+
+            DemoData._kiosks.Insert(0, result);
+
+            return result;
+        }
+
+        public void AddOrUpdate(KioskDto kiosk)
+        {
+            if (kiosk == null)
+                throw new NullReferenceException();
+
+            if (string.IsNullOrWhiteSpace(kiosk.UID))
+                throw new ArgumentException("Kiosk uid is mandatory");
+
+            KioskDto existedKiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kiosk.UID);
+
+            if (existedKiosk == null)
+                existedKiosk = Add(kiosk.UID);
+
+            existedKiosk.Merge(kiosk);
+        }
 
         public void DisableProductLink(string kioskUid, string sku)
         {

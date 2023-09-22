@@ -22,6 +22,14 @@ namespace API.Controllers
         public IEnumerable<KioskDto> GetAll()
             => _kioskService.GetAll();
 
+        [HttpPost]
+        public KioskDto Post(string uid)
+            => _kioskService.Add(uid);
+
+        [HttpPut]
+        public void Put([FromBody] KioskDto kiosk)
+            => _kioskService.AddOrUpdate(kiosk);
+
         [HttpPost("link/disable")]
         public void DisableProductLink(string kioskUid, string sku)
             => _kioskService.DisableProductLink(kioskUid, sku);

@@ -6,6 +6,8 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
     {
         KioskDto Get(string uid);
         IEnumerable<KioskDto> GetAll();
+        KioskDto Add(string uid);
+        void AddOrUpdate(KioskDto kiosk);
         void DisableProductLink(string kioskUid, string sku);
         void EnableProductLink(string kioskUid, string sku);
         void AddProductLink(string kioskUid, string sku);

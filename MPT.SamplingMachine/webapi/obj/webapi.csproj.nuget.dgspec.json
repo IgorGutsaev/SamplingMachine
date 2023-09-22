@@ -197,10 +197,6 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Filuet.Infrastructure.Abstractions": {
-              "target": "Package",
-              "version": "[1.0.78, )"
-            },
             "Filuet.Infrastructure.DataProvider": {
               "target": "Package",
               "version": "[1.0.13, )"

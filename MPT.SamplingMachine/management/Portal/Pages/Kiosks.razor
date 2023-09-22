@@ -3,6 +3,7 @@
 @using MPT.Vending.API.Dto;
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
 @inject KioskStateContainer kioskStateContainer
@@ -34,11 +35,12 @@ else
                 <div class="modal-body">
                    <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">Name</span>
-                      <input type="text" class="form-control" placeholder="E.g. 'baz'" aria-label="Name" aria-describedby="basic-addon1">
+                      <input type="text" class="form-control" placeholder="E.g. 'baz'" @bind="_newUid" aria-label="Name" aria-describedby="basic-addon1">
                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                    <button type="button" disabled="@string.IsNullOrWhiteSpace(_newUid)" class="btn btn-primary" @onclick="() => Create(_newUid)">Create</button>
                 </div>
             </div>
         </div>
@@ -55,7 +57,7 @@ else
             {
                 <tr>
                     <td>
-                        <button class="btn btn-light" @onclick="() => EditKiosk(kiosk.UID)">@kiosk.UID</button>
+                        <button class="btn btn-light" @onclick="() => Edit(kiosk.UID)">@kiosk.UID</button>
                     </td>
                 </tr>
             }
@@ -65,13 +67,23 @@ else
 
 @code {
     private IEnumerable<KioskDto> kiosks;
+    protected string _newUid;
 
     protected override async Task OnInitializedAsync()
     {
         kiosks = await _client.GetKiosksAsync();
     }
 
-    private void EditKiosk(string uid)
+    private async Task Create(string uid)
+    {
+        KioskDto newKiosk = await _client.AddKioskAsync(uid);
+        var kioskList = kiosks.ToList();
+        kioskList.Insert(0, newKiosk);
+        kiosks = kioskList;
+        await JSRuntime.InvokeVoidAsync("ui.hideModalManually", "addKioskModal");
+    }
+
+    private void Edit(string uid)
     {
         kioskStateContainer.SetValue(kiosks.First(x => x.UID == uid));
         navigationManager.NavigateTo($"/kiosk/{uid}");

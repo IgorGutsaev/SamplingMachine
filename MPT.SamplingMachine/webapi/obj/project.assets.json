@@ -1127,7 +1127,6 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Filuet.Infrastructure.Abstractions >= 1.0.78",
       "Filuet.Infrastructure.DataProvider >= 1.0.13",
       "MPT.SamplingMachine.ApiClient >= 1.0.0",
       "MPT.Vending.API.Dto >= 1.0.0",
@@ -1193,10 +1192,6 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
-          "Filuet.Infrastructure.Abstractions": {
-            "target": "Package",
-            "version": "[1.0.78, )"
-          },
           "Filuet.Infrastructure.DataProvider": {
             "target": "Package",
             "version": "[1.0.13, )"

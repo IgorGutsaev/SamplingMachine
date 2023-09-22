@@ -8,6 +8,7 @@
 @using System.Drawing;
 @using System.Web;
 @using System.Drawing.Imaging;
+@using Portal.Models;
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
@@ -28,17 +29,16 @@ else
 {
     <div class="container">
         <div class="row">
-            <div class="col-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Out of service</label>
+            <div class="col-2">
+                <div class="form-check form-switch" style="padding-top: 0.5rem">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="IsOn" />
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Turned on</label>
                 </div>
             </div>
-
-            <div class="col-3">
+            <div class="col-4">
                 <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01">Show logoff popup after</label>
-                    <select class="form-select" id="inputGroupSelect01">
+                    <label class="input-group-text" for="inputGroupSelect01">Logoff after</label>
+                    <select class="form-select" id="inputGroupSelect01" @bind="IdleTimeout">
                         <option selected>Choose...</option>
                         <option value="1">1 minute</option>
                         <option value="2">2 minutes</option>
@@ -47,16 +47,16 @@ else
                 </div>
             </div>
             <div class="col-3">
-                <div class="input-group">
+                <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupSelect01">Credit</label>
                     <input type="text" class="form-control" placeholder="Credit" aria-label="Max credit" value="@kiosk.Credit" disabled>
-                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit > 1) kiosk.Credit--; }"><i class="oi oi-minus smallicon" aria-hidden="true"/></button>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit > 1) kiosk.Credit--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
                     <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit < 10) kiosk.Credit++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                 </div>
             </div>
             <div class="col-3">
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Languages" aria-label="Languages" value="@string.Join(", ", kiosk.Languages.Select(x => x.GetName()))" aria-describedby="button-addon2">
+                    <input type="text" class="form-control" placeholder="Languages" aria-label="Languages" value="@string.Join(", ", kiosk.Languages.Select(x => x.GetName()))" aria-describedby="button-addon2" disabled>
                     <button class="btn btn-outline-secondary" type="button" id="tuneLanguagesBtn" data-bs-toggle="modal" data-bs-target="#tuneLanguagesModal">Tune</button>
                 </div>
 
@@ -69,12 +69,12 @@ else
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                @foreach(var language in EnumHelpers.GetValues<Language>())
+                                @foreach (var language in LanguageList.OrderBy(x => x.Language.GetCode()))
                                 {
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@kiosk.Languages.Contains(language)">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">@language.GetName()</label>
-                                    </div>
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@language.Index.HasValue" @oninput="(e) => OnLanguageChanged(language.Language, Convert.ToBoolean(e.Value))">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">@language.AsMarkup()</label>
+                                     </div>
                                 }
                             </div>
                             <div class="modal-footer">
@@ -153,43 +153,44 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var link in kiosk.ProductLinks)
-            {
-                <tr>
-                    <td>
-                        <button class="btn btn-light" @onclick="() => EditProduct(link.Product.Sku)">@link.Product.Sku</button>
-                    </td>
-                    <td>
-                        <a data-toggle="tooltip" data-bs-html="true" title="<img src='data:image/*;base64,@link.Product.Picture' width='150' />">
-                            @link.Product.Names.FirstOrDefault().Value
-                        </a>
-                    </td>
-                    <td>
-                        <div>
-                            <input type="number" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); SetCredit(link.Product.Sku, link.Credit); }">
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <input type="number" min="1" max="10" value="@link.MaxCountPerSession" @oninput="(e) => { link.MaxCountPerSession = Convert.ToInt32(e.Value); SetMaxCountPerSession(link.Product.Sku, link.MaxCountPerSession); }">
-                        </div>
-                    </td>
-                    <td>
-                        @link.RemainingQuantity
-                    </td>
-                    <td>
-                        @if (!link.Disabled)
-                        {
-                            <button type="button" class="btn btn-warning" @onclick="() => DisableProduct(link.Product.Sku)">Disable</button>
-                        }
-                        else
-                        {
-                            <button type="button" class="btn btn-success" @onclick="() => EnableProduct(link.Product.Sku)">Enable</button>
-                            <button type="button" class="btn btn-danger" @onclick="() => UnlinkProduct(link.Product.Sku)">Unlink</button>
-                        }
-                    </td>
-                </tr>
-            }
+            @if (kiosk.ProductLinks != null)
+                @foreach (var link in kiosk.ProductLinks)
+                {
+                    <tr>
+                        <td>
+                            <button class="btn btn-light" @onclick="() => EditProduct(link.Product.Sku)">@link.Product.Sku</button>
+                        </td>
+                        <td>
+                            <a data-toggle="tooltip" data-bs-html="true" title="<img src='data:image/*;base64,@link.Product.Picture' width='150' />">
+                                @link.Product.Names.FirstOrDefault().Value
+                            </a>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="number" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); SetCredit(link.Product.Sku, link.Credit); }">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="number" min="1" max="10" value="@link.MaxCountPerSession" @oninput="(e) => { link.MaxCountPerSession = Convert.ToInt32(e.Value); SetMaxCountPerSession(link.Product.Sku, link.MaxCountPerSession); }">
+                            </div>
+                        </td>
+                        <td>
+                            @link.RemainingQuantity
+                        </td>
+                        <td class="col-md-2">
+                            @if (!link.Disabled)
+                            {
+                                <button type="button" class="btn btn-warning" @onclick="() => DisableProduct(link.Product.Sku)">Disable</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-success" @onclick="() => EnableProduct(link.Product.Sku)">Enable</button>
+                                <button type="button" class="btn btn-danger" @onclick="() => UnlinkProduct(link.Product.Sku)">Unlink</button>
+                            }
+                        </td>
+                    </tr>
+                }
         </tbody>
     </table>
 }
@@ -199,15 +200,50 @@ else
     public string uid { get; set; }
 
     private KioskDto kiosk;
-    private int idleTimeoutMin;
     private IEnumerable<ProductDto> products;
     private IEnumerable<ProductDto> productsToLink;
+
+    private List<LangSelector> LanguageList = new List<LangSelector>();
+
+    private bool _isOn = true;
+    private bool IsOn
+    {
+        get => _isOn;
+        set
+        {
+            _isOn = value;
+            kiosk.IsOn = _isOn;
+        }
+    }
+
+    private int _idleTimeout = 1;
+    private int IdleTimeout
+    {
+        get => _idleTimeout;
+        set
+        {
+            _idleTimeout = value;
+            kiosk.IdleTimeout = TimeSpan.FromMinutes(_idleTimeout);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         kiosk = kioskStateContainer.Value;
+
         products = await _client.GetProductsAsync();
-        productsToLink = products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
+        productsToLink = kiosk.ProductLinks == null ? products : products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
+
+        SetupBindVariables();
+    }
+
+    private void SetupBindVariables()
+    {
+        _isOn = kiosk.IsOn;
+        _idleTimeout = (int)kiosk.IdleTimeout.TotalMinutes;
+
+        foreach (var language in EnumHelpers.GetValues<Language>())
+            LanguageList.Add(new LangSelector { Language = language, Index = kiosk.Languages.ToList().IndexOf(language) == -1 ? null : kiosk.Languages.ToList().IndexOf(language) + 1 });
     }
 
     private void EditProduct(string sku)
@@ -258,6 +294,26 @@ else
 
     private async Task SetMaxCountPerSession(string sku, int maxCountPerSession)
         => await _client.SetMaxCountPerSession(kiosk.UID, sku, maxCountPerSession);
+
+    private async Task OnLanguageChanged(Language lang, bool value)
+    {
+        Language? l = kiosk.Languages.FirstOrDefault(x => x == lang);
+        if (l.HasValue && !value)
+        {
+            kiosk.Languages = kiosk.Languages.Where(x => x != lang);
+        }
+        else if (l == 0 && value)
+        {
+            var langList = kiosk.Languages.ToList();
+            langList.Add(lang);
+            kiosk.Languages = langList;
+        }
+
+        foreach (var language in LanguageList)
+            language.Index = kiosk.Languages.Contains(language.Language) ? kiosk.Languages.ToList().IndexOf(kiosk.Languages.First(x => x == language.Language)) + 1 : null;
+
+        await _client.AddOrUpdateKioskAsync(kiosk);
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {

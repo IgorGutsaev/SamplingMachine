@@ -1,4 +1,6 @@
-﻿using MPT.Vending.API.Dto;
+﻿using Filuet.Infrastructure.Abstractions.Converters;
+using MPT.Vending.API.Dto;
+using System.Text;
 using System.Text.Json;
 
 namespace MPT.SamplingMachine.ApiClient
@@ -7,15 +9,20 @@ namespace MPT.SamplingMachine.ApiClient
     {
         private readonly string _url;
         private readonly HttpClient _client;
+        private JsonSerializerOptions _options;
 
         public SamplingMachineApiClient(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException(nameof(url));
 
-            _client = new HttpClient();
-
             _url = url;
+            _client = new HttpClient();
+            _options = new JsonSerializerOptions();
+            _options.Converters.Add(new CurrencyJsonConverter());
+            _options.Converters.Add(new CountryJsonConverter());
+            _options.Converters.Add(new LanguageJsonConverter());
+            _options.Converters.Add(new N2JsonConverter());
         }
 
         public void Dispose()
@@ -38,14 +45,29 @@ namespace MPT.SamplingMachine.ApiClient
             return JsonSerializer.Deserialize<KioskDto>(result);
         }
 
+        public async Task<KioskDto> AddKioskAsync(string kioskUid)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks?uid={kioskUid}"), null);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<KioskDto>(result);
+        }
+
+        public async Task AddOrUpdateKioskAsync(KioskDto kiosk)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(kiosk, _options), Encoding.UTF8, "application/json");
+            await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks"), httpContent);
+        }
+
         public async Task<IEnumerable<KioskDto>> GetKiosksAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/all"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<KioskDto>>(result);
-        }        
-        
+        }
+
         public async Task DisableProductLinkAsync(string kioskUid, string sku)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);

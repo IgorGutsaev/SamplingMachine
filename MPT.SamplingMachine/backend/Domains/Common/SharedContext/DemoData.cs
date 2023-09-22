@@ -81,6 +81,7 @@ namespace MPT.Vending.Domains.SharedContext
             _kiosks.Add(new KioskDto
             {
                 UID = "foo",
+                IsOn = true,
                 Credit = 1,
                 IdleTimeout = TimeSpan.FromMinutes(1),
                 Languages = new Language[] { Language.Hindi, Language.English },
@@ -169,7 +170,8 @@ namespace MPT.Vending.Domains.SharedContext
 
         public static void Link(string kioskUid, string sku)
         {
-            var links = _kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.ToList();
+            KioskDto kiosk = _kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            var links = kiosk.ProductLinks?.ToList() ?? new List<KioskProductLink>();
             if (links.Any(x => x.Product.Sku == sku))
                 return;
             else
