@@ -81,8 +81,6 @@
             // already being observed
             this.fetchData();
             
-            KioskSettings.credit = 5;
-            KioskSettings.idleTimeoutSec = 60;
             KioskSettings.canLogOff = false;
         },
         watch: {
@@ -148,6 +146,13 @@
                                 this.languages = json;
                                 return;
                             });
+
+                        KioskSettings.credit = kiosk.credit;
+                        let a = kiosk.idleTimeout.split(':'); // split it at the colons
+                        // minutes are worth 60 seconds. Hours are worth 60 minutes.
+                        let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+
+                        KioskSettings.idleTimeoutSec = seconds;
 
                         this.loading = false;
                         return;
