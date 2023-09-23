@@ -2,7 +2,6 @@
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.SharedContext;
-using System.Xml.Linq;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
@@ -14,6 +13,12 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 return DemoData._kiosks.First(x => x.UID == uid);
 
             return null;
+        }
+
+        public void EnableDisable(string uid, bool enabled)
+        {
+            if (DemoData._kiosks.Any(x => x.UID == uid))
+                DemoData._kiosks.First(x => x.UID == uid).IsOn = enabled;
         }
 
         public IEnumerable<KioskDto> GetAll()

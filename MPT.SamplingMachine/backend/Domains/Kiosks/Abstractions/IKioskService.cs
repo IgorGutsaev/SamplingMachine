@@ -5,6 +5,7 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
     public interface IKioskService
     {
         KioskDto Get(string uid);
+        void EnableDisable(string uid, bool enable);
         IEnumerable<KioskDto> GetAll();
         KioskDto Add(string uid);
         void AddOrUpdate(KioskDto kiosk);

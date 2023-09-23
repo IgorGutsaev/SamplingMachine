@@ -18,6 +18,14 @@ namespace API.Controllers
         public KioskDto Get(string uid)
             => _kioskService.Get(uid);
 
+        [HttpGet("enable")]
+        public void EnableProductLink(string uid)
+            => _kioskService.EnableDisable(uid, true);
+
+        [HttpGet("disable")]
+        public void DisableProductLink(string uid)
+            => _kioskService.EnableDisable(uid, false);
+
         [HttpGet("all")]
         public IEnumerable<KioskDto> GetAll()
             => _kioskService.GetAll();
@@ -30,13 +38,13 @@ namespace API.Controllers
         public void Put([FromBody] KioskDto kiosk)
             => _kioskService.AddOrUpdate(kiosk);
 
-        [HttpPost("link/disable")]
-        public void DisableProductLink(string kioskUid, string sku)
-            => _kioskService.DisableProductLink(kioskUid, sku);
-
         [HttpPost("link/enable")]
         public void EnableProductLink(string kioskUid, string sku)
             => _kioskService.EnableProductLink(kioskUid, sku);
+
+        [HttpPost("link/disable")]
+        public void DisableProductLink(string kioskUid, string sku)
+            => _kioskService.DisableProductLink(kioskUid, sku);
 
         [HttpDelete("link")]
         public void DeleteProductLink(string kioskUid, string sku)

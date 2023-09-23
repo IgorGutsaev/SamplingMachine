@@ -213,6 +213,13 @@ else
         {
             _isOn = value;
             kiosk.IsOn = _isOn;
+            
+            new Task(async () =>
+            {
+                if (kiosk.IsOn)
+                    await _client.KioskEnableAsync(kiosk.UID);
+                else await _client.KioskDisableAsync(kiosk.UID);
+            }).Start();
         }
     }
 
@@ -261,7 +268,7 @@ else
 
     private async void EnableProduct(string sku)
     {
-        await _client.DisableProductLinkAsync(kiosk.UID, sku);
+        await _client.EnableProductLinkAsync(kiosk.UID, sku);
         kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
         this.StateHasChanged();
     }

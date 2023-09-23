@@ -103,6 +103,28 @@ namespace MPT.SamplingMachine.ApiClient
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/limit?kioskUid={kioskUid}&sku={sku}&limit={maxCountPerSession}"), null);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uid">Unique identifier of the kiosk</param>
+        /// <returns></returns>
+        public async Task KioskEnableAsync(string uid)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/enable?uid={uid}"));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uid">Unique identifier of the kiosk</param>
+        /// <returns></returns>
+        public async Task KioskDisableAsync(string uid)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/disable?uid={uid}"));
+        }
         #endregion
 
         #region products
