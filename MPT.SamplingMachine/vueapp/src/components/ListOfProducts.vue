@@ -15,7 +15,7 @@
                         <!-- container -->
                         <div class="row justify-content-md-center mt-4" v-for="chunk in pageChunks(page)">
                             <div class="col col-lg-2" v-if="calcChunkSize(page) == 1" />
-                            <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-9' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
+                            <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-8' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
                                 <div class="card" id="card">
                                     <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
                                     <div v-if="product.count && product.maxCountPerSession <= product.count" class="outOfStock display-6">
