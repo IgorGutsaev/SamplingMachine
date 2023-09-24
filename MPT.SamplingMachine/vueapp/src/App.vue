@@ -28,6 +28,7 @@
     import $ from 'jquery'
     import Sampling from './components/SamplingPage.vue'
     import KioskSettings from '/src/modules/settings.module.js'
+    import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr';
 
     export default {
         name: 'App',
@@ -40,6 +41,34 @@
             exitPopupOpened: false;
         },
         created() {
+             const connection = new HubConnectionBuilder()
+            .withUrl('https://localhost:7244/notificationhub' ,{
+                skipNegotiation: true,
+                transport: HttpTransportType.WebSockets
+            }) 
+                .configureLogging(LogLevel.Information)
+                .build();
+
+                async function start() {
+                    try {
+                        await connection.start();
+                        console.log("SignalR Connected.");
+                    } catch (err) {
+                        console.log(err);
+                        setTimeout(start, 5000);
+                    }
+                };
+
+                connection.onclose(async () => {
+                    await start();
+                });
+
+                // Start the connection.
+                start();
+
+                connection.on("Send", message => {
+                    alert(message);
+                });
             let startIdleTimer = () => {
                 if (KioskSettings.canLogOff && !this.exitPopupOpened)
                 {

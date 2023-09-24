@@ -1,5 +1,7 @@
 using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using MPT.SamplingMachine.ApiClient;
 using webapi.Communication;
 using webapi.Services;
@@ -18,10 +20,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddSingleton(sp => new SamplingMachineApiClient("https://localhost:7189/"));
 builder.Services.AddSingleton(sp => new KioskService(sp.GetRequiredService<SamplingMachineApiClient>(), sp.GetRequiredService<IMemoryCachingService>(), kioskUid));
-builder.Services.AddSingleton(new Portal2KioskMessagesReceiver("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=", kioskUid));
+
+//builder.Services.AddScoped<NotificationHub>();
+builder.Services.AddSingleton(sp => new Portal2KioskMessagesReceiver("Endpoint=sb://ogmentoservicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=", kioskUid, sp.GetRequiredService<IHubContext<NotificationHub>>()));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:5002/")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+builder.Services.AddSignalR();
 
 var app = builder.Build();
-
 var processor = app.Services.GetRequiredService<Portal2KioskMessagesReceiver>();
 await processor.RunAsync();
 
@@ -37,5 +53,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationhub");
+
 
 app.Run();
