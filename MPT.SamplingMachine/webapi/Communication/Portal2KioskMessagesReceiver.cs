@@ -23,7 +23,7 @@ namespace webapi.Communication
                 // log
             };
 
-            //Task.Delay(15000).ContinueWith(x => { 
+            //Task.Delay(10000).ContinueWith(x => { 
             //    hubContext.Clients.All.SendAsync("Send", "hello"); 
             //});
         }
