@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\communication\MessagingServices\MessagingServices.csproj" />
     <ProjectReference Include="..\Domains\Kiosks\Abstractions\MPT.Vending.Domains.Kiosks.Abstractions.csproj" />
     <ProjectReference Include="..\Domains\Kiosks\Services\MPT.Vending.Domains.Kiosks.Services.csproj" />
     <ProjectReference Include="..\Domains\Products\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj" />

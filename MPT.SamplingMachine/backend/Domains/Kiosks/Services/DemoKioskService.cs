@@ -7,6 +7,8 @@ namespace MPT.Vending.Domains.Kiosks.Services
 {
     public class DemoKioskService : IKioskService
     {
+        public event EventHandler<KioskDto> onKioskHasChanged;
+
         public KioskDto Get(string uid)
         {
             if (DemoData._kiosks.Any(x => x.UID == uid))
@@ -53,10 +55,16 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
             KioskDto existedKiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kiosk.UID);
 
+            bool isNewKiosk = false;
             if (existedKiosk == null)
+            {
                 existedKiosk = Add(kiosk.UID);
+                isNewKiosk = true;
+            }
 
             existedKiosk.Merge(kiosk);
+            if (!isNewKiosk)
+                onKioskHasChanged?.Invoke(this, kiosk);
         }
 
         public void DisableProductLink(string kioskUid, string sku)

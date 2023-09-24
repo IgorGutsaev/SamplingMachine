@@ -4,6 +4,7 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
 {
     public interface IKioskService
     {
+        event EventHandler<KioskDto> onKioskHasChanged;
         KioskDto Get(string uid);
         void EnableDisable(string uid, bool enable);
         IEnumerable<KioskDto> GetAll();
