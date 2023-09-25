@@ -6,6 +6,7 @@
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
-    "font-awesome-animation": "^1.1.1"
+    "font-awesome-animation": "^1.1.1",
+    "mitt": "^3.0.1"
   }
 }

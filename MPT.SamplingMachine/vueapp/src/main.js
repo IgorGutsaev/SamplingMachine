@@ -7,4 +7,9 @@ import i18n from './i18n'
 library.add(faPhone, faHouse, faSpinner, faPlus, faRemove)
 import App from './App.vue'
 
-createApp(App).component('font-awesome-icon', FontAwesomeIcon).use(i18n).mount('#app')
+import mitt from 'mitt';
+const emitter = mitt();
+
+const app = createApp(App);
+app.config.globalProperties.emitter = emitter;
+app.component('font-awesome-icon', FontAwesomeIcon).use(i18n).mount('#app');

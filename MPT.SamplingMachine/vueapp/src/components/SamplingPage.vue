@@ -116,9 +116,11 @@
             $("#dispensing-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
-        mounted() {
-            this.bus.$on('syncKiosk', this.syncKiosk)
-        },  
+        mounted() { 
+            this.emitter.on('sync', data => {
+              this.languages = data.languages;
+            });
+        },
         methods: {
             fetchData() {
                 this.loading = true;
