@@ -82,6 +82,7 @@
             this.fetchData();
             
             KioskSettings.canLogOff = false;
+            KioskSettings.isEmulation = true;
         },
         watch: {
             // call again the method if the route changes
