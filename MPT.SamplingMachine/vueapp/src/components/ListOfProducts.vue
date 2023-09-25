@@ -18,10 +18,10 @@
                             <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-8' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
                                 <div class="card" id="card">
                                     <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
-                                    <div v-if="product.count && product.maxCountPerSession <= product.count" class="outOfStock display-6">
+                                    <div v-if="product.count && product.maxQty <= product.count" class="outOfStock display-6">
                                         <label v-html="$t('titles.outOfStock')" />
                                     </div>
-                                    <div v-if="products.length > 1 && product.maxCountPerSession > product.count && (product.credit > (this.credit - this.creditUsed))" class="lackOfCredit display-6">
+                                    <div v-if="products.length > 1 && product.maxQty > product.count && (product.credit > (this.credit - this.creditUsed))" class="lackOfCredit display-6">
                                         <label v-html="$t('titles.lackOfCredit')" />
                                     </div>
 
@@ -181,7 +181,7 @@
             },
             productAvailable(product) {
                 // show Add button if 1) stock is not empty 2) no limitation violation 3) credit is sufficient
-                let isAvailable = product.remainingQuantity > 0 && (product.maxCountPerSession > product.count || !product.count) && ((this.credit - this.creditUsed) >= product.credit);
+                let isAvailable = product.remains > 0 && (product.maxQty > product.count || !product.count) && ((this.credit - this.creditUsed) >= product.credit);
 
                 let pic = $(".pic#" + product.sku);
                 if (isAvailable)

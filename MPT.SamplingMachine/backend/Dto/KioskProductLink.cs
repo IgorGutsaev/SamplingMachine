@@ -4,16 +4,16 @@ namespace MPT.Vending.API.Dto
 {
     public class KioskProductLink
     {
-        [JsonPropertyName("maxCountPerSession")]
+        [JsonPropertyName("maxQty")]
         public int MaxCountPerSession { get; set; }
-        [JsonPropertyName("remainingQuantity")]
+        [JsonPropertyName("remains")]
         public int RemainingQuantity { get; set; }
         [JsonPropertyName("credit")]
         public int Credit { get; set; }
         [JsonPropertyName("product")]
         public ProductDto Product { get; set; }
-
         [JsonPropertyName("disabled")]
-        public bool Disabled { get; set; } = false;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool Disabled { get; set; }
     }
 }

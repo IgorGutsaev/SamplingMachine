@@ -1,5 +1,4 @@
-﻿using Filuet.Infrastructure.Abstractions.Enums;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MPT.Vending.API.Dto
 {
@@ -10,6 +9,7 @@ namespace MPT.Vending.API.Dto
         [JsonPropertyName("names")]
         public IEnumerable<LocalizedValue> Names { get; set; }
         [JsonPropertyName("picture")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Picture { get; set; }
     }
 }

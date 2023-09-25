@@ -72,7 +72,8 @@
             Identification,
             ListOfProducts,
             Dispensing,
-            EndSession
+            EndSession,
+            KioskSettings
         },
         props: {
         },
@@ -115,6 +116,9 @@
             $("#dispensing-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
+        mounted() {
+            this.bus.$on('syncKiosk', this.syncKiosk)
+        },  
         methods: {
             fetchData() {
                 this.loading = true;
@@ -124,10 +128,10 @@
                     .then(kiosk => {
 
                         // set products
-                        CatalogModule.products = kiosk.productLinks.map((l) => {
+                        CatalogModule.products = kiosk.links.map((l) => {
                             return {
-                                maxCountPerSession: l.maxCountPerSession,
-                                remainingQuantity: l.remainingQuantity,
+                                maxQty: l.maxQty,
+                                remains: l.remains,
                                 credit: l.credit,
                                 sku: l.product.sku,
                                 names: l.product.names,
@@ -176,6 +180,10 @@
             changeHomeButton(enabled) {
                 this.homeButtonEnabled = enabled;
                 KioskSettings.canLogOff = enabled;
+            },
+            syncKiosk(revision)
+            {
+                KioskSettings.credit = revision.credit;
             }
         }
     });

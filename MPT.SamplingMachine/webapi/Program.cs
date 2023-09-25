@@ -22,7 +22,7 @@ builder.Services.AddSingleton(sp => new SamplingMachineApiClient("https://localh
 builder.Services.AddSingleton(sp => new KioskService(sp.GetRequiredService<SamplingMachineApiClient>(), sp.GetRequiredService<IMemoryCachingService>(), kioskUid));
 
 //builder.Services.AddScoped<NotificationHub>();
-builder.Services.AddSingleton(sp => new Portal2KioskMessagesReceiver("Endpoint=sb://ogmentoservicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=", kioskUid, sp.GetRequiredService<IHubContext<NotificationHub>>()));
+builder.Services.AddSingleton(sp => new Portal2KioskMessagesReceiver("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=", kioskUid, sp.GetRequiredService<IHubContext<NotificationHub>>()));
 
 builder.Services.AddCors(options =>
 {
@@ -39,7 +39,7 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 var processor = app.Services.GetRequiredService<Portal2KioskMessagesReceiver>();
-await processor.RunAsync();
+await processor.Run();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -16,7 +16,7 @@ namespace MPT.Vending.API.Dto
         public int Credit { get; set; }
         [JsonPropertyName("idleTimeout")]
         public TimeSpan IdleTimeout { get; set; }
-        [JsonPropertyName("productLinks")]
+        [JsonPropertyName("links")]
         public IEnumerable<KioskProductLink> ProductLinks { get; set; }
         [JsonPropertyName("isOn")]
         public bool IsOn { get; set; }

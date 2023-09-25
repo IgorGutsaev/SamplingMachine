@@ -42,10 +42,10 @@
         },
         created() {
              const connection = new HubConnectionBuilder()
-            .withUrl('https://localhost:7244/notificationhub' ,{
-                skipNegotiation: true,
-                transport: HttpTransportType.WebSockets
-            }) 
+                .withUrl('https://localhost:7244/notificationhub', {
+                    skipNegotiation: true,
+                    transport: HttpTransportType.WebSockets
+                })
                 .configureLogging(LogLevel.Information)
                 .build();
 
@@ -66,9 +66,7 @@
                 // Start the connection.
                 start();
 
-                connection.on("Send", message => {
-                    alert(message);
-                });
+                connection.on("syncKiosk", message => Sampling.syncKiosk(message));
             let startIdleTimer = () => {
                 if (KioskSettings.canLogOff && !this.exitPopupOpened)
                 {
