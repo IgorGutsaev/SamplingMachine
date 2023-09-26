@@ -55,7 +55,7 @@ namespace API.Controllers
             => _kioskService.AddProductLink(kioskUid, sku);
 
         [HttpPost("credit")]
-        public void SetCredit(string kioskUid, string sku, int credit)
+        public void SetCredit(string kioskUid, int credit, string sku = null)
             => _kioskService.SetCredit(kioskUid, sku, credit);        
         
         [HttpPost("limit")]

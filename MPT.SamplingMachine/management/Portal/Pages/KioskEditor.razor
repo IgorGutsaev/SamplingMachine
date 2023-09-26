@@ -49,9 +49,9 @@ else
             <div class="col-3">
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupSelect01">Credit</label>
-                    <input type="text" class="form-control" placeholder="Credit" aria-label="Max credit" value="@kiosk.Credit" disabled>
-                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit > 1) kiosk.Credit--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
-                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (kiosk.Credit < 10) kiosk.Credit++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                    <input type="text" class="form-control" placeholder="Credit" aria-label="Max credit" @bind="Credit" disabled>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (Credit > 1) Credit--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (Credit < 10) Credit++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                 </div>
             </div>
             <div class="col-3">
@@ -231,6 +231,18 @@ else
         {
             _idleTimeout = value;
             kiosk.IdleTimeout = TimeSpan.FromMinutes(_idleTimeout);
+        }
+    }
+
+    private int _credit = 1;
+    private int Credit
+    {
+        get => _credit;
+        set
+        {
+            _credit = value;
+            kiosk.Credit = _credit;
+            new Task(async () => await _client.SetCreditAsync(kiosk.UID, _credit)).Start();
         }
     }
 

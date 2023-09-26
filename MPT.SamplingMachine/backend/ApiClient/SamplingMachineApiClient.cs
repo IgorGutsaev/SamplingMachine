@@ -92,6 +92,12 @@ namespace MPT.SamplingMachine.ApiClient
             await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"), null);
         }
 
+        public async Task SetCreditAsync(string kioskUid, int credit)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/credit?kioskUid={kioskUid}&credit={credit}"), null);
+        }
+
         public async Task SetCreditAsync(string kioskUid, string sku, int credit)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);

@@ -20,7 +20,14 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public void EnableDisable(string uid, bool enabled)
         {
             if (DemoData._kiosks.Any(x => x.UID == uid))
-                DemoData._kiosks.First(x => x.UID == uid).IsOn = enabled;
+            {
+                KioskDto kiosk = DemoData._kiosks.First(x => x.UID == uid);
+                if (kiosk.IsOn != enabled)
+                {
+                    kiosk.IsOn = enabled;
+                    onKioskHasChanged?.Invoke(this, kiosk);
+                }
+            }
         }
 
         public IEnumerable<KioskDto> GetAll()
@@ -93,9 +100,29 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public void SetCredit(string kioskUid, string sku, int credit)
         {
-            KioskProductLink link = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
-            if (link != null)
-                link.Credit = credit;
+            bool changed = false;
+            KioskDto kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                if (kiosk.Credit != credit)
+                {
+                    kiosk.Credit = credit;
+                    changed = true;
+                }
+            }
+            else
+            {
+                KioskProductLink link = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
+                if (link != null && link.Credit != credit)
+                {
+                    link.Credit = credit;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                onKioskHasChanged?.Invoke(this, kiosk);
         }
 
         public void SetMaxCountPerSession(string kioskUid, string sku, int limit)

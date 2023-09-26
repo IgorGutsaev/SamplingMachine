@@ -50,13 +50,14 @@
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
     import CatalogModule from '/src/modules/catalog.module.js'
+    import { getLanguages, getSecTimeoutFromTimespan } from '/src/modules/sync.module.js';
     import Terms from './TermsOfService.vue'
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
     import Dispensing from './DispensingGoods.vue'
     import EndSession from './EndSession.vue'
     import i18n from '../i18n'
-
+    
     export default defineComponent({
         data() {
             return {
@@ -117,18 +118,22 @@
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         mounted() { 
-            this.emitter.on('sync', data => {
-              this.languages = data.languages;
+            this.emitter.on('sync', async kiosk => {
+                this.languages = await getLanguages(this.languages, kiosk.languages);
+                KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout) / 10;
+                KioskSettings.credit = kiosk.credit;
+                ListOfProducts.credit = KioskSettings.credit;
             });
         },
         methods: {
-            fetchData() {
+            async fetchData() {
                 this.loading = true;
 
-                fetch('kiosk')
+                let kiosk;
+                await fetch('kiosk')
                     .then(r => r.json())
-                    .then(kiosk => {
-
+                    .then(x => {
+                        kiosk = x;
                         // set products
                         CatalogModule.products = kiosk.links.map((l) => {
                             return {
@@ -140,30 +145,15 @@
                                 picture: l.product.picture };
                         });
 
-                        // get localized list of languages
-                        fetch('settings/languages', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json;charset=utf-8'
-                              },
-                              body: JSON.stringify(kiosk.languages)
-                            })
-                            .then(r => r.json())
-                            .then(json => {
-                                this.languages = json;
-                                return;
-                            });
-
-                        KioskSettings.credit = kiosk.credit;
-                        let a = kiosk.idleTimeout.split(':'); // split it at the colons
-                        // minutes are worth 60 seconds. Hours are worth 60 minutes.
-                        let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-
-                        KioskSettings.idleTimeoutSec = seconds;
-
-                        this.loading = false;
                         return;
                     });
+
+                // get localized list of languages
+                this.languages = await getLanguages(null, kiosk.languages);
+                KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
+                KioskSettings.credit = kiosk.credit;
+
+                this.loading = false;
             },
             setLanguage(lang) {
                 this.currentLang = lang.code;
