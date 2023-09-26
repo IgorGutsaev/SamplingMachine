@@ -101,6 +101,12 @@
             // call again the method if the route changes
             '$route': 'fetchData'
         },
+        mounted() { 
+            this.emitter.on('sync', async kiosk => {
+                this.credit = kiosk.credit;
+                //todo: remove or add products according to the new credit limit
+            });
+        },
         methods: {
             fetchData() {
                 this.loading = true;

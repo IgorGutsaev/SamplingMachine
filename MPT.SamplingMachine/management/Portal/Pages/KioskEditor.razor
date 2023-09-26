@@ -213,7 +213,7 @@ else
         {
             _isOn = value;
             kiosk.IsOn = _isOn;
-            
+
             new Task(async () =>
             {
                 if (kiosk.IsOn)
@@ -250,6 +250,7 @@ else
     {
         kiosk = kioskStateContainer.Value;
 
+        _credit = kiosk.Credit;
         products = await _client.GetProductsAsync();
         productsToLink = kiosk.ProductLinks == null ? products : products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
 

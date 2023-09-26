@@ -120,7 +120,7 @@
         mounted() { 
             this.emitter.on('sync', async kiosk => {
                 this.languages = await getLanguages(this.languages, kiosk.languages);
-                KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout) / 10;
+                KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
                 ListOfProducts.credit = KioskSettings.credit;
             });
