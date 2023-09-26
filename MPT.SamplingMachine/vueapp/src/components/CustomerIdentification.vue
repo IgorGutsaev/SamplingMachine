@@ -5,6 +5,9 @@
             <div class="row">
                 <div class="col" v-if="!smsRequested">
                     <p class="h3">{{$t('titles.phoneNumber')}}</p>
+                    <div v-if="showWarning" class="alert alert-warning" role="alert">
+                        {{$t('titles.checkPhoneWarning')}}
+                    </div>
                     <div>
                         <div class="input-group-lg">
                             <input id="mobileInput" class="input form-control is-invalid" pattern="^\d{10}$" :maxlength="10" :value="phoneNumber" @input="onPhoneInputChange" :placeholder="$t('titles.formatNumber')" required />
@@ -29,6 +32,9 @@
                             </div>
                         </div>
                     </div>
+                    <br/>
+                    <h5 v-if="countdown < 60 && countdown > 0">00:{{('0' + countdown).slice(-2)}}</h5>
+                    <button v-if="countdown == 0" class="btn btn-outline-primary btn-lg" v-on:click="() => { smsRequested = false; pin = ''; showWarning = true; }">{{$t('buttons.sendPinCode')}}</button>
                 </div>
             </div>
         </div>
@@ -47,7 +53,9 @@
                 // loading: false
                 smsRequested: false,
                 phoneNumber: '1234567890',
-                pin: '1234'
+                pin: '1234',
+                showWarning: false,
+                countdown: 60
             };
         },
         components:{
@@ -66,6 +74,20 @@
             sendSMS() {
                 // save number
                 this.smsRequested = true;
+
+                this.countdown = 10;
+
+                var self = this;
+                let countdownTimer = setTimeout(function tick() {
+                    countdownTimer = setTimeout(tick, 1000);
+                    self.countdown--;
+                    if (self.countdown <= 0) {
+                        console.log(self.countdown);
+                        clearInterval(countdownTimer);
+                        return;
+                    }
+                console.log(self.countdown);
+                }, 1000);
             },
             toCatalog() {
                 // check
@@ -81,7 +103,7 @@
                 this.pin = input;
             },
             onPinInputChange(input) {
-              this.pin = input.target.value;
+                this.pin = input.target.value;
             }
         }
     });

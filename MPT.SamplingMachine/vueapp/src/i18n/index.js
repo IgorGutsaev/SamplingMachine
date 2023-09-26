@@ -9,6 +9,7 @@ const i18n = createI18n({
                 terms: 'शर्तें',
                 termsConfirmation: 'मैं सेवा की शर्तों और गोपनीयता नीति को स्वीकार करता हूं',
                 phoneNumber: 'आपका फोन नंबर',
+                checkPhoneWarning: 'सुनिश्चित करें कि संख्या सही है',
                 pinCode: 'पिन कोड',
                 credit: 'श्रेय',
                 lackOfCredit: 'अपर्याप्त क्रेडिट',
@@ -29,7 +30,8 @@ const i18n = createI18n({
                 more: 'अधिक',
                 dispense: 'उत्पाद जारी करें',
                 sendSMS: 'एसएमएस भेजें',
-                confirm: 'पुष्टि करना'
+                confirm: 'पुष्टि करना',
+                sendPinCode: 'पिन कोड दोबारा भेजें'
             }
         },
         en: {
@@ -37,6 +39,7 @@ const i18n = createI18n({
                 terms: 'Terms',
                 termsConfirmation: 'I accept the Terms of service and Privacy Policy',
                 phoneNumber: 'Your phone number',
+                checkPhoneWarning: 'Make sure the number is correct',
                 pinCode: 'PIN code',
                 credit: 'Credit',
                 lackOfCredit: 'insufficient<br/>credit',
@@ -57,7 +60,8 @@ const i18n = createI18n({
                 more: 'More',
                 dispense: 'Issue products',
                 sendSMS: 'Send SMS',
-                confirm: 'Confirm'
+                confirm: 'Confirm',
+                sendPinCode: 'Send PIN code again'
             }
         }
     }
