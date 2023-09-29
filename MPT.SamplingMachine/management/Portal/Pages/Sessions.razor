@@ -1,0 +1,48 @@
+﻿@page "/sessions";
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@using Portal.StateContainers;
+@attribute [StreamRendering(true)]
+@inject NavigationManager navigationManager
+@inject SamplingMachineApiClient _client;
+
+<PageTitle>Sessions</PageTitle>
+
+<h1>Sessions</h1>
+
+<p>List of sessions</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (sessions != null)
+        {
+            foreach (var session in sessions)
+            {
+                <tr>
+                    <td>
+                        <button class="btn btn-light">@session.PhoneNumber</button>
+                    </td>
+                    <td>
+                        @session.Date?.ToString("HH:mm:ss dd-MM-yyyy")
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Session> sessions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sessions = await _client.GetSessionsAsync(new SessionsRequest { From = DateTime.Now.Date, To = DateTime.Now });
+    }
+}

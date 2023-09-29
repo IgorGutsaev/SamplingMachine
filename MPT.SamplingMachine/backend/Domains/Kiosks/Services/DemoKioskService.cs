@@ -7,9 +7,9 @@ namespace MPT.Vending.Domains.Kiosks.Services
 {
     public class DemoKioskService : IKioskService
     {
-        public event EventHandler<KioskDto> onKioskHasChanged;
+        public event EventHandler<Kiosk> onKioskHasChanged;
 
-        public KioskDto Get(string uid)
+        public Kiosk Get(string uid)
         {
             if (DemoData._kiosks.Any(x => x.UID == uid))
                 return DemoData._kiosks.First(x => x.UID == uid);
@@ -21,7 +21,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         {
             if (DemoData._kiosks.Any(x => x.UID == uid))
             {
-                KioskDto kiosk = DemoData._kiosks.First(x => x.UID == uid);
+                Kiosk kiosk = DemoData._kiosks.First(x => x.UID == uid);
                 if (kiosk.IsOn != enabled)
                 {
                     kiosk.IsOn = enabled;
@@ -30,10 +30,10 @@ namespace MPT.Vending.Domains.Kiosks.Services
             }
         }
 
-        public IEnumerable<KioskDto> GetAll()
+        public IEnumerable<Kiosk> GetAll()
             => DemoData._kiosks;
 
-        public KioskDto Add(string uid)
+        public Kiosk Add(string uid)
         {
             if (string.IsNullOrWhiteSpace(uid))
                 throw new ArgumentException("Kiosk uid is mandatory");
@@ -41,7 +41,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             if (DemoData._kiosks.Any(x => x.UID == uid))
                 throw new ArgumentException("A kiosk with the same name already exists");
 
-            KioskDto result = new KioskDto {
+            Kiosk result = new Kiosk {
                 UID = uid, Credit= 1,
                 IdleTimeout = TimeSpan.FromMinutes(3),
                 Languages= new Language[] { Language.English}
@@ -52,7 +52,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             return result;
         }
 
-        public void AddOrUpdate(KioskDto kiosk)
+        public void AddOrUpdate(Kiosk kiosk)
         {
             if (kiosk == null)
                 throw new NullReferenceException();
@@ -60,7 +60,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             if (string.IsNullOrWhiteSpace(kiosk.UID))
                 throw new ArgumentException("Kiosk uid is mandatory");
 
-            KioskDto existedKiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kiosk.UID);
+            Kiosk existedKiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kiosk.UID);
 
             bool isNewKiosk = false;
             if (existedKiosk == null)
@@ -101,7 +101,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public void SetCredit(string kioskUid, string sku, int credit)
         {
             bool changed = false;
-            KioskDto kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
 
             if (string.IsNullOrWhiteSpace(sku))
             {

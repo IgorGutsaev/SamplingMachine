@@ -28,15 +28,16 @@
                                     <div class="card-body">
                                         <p class="product-title">{{product.names.find(x => x.lang == currentLang)?.value}}</p>
                                         <!-- hide +/- buttons, out of stock and lack of credit label if there's a single product -->
-                                        <button type="button" class="btn btn-primary btn-sm position-relative lmButton" v-if="product.count > 0" v-on:click="removeFromCart(product)">
+                                        <button type="button" class="btn btn-dark btn-sm position-relative lmButton" v-if="product.count > 0" v-on:click="removeFromCart(product)">
                                             {{$t('buttons.remove')}}
                                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
-                                                {{product.count}}
+                                                {{product.count * product.credit}}
                                                 <span class="visually-hidden">{{$t('titles.itemsCount')}}</span>
                                             </span>
                                         </button>
 
-                                        <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a>
+                                        <!-- <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a> -->
+                                        <button class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}<span class="badge bg-warning" style="margin-left: 0.25em; color: black"> {{product.credit}}</span></button>
                                         <button disabled class="btn btn-secondary btn-sm lmButton" v-if="!productAvailable(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</button>
                                     </div>
                                 </div>
@@ -178,7 +179,7 @@
                 product.count++;
 
                 if (ShoppingCart.items.filter(x => x.sku == product.sku).length == 0)
-                    ShoppingCart.items.push({ sku: product.sku, count: 0 });
+                    ShoppingCart.items.push({ sku: product.sku, count: 0, unitCredit: product.credit });
 
                 ShoppingCart.items.filter(x => x.sku == product.sku)[0].count++;
                 this.creditUsed += product.credit;
@@ -197,10 +198,11 @@
 
                 return isAvailable;
             },
-            issueProducts() {
+            async issueProducts() {
                 this.$emit('homeButtonEnabled', false)
                 Sampling.toDispensing();
-                Dispensing.extract();
+
+                await Dispensing.extract(ShoppingCart.items);
             },
             calcChunkSize(chunk) {
                 return this.products.length > 9 ? 3 : (chunk.length == 2 || chunk.length == 4 ? 2 : (chunk.length == 1 ? 1 : 3));

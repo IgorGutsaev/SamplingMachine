@@ -5,80 +5,81 @@ namespace MPT.Vending.Domains.SharedContext
 {
     public static class DemoData
     {
-        public static List<KioskDto> _kiosks = new List<KioskDto>();
-        public static List<ProductDto> _products = new List<ProductDto>();
+        public static List<Kiosk> _kiosks = new List<Kiosk>();
+        public static List<Product> _products = new List<Product>();
+        public static List<Session> _sessions = new List<Session>(); 
 
         static DemoData()
         {
             _products.AddRange(new[] {
-                new ProductDto {
+                new Product {
                     Sku = "Aby",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Abyssinian"), LocalizedValue.Bind(Language.Hindi, "एबिसिनियन") },
                     Picture = Properties.Resources.Abyssinian
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Ori",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Oriental"), LocalizedValue.Bind(Language.Hindi, "ओरिएंटल") },
                     Picture = Properties.Resources.Oriental
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Sav",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Savannah"), LocalizedValue.Bind(Language.Hindi, "सवाना") },
                     Picture = Properties.Resources.Savannah
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Rus",
                     Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Russian blue"), LocalizedValue.Bind(Language.Hindi, "रूसी नीला") },
                     Picture = Properties.Resources.RussianBlue
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Ben",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bengal"), LocalizedValue.Bind(Language.Hindi, "बंगाल") },
                     Picture = Properties.Resources.Bengal
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Ang",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Angora"), LocalizedValue.Bind(Language.Hindi, "अंगोरा") },
                     Picture = Properties.Resources.Angora
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Bir",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Birman"), LocalizedValue.Bind(Language.Hindi, "बिरमन") },
                     Picture = Properties.Resources.Birman
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Bom",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Bombay"), LocalizedValue.Bind(Language.Hindi, "बॉम्बे") },
                     Picture = Properties.Resources.Bombay
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Brt",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "British Shorthair"), LocalizedValue.Bind(Language.Hindi, "ब्रिटिश शॉर्टहेयर") },
                     Picture = Properties.Resources.British
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Mnc",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Munchkin"), LocalizedValue.Bind(Language.Hindi, "मंचकिन") },
                     Picture = Properties.Resources.Munchkin
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Sbr",
                     Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Siberian"), LocalizedValue.Bind(Language.Hindi, "साइबेरियाई") },
                     Picture = Properties.Resources.Siberian
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Sco",
                     Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Scottish fold"), LocalizedValue.Bind(Language.Hindi, "स्कॉटिश मोड़") },
                     Picture = Properties.Resources.Scottish
                 },
-                new ProductDto {
+                new Product {
                     Sku = "Bur",
                     Names =new LocalizedValue[] { LocalizedValue.Bind(Language.English, "Burmilla"), LocalizedValue.Bind(Language.Hindi, "बर्मिला") },
                     Picture = Properties.Resources.Burmilla
                 }
             });
 
-            _kiosks.Add(new KioskDto
+            _kiosks.Add(new Kiosk
             {
                 UID = "foo",
                 IsOn = true,
@@ -170,7 +171,7 @@ namespace MPT.Vending.Domains.SharedContext
 
         public static void Link(string kioskUid, string sku)
         {
-            KioskDto kiosk = _kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            Kiosk kiosk = _kiosks.FirstOrDefault(x => x.UID == kioskUid);
             var links = kiosk.ProductLinks?.ToList() ?? new List<KioskProductLink>();
             if (links.Any(x => x.Product.Sku == sku))
                 return;

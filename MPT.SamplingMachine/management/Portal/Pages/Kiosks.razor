@@ -66,7 +66,7 @@ else
 }
 
 @code {
-    private IEnumerable<KioskDto> kiosks;
+    private IEnumerable<Kiosk> kiosks;
     protected string _newUid;
 
     protected override async Task OnInitializedAsync()
@@ -76,7 +76,7 @@ else
 
     private async Task Create(string uid)
     {
-        KioskDto newKiosk = await _client.AddKioskAsync(uid);
+        Kiosk newKiosk = await _client.AddKioskAsync(uid);
         var kioskList = kiosks.ToList();
         kioskList.Insert(0, newKiosk);
         kiosks = kioskList;

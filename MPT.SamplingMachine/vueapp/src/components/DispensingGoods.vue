@@ -9,6 +9,8 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
+    import { commitSessionAsync } from '/src/modules/sync.module.js';
+    import Session from '/src/modules/session.module.js'
     import Sampling from './SamplingPage.vue'
 
     export default defineComponent({
@@ -32,12 +34,14 @@
                 this.loading = false;
             }
         },
-        extract() {
+        async extract(products) {
             if (KioskSettings.isEmulation) {
                 let promise = new Promise((resolve, reject) => {
                     setTimeout(() => Sampling.toExit(), 5000)
                 });
             }
+
+           await commitSessionAsync(Session.info.phone, products);
         }
     });
 </script>

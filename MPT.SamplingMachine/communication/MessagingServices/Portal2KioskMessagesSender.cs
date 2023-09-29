@@ -26,7 +26,7 @@ namespace MessagingServices
             _senders = new ConcurrentDictionary<string, ServiceBusSender>();
         }
 
-        public async Task OnKioskHasChanged(object? sender, KioskDto revision)
+        public async Task OnKioskHasChanged(object? sender, Kiosk revision)
         {
             string queueName = $"smp_{revision.UID}";
             if (!_senders.ContainsKey(queueName))

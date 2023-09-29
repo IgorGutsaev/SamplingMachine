@@ -15,7 +15,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public KioskDto Get(string uid)
+        public Kiosk Get(string uid)
             => _kioskService.Get(uid);
 
         [HttpGet("enable")]
@@ -27,15 +27,15 @@ namespace API.Controllers
             => _kioskService.EnableDisable(uid, false);
 
         [HttpGet("all")]
-        public IEnumerable<KioskDto> GetAll()
+        public IEnumerable<Kiosk> GetAll()
             => _kioskService.GetAll();
 
         [HttpPost]
-        public KioskDto Post(string uid)
+        public Kiosk Post(string uid)
             => _kioskService.Add(uid);
 
         [HttpPut]
-        public void Put([FromBody] KioskDto kiosk)
+        public void Put([FromBody] Kiosk kiosk)
             => _kioskService.AddOrUpdate(kiosk);
 
         [HttpPost("link/enable")]

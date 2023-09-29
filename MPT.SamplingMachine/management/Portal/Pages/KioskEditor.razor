@@ -69,12 +69,15 @@ else
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                @foreach (var language in LanguageList.OrderBy(x => x.Language.GetCode()))
-                                {
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@language.Index.HasValue" @oninput="(e) => OnLanguageChanged(language.Language, Convert.ToBoolean(e.Value))">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">@language.AsMarkup()</label>
-                                     </div>
+                                @{
+                                    bool theOnlyLanguage = LanguageList.Where(x => x.Index.HasValue).Count() <= 1;
+                                    foreach (var language in LanguageList.OrderBy(x => x.Language.GetCode()))
+                                    {
+                                        <div class="form-check form-switch">
+                                            <input id="lang_@language.Language.GetCode()" disabled="@(theOnlyLanguage && language.Index.HasValue)" class="form-check-input" type="checkbox" checked="@language.Index.HasValue" @oninput="(e) => OnLanguageChanged(language.Language, Convert.ToBoolean(e.Value))">
+                                            <label class="form-check-label" for="lang_@language.Language.GetCode()">@language.AsMarkup()</label>
+                                        </div>
+                                    }
                                 }
                             </div>
                             <div class="modal-footer">
@@ -199,9 +202,9 @@ else
     [Parameter]
     public string uid { get; set; }
 
-    private KioskDto kiosk;
-    private IEnumerable<ProductDto> products;
-    private IEnumerable<ProductDto> productsToLink;
+    private Kiosk kiosk;
+    private IEnumerable<Product> products;
+    private IEnumerable<Product> productsToLink;
 
     private List<LangSelector> LanguageList = new List<LangSelector>();
 
@@ -317,6 +320,10 @@ else
 
     private async Task OnLanguageChanged(Language lang, bool value)
     {
+        IEnumerable<LangSelector> activeLanguages = LanguageList.Where(x => x.Index.HasValue);
+        if (activeLanguages.Count() == 1 && activeLanguages.First().Language == lang && !value)
+            return;
+
         Language? l = kiosk.Languages.FirstOrDefault(x => x == lang);
         if (l.HasValue && !value)
         {

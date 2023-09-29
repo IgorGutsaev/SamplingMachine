@@ -2,7 +2,7 @@
 {
     public static class DtoExtensions
     {
-        public static KioskDto Merge(this KioskDto target, KioskDto source)
+        public static Kiosk Merge(this Kiosk target, Kiosk source)
         {
             target.Credit = source.Credit;
             target.IdleTimeout = source.IdleTimeout;
@@ -14,8 +14,8 @@
             return target;
         }
 
-        public static KioskDto OptimizeForCommunication(this KioskDto source)
-            => new KioskDto {
+        public static Kiosk OptimizeForCommunication(this Kiosk source)
+            => new Kiosk {
                 UID = source.UID,
                 Credit = source.Credit,
                 IdleTimeout = source.IdleTimeout,
@@ -26,7 +26,7 @@
                     Disabled = x.Disabled,
                     MaxCountPerSession = x.MaxCountPerSession,
                     RemainingQuantity = x.RemainingQuantity,
-                    Product = new ProductDto
+                    Product = new Product
                     {
                         Names = x.Product.Names,
                         Sku = x.Product.Sku

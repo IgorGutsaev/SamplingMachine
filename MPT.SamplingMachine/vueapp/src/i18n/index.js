@@ -9,7 +9,8 @@ const i18n = createI18n({
                 terms: 'शर्तें',
                 termsConfirmation: 'मैं सेवा की शर्तों और गोपनीयता नीति को स्वीकार करता हूं',
                 phoneNumber: 'आपका फोन नंबर',
-                checkPhoneWarning: 'सुनिश्चित करें कि संख्या सही है',
+                checkPhoneWarning: 'कृपया अपना फोन नंबर दर्ज करें',
+                checkPinWarning: 'ग़लत पिन या फ़ोन नंबर.<br>कृपया पुन: प्रयास करें',
                 pinCode: 'पिन कोड',
                 credit: 'श्रेय',
                 lackOfCredit: 'अपर्याप्त क्रेडिट',
@@ -21,9 +22,11 @@ const i18n = createI18n({
                 formatCode: 'प्रारूप: xxxx',
                 idleModalTitle: 'क्या आप अभी भी यहीं हैं?',
                 exit: 'बाहर निकलना',
-                yes: 'हाँ'
+                yes: 'हाँ',
+                oos: 'क्षमा करें, कियोस्क सेवा से बाहर है'
             },
             buttons: {
+                start: 'शुरू',
                 next: 'अगला',
                 add: 'जोड़ना',
                 remove: 'निकालना',
@@ -39,7 +42,8 @@ const i18n = createI18n({
                 terms: 'Terms',
                 termsConfirmation: 'I accept the Terms of service and Privacy Policy',
                 phoneNumber: 'Your phone number',
-                checkPhoneWarning: 'Make sure the number is correct',
+                checkPhoneWarning: 'Please enter your phone number',
+                checkPinWarning: 'Wrong PIN or phone number.<br>Please try again',
                 pinCode: 'PIN code',
                 credit: 'Credit',
                 lackOfCredit: 'insufficient<br/>credit',
@@ -51,9 +55,11 @@ const i18n = createI18n({
                 formatCode: 'format: xxxx',
                 idleModalTitle: 'Are you still here?',
                 exit: 'Exit',
-                yes: 'Yes'
+                yes: 'Yes',
+                oos: 'Sorry, the kiosk is out of service'
             },
             buttons: {
+                start: 'Start',
                 next: 'Next',
                 add: 'Add',
                 remove: 'Remove',

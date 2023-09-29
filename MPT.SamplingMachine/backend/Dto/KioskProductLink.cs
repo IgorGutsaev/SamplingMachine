@@ -11,7 +11,7 @@ namespace MPT.Vending.API.Dto
         [JsonPropertyName("credit")]
         public int Credit { get; set; }
         [JsonPropertyName("product")]
-        public ProductDto Product { get; set; }
+        public Product Product { get; set; }
         [JsonPropertyName("disabled")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Disabled { get; set; }

@@ -8,17 +8,27 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        public ProductsController(IProductService productService, ILogger<ProductsController> logger)
+        public ProductsController(IProductService productService, ISessionService sessionService, ILogger<ProductsController> logger)
         {
             _productService = productService;
+            _sessionService = sessionService;
             _logger = logger;
         }
 
         [HttpGet("all")]
-        public IEnumerable<ProductDto> GetAll()
+        public IEnumerable<Product> GetAll()
             => _productService.Get();
 
+        [HttpPut("session")]
+        public void GetSessions([FromBody] Session session)
+            => _sessionService.Put(session);
+
+        [HttpPost("sessions")]
+        public IEnumerable<Session> GetSessions([FromBody]SessionsRequest request)
+            => _sessionService.Get(request);
+
         private readonly IProductService _productService;
+        private readonly ISessionService _sessionService;
         private readonly ILogger<ProductsController> _logger;
     }
 }

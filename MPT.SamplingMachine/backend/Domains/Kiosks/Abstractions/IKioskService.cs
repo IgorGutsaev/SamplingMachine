@@ -4,12 +4,12 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
 {
     public interface IKioskService
     {
-        event EventHandler<KioskDto> onKioskHasChanged;
-        KioskDto Get(string uid);
+        event EventHandler<Kiosk> onKioskHasChanged;
+        Kiosk Get(string uid);
         void EnableDisable(string uid, bool enable);
-        IEnumerable<KioskDto> GetAll();
-        KioskDto Add(string uid);
-        void AddOrUpdate(KioskDto kiosk);
+        IEnumerable<Kiosk> GetAll();
+        Kiosk Add(string uid);
+        void AddOrUpdate(Kiosk kiosk);
         void DisableProductLink(string kioskUid, string sku);
         void EnableProductLink(string kioskUid, string sku);
         void AddProductLink(string kioskUid, string sku);

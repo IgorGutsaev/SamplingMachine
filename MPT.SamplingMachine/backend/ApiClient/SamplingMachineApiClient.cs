@@ -30,42 +30,41 @@ namespace MPT.SamplingMachine.ApiClient
             _client.Dispose();
         }
 
-     
         #region kiosks
         /// <summary>
         /// Get kiosk
         /// </summary>
         /// <param name="uid">Unique identifier of the kiosk</param>
         /// <returns></returns>
-        public async Task<KioskDto> GetKioskAsync(string uid)
+        public async Task<Kiosk> GetKioskAsync(string uid)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks?uid={uid}"));
             string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<KioskDto>(result);
+            return JsonSerializer.Deserialize<Kiosk>(result);
         }
 
-        public async Task<KioskDto> AddKioskAsync(string kioskUid)
+        public async Task<Kiosk> AddKioskAsync(string kioskUid)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks?uid={kioskUid}"), null);
             string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<KioskDto>(result);
+            return JsonSerializer.Deserialize<Kiosk>(result);
         }
 
-        public async Task AddOrUpdateKioskAsync(KioskDto kiosk)
+        public async Task AddOrUpdateKioskAsync(Kiosk kiosk)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(kiosk, _options), Encoding.UTF8, "application/json");
             await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks"), httpContent);
         }
 
-        public async Task<IEnumerable<KioskDto>> GetKiosksAsync()
+        public async Task<IEnumerable<Kiosk>> GetKiosksAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/all"));
             string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<KioskDto>>(result);
+            return JsonSerializer.Deserialize<IEnumerable<Kiosk>>(result);
         }
 
         public async Task DisableProductLinkAsync(string kioskUid, string sku)
@@ -134,20 +133,47 @@ namespace MPT.SamplingMachine.ApiClient
         #endregion
 
         #region products
-        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
+        public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products/all"));
             string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<ProductDto>>(result);
+            return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
         }
 
-        public async Task<IEnumerable<ProductDto>> DisableProductAsync(string kioskUid, string sku)
+        public async Task<IEnumerable<Product>> DisableProductAsync(string kioskUid, string sku)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/disable"));
             string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<ProductDto>>(result);
+            return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
+        }
+        #endregion
+
+        #region sessions
+        public async Task CommitSessionsAsync(Session session)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(session, _options), Encoding.UTF8, "application/json");
+            await _client.PutAsync(new Uri(new Uri(_url), "/api/products/session"), httpContent);
+        }
+
+        public async Task<IEnumerable<Session>> GetSessionsAsync(SessionsRequest request)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), "/api/products/sessions"), httpContent);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<Session>>(result);
+        }
+        #endregion
+
+        #region login
+        public async Task<HttpResponseMessage> LoginAsync(LoginRequest request)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            return await _client.PostAsync(new Uri(new Uri(_url), "/api/customers/login"), httpContent);
         }
         #endregion
     }

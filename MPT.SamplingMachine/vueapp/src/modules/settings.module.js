@@ -1,5 +1,9 @@
 export default {
     props: {
+        isOn: {
+            type: Boolean,
+            required: true
+        },
         currentLanguage: {
             type: Object,
             required: false

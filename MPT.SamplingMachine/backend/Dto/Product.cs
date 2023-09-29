@@ -2,14 +2,14 @@
 
 namespace MPT.Vending.API.Dto
 {
-    public class ProductDto
+    public class Product
     {
         [JsonPropertyName("sku")]
         public string Sku { get; set; }
         [JsonPropertyName("names")]
-        public IEnumerable<LocalizedValue> Names { get; set; }
+        public IEnumerable<LocalizedValue>? Names { get; set; }
         [JsonPropertyName("picture")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Picture { get; set; }
+        public string? Picture { get; set; }
     }
 }

@@ -2,5 +2,5 @@
 
 namespace Portal.StateContainers
 {
-    public class ProductStateContainer : StateContainer<ProductDto> { }
+    public class ProductStateContainer : StateContainer<Product> { }
 }

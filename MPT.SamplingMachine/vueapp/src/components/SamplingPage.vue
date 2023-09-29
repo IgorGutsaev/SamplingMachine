@@ -1,10 +1,14 @@
-<template>
+﻿<template>
     <div class="post">
         <div v-if="loading" class="loading" id="mainSpinner">
             <font-awesome-icon :icon="['fas', 'spinner']" size="3x" spin />
         </div>
 
-        <div v-if="languages" class="content">
+        <h1 id="oosBanner" v-if="!loading && !isOn">
+            {{$t('titles.oos')}}
+        </h1>
+
+        <div v-if="languages && isOn" class="content">
             <div class="container-fluid">
                 <div class="row mb-1">
                     <div class="col-lg-12 d-flex justify-content-between">
@@ -18,7 +22,7 @@
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
                         <img src="https://www.petful.com/wp-content/uploads/2013/12/Abyssinian-1-750x398.jpg" class="d-block w-100">
-                        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="setLanguage(lang)" v-for="lang in languages" :key="lang.code" role="button">{{lang.value}}</div>
+                        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="setLanguage(lang, true)" v-for="lang in languages" :key="lang.code" role="button">{{languages.length <= 1 ? $t('buttons.start') : lang.value}}</div>
                     </div>
                     <div class="carousel-item" id="agreement-screen">
                         <img src="https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png" class="d-block w-100">
@@ -50,21 +54,23 @@
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
     import CatalogModule from '/src/modules/catalog.module.js'
-    import { getLanguages, getSecTimeoutFromTimespan } from '/src/modules/sync.module.js';
+    import { getLanguagesAsync } from '/src/modules/sync.module.js';
+    import { getSecTimeoutFromTimespan } from '/src/modules/helpers.module.js';
     import Terms from './TermsOfService.vue'
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
     import Dispensing from './DispensingGoods.vue'
     import EndSession from './EndSession.vue'
     import i18n from '../i18n'
-    
+
     export default defineComponent({
         data() {
             return {
                 loading: false,
                 languages: null,
                 currentLang: false,
-                homeButtonEnabled: false
+                homeButtonEnabled: false,
+                isOn: true
             };
         },
         components: {
@@ -82,7 +88,7 @@
             // fetch the data when the view is created and the data is
             // already being observed
             this.fetchData();
-            
+
             KioskSettings.canLogOff = false;
             KioskSettings.isEmulation = true;
         },
@@ -99,7 +105,7 @@
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#catalog-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
-        $($("#productCarousel .carousel-item")[0]).addClass("active");
+            $($("#productCarousel .carousel-item")[0]).addClass("active");
         },
         toExit() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
@@ -117,12 +123,16 @@
             $("#dispensing-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
-        mounted() { 
+        mounted() {
             this.emitter.on('sync', async kiosk => {
-                this.languages = await getLanguages(this.languages, kiosk.languages);
+                this.languages = await getLanguagesAsync(this.languages, kiosk.languages);
+                KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
                 ListOfProducts.credit = KioskSettings.credit;
+
+                if (this.languages.length == 1)
+                    this.setLanguage(this.languages[0], false);
             });
         },
         methods: {
@@ -130,7 +140,7 @@
                 this.loading = true;
 
                 let kiosk;
-                await fetch('kiosk')
+                await fetch('kiosks')
                     .then(r => r.json())
                     .then(x => {
                         kiosk = x;
@@ -142,29 +152,34 @@
                                 credit: l.credit,
                                 sku: l.product.sku,
                                 names: l.product.names,
-                                picture: l.product.picture };
+                                picture: l.product.picture
+                            };
                         });
 
                         return;
                     });
 
                 // get localized list of languages
-                this.languages = await getLanguages(null, kiosk.languages);
+                this.languages = await getLanguagesAsync(null, kiosk.languages);
+                KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
 
                 this.loading = false;
             },
-            setLanguage(lang) {
+            setLanguage(lang, goNextScreen) {
                 this.currentLang = lang.code;
                 KioskSettings.currentLanguage = lang;
                 console.info("Selected language: " + KioskSettings.currentLanguage.code);
                 i18n.global.locale = KioskSettings.currentLanguage.code;
 
-                $("#globalCarousel .carousel-item.active").removeClass("active");
-                $("#agreement-screen").addClass("active");
-                console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
-                this.changeHomeButton(true);
+                if (goNextScreen)
+                {
+                    $("#globalCarousel .carousel-item.active").removeClass("active");
+                    $("#agreement-screen").addClass("active");
+                    console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+                    this.changeHomeButton(true);
+                }
             },
             goHome() {
                 location.reload();
@@ -173,8 +188,7 @@
                 this.homeButtonEnabled = enabled;
                 KioskSettings.canLogOff = enabled;
             },
-            syncKiosk(revision)
-            {
+            syncKiosk(revision) {
                 KioskSettings.credit = revision.credit;
             }
         }

@@ -2,5 +2,5 @@
 
 namespace Portal.StateContainers
 {
-    public class KioskStateContainer : StateContainer<KioskDto> { }
+    public class KioskStateContainer : StateContainer<Kiosk> { }
 }

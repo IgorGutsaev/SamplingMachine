@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\SharedContext\MPT.Vending.Domains.SharedContext.csproj" />
     <ProjectReference Include="..\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj" />
   </ItemGroup>
 

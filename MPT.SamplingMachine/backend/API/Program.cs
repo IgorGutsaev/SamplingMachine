@@ -1,5 +1,6 @@
 using Filuet.Infrastructure.Abstractions.Converters;
 using MessagingServices;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Products.Abstractions;
@@ -20,10 +21,15 @@ builder.Services.AddControllers()
      });
 
 builder.Services.AddSingleton(new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54="));
-builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IProductService, DemoProductService>();
 builder.Services.AddTransient<IKioskService>(sp => {
     DemoKioskService result = new DemoKioskService();
     result.onKioskHasChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e);
+    return result;
+});
+builder.Services.AddTransient<ISessionService>(sp => {
+    DemoSessionService result = new DemoSessionService();
+    // result.OnNewSession += async (sender, e) => await ...;
     return result;
 });
 

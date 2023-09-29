@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MPT.Vending.API.Dto
 {
-    public class KioskDto
+    public class Kiosk
     {
         [JsonPropertyName("uid")]
         /// <summary>

@@ -24,9 +24,9 @@ namespace webapi.Services
         /// Retrieves current kiosk. Tries to get it from cache first, and if the cache is empty requests the API
         /// </summary>
         /// <returns></returns>
-        public async Task<KioskDto> GetAsync()
+        public async Task<Kiosk> GetAsync()
         {
-            KioskDto result = _kioskCache.Get<KioskDto>(_kioskUid);
+            Kiosk result = _kioskCache.Get<Kiosk>(_kioskUid);
             if (result == null)
             {
                 result = await _client.GetKioskAsync(_kioskUid);
@@ -34,6 +34,17 @@ namespace webapi.Services
             }
 
             return result;
+        }
+
+        public async Task<HttpResponseMessage> LoginAsync(LoginRequest login)
+            => await _client.LoginAsync(login);
+
+        public async Task CommitSessionAsync(Session session)
+        {
+            if (!session.Date.HasValue)
+                session.Date = DateTimeOffset.Now;
+
+            await _client.CommitSessionsAsync(session);
         }
 
         private readonly SamplingMachineApiClient _client;

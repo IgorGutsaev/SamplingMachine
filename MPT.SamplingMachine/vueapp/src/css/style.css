@@ -1,4 +1,4 @@
-body {
+﻿body {
 }
 
 img.grayscale {
@@ -51,8 +51,8 @@ img.grayscale {
 }
 
 .lmButton {
-    margin-left: 0.25em;
-    margin-right: 0.25em;
+    margin-left: 0.12em;
+    margin-right: 0.12em;
 }
 
 .card {
@@ -93,4 +93,14 @@ img.grayscale {
     padding-top: 5%;
     color: white;
     text-shadow: #dc143c 1px 0 10px;
+}
+
+#oosBanner {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    margin-top: -50px;
+    margin-left: -50px;
+    width: 80%;
+    color: crimson;
 }
