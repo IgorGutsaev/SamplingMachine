@@ -1,5 +1,6 @@
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.SamplingMachine.ApiClient;
+using Portal.Hubs;
 using Portal.StateContainers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<KioskStateContainer>();
 builder.Services.AddSingleton<ProductStateContainer>();
+builder.Services.AddSingleton<HookHub>();
 
 builder.Services.AddControllers()
      .AddJsonOptions(opts =>
@@ -36,6 +38,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.MapHub<HookHub>("/hookhub");
+app.MapControllers();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

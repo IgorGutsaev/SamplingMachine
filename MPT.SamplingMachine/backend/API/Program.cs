@@ -1,15 +1,15 @@
 using Filuet.Infrastructure.Abstractions.Converters;
+using Filuet.Infrastructure.Communication.Helpers;
 using MessagingServices;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Products.Abstractions;
 using MPT.Vending.Domains.Products.Services;
-using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers()
      .AddJsonOptions(opts =>
@@ -29,17 +29,29 @@ builder.Services.AddTransient<IKioskService>(sp => {
 });
 builder.Services.AddTransient<ISessionService>(sp => {
     DemoSessionService result = new DemoSessionService();
-    // result.OnNewSession += async (sender, e) => await ...;
+    result.OnNewSession += async (sender, e) => {
+        IConfiguration config = sp.GetRequiredService<IConfiguration>();
+        int index = 0;
+        while (true)
+        {
+            string apiUrl = config[$"Api:{index++}"];
+            if (!string.IsNullOrWhiteSpace(apiUrl))
+            {
+                HttpClient client = new HttpClient();
+                var httpContent = new StringContent(JsonSerializer.Serialize(new SessionHookRequest { Message = HookHelpers.Encrypt(config["HookSecret"], JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(apiUrl), "/api/hook/session"), httpContent);
+            }
+            else break;
+        }
+    };
     return result;
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

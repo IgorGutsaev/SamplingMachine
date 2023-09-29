@@ -19,6 +19,8 @@ namespace MPT.Vending.Domains.Products.Services
 
         public void Put(Session session)
         {
+            OnNewSession?.Invoke(this, session);
+
             // fill with product details
             foreach (var product in session.Items)
             {
@@ -28,7 +30,6 @@ namespace MPT.Vending.Domains.Products.Services
             }
 
             DemoData._sessions.Add(session);
-            OnNewSession?.Invoke(this, session);
         }
     }
 }

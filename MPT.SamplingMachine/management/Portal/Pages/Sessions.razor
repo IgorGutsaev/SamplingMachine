@@ -1,10 +1,13 @@
 ﻿@page "/sessions";
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Portal.StateContainers;
+@using System.Text.Json;
 @attribute [StreamRendering(true)]
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
+@inject NavigationManager _uriHelper
 
 <PageTitle>Sessions</PageTitle>
 
@@ -40,9 +43,28 @@
 
 @code {
     private IEnumerable<Session> sessions;
+    private HubConnection hubConnectionEditBelt;
 
     protected override async Task OnInitializedAsync()
     {
+        hubConnectionEditBelt = new HubConnectionBuilder()
+           .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+           .Build();
+
+        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) =>
+        {
+            Session session = JsonSerializer.Deserialize<Session>(sessionData);
+            List<Session> listOfSessions = sessions.ToList();
+            listOfSessions.Insert(0, session);
+            sessions = listOfSessions;
+
+            await InvokeAsync(() => {
+                StateHasChanged();
+            });
+        });
+
+        await hubConnectionEditBelt.StartAsync();
+
         sessions = await _client.GetSessionsAsync(new SessionsRequest { From = DateTime.Now.Date, To = DateTime.Now });
     }
 }
