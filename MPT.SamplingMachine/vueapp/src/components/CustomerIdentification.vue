@@ -78,6 +78,7 @@
             sendSMS() {
                 // save number
                 this.smsRequested = true;
+                this.countdown = 60;
 
                 var self = this;
                 let countdownTimer = setTimeout(function tick() {

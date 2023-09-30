@@ -5,6 +5,7 @@
 @using Portal.StateContainers;
 @using System.Text.Json;
 @attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
 @inject NavigationManager _uriHelper
@@ -20,6 +21,7 @@
         <tr>
             <th>Number</th>
             <th>Date</th>
+            <th>Credit used</th>
         </tr>
     </thead>
     <tbody>
@@ -28,12 +30,25 @@
         {
             foreach (var session in sessions)
             {
+                string id = PopoverContentId(session);
                 <tr>
                     <td>
-                        <button class="btn btn-light">@session.PhoneNumber</button>
+                        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToSessionDetails(session)" data-bs-trigger="hover" title="Session @session.PhoneNumber" data-bs-content-id="@id">@session.PhoneNumber</button>
+                        <div id="@id" class="d-none">
+                            @foreach (var item in session.Items)
+                            {
+                                <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
+                                <strong>&nbsp;@item.Product.Sku</strong>
+                                <span>&nbsp;x&nbsp;@item.Count</span>
+                                <br>
+                            }
+                        </div>
                     </td>
                     <td>
                         @session.Date?.ToString("HH:mm:ss dd-MM-yyyy")
+                    </td>
+                    <td>
+                        <span class="badge bg-warning text-dark">@session.Items.Sum(x=>x.UnitCredit * x.Count)</span>
                     </td>
                 </tr>
             }
@@ -58,13 +73,26 @@
             listOfSessions.Insert(0, session);
             sessions = listOfSessions;
 
-            await InvokeAsync(() => {
+            await InvokeAsync(() =>
+            {
                 StateHasChanged();
             });
+
+            await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
         });
 
         await hubConnectionEditBelt.StartAsync();
 
         sessions = await _client.GetSessionsAsync(new SessionsRequest { From = DateTime.Now.Date, To = DateTime.Now });
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
     }
+
+    private void GoToSessionDetails(Session session)
+    {
+
+    }
+
+    private string PopoverContentId(Session session)
+        => $"popover-content-{session.PhoneNumber}-{session.Date.Value:ddMMyyHHmmss}";
 }
