@@ -10,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<KioskStateContainer>();
 builder.Services.AddSingleton<ProductStateContainer>();
+builder.Services.AddSingleton<SessionStateContainer>();
 builder.Services.AddSingleton<HookHub>();
 
 builder.Services.AddControllers()

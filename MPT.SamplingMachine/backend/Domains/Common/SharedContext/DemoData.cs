@@ -7,7 +7,7 @@ namespace MPT.Vending.Domains.SharedContext
     {
         public static List<Kiosk> _kiosks = new List<Kiosk>();
         public static List<Product> _products = new List<Product>();
-        public static List<Session> _sessions = new List<Session>(); 
+        public static List<Session> _sessions = new List<Session>();
 
         static DemoData()
         {
@@ -169,25 +169,31 @@ namespace MPT.Vending.Domains.SharedContext
             });
 
             _sessions.AddRange(new[] {
-                new Session { PhoneNumber = "9281128377", Date = DateTime.Now.AddHours(-5), Items = new SessionProductLink[]{
-                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = _products.First(x => x.Sku == "Aby") }
+                new Session { PhoneNumber = "9262147116", Date = DateTime.Now.AddHours(-6), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Bir" } },
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Brt" } }
                 }},
-                new Session { PhoneNumber = "9262147116", Date = DateTime.Now.AddHours(-4), Items = new SessionProductLink[]{
-                    new SessionProductLink { Count = 1, UnitCredit = 2, Product = _products.First(x => x.Sku == "Ori") },
-                    new SessionProductLink { Count = 2, UnitCredit = 1, Product = _products.First(x => x.Sku == "Sco") }
+                new Session { PhoneNumber = "9281128377", Date = DateTime.Now.AddHours(-5), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Aby" } }
                 }},
-                new Session { PhoneNumber = "9265886080", Date = DateTime.Now.AddHours(-3), Items = new SessionProductLink[]{
-                    new SessionProductLink { Count = 1, UnitCredit = 3, Product = _products.First(x => x.Sku == "Mnc") }
+                new Session { PhoneNumber = "9262147116", Date = DateTime.Now.AddHours(-5), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 2, UnitCredit = 1, Product = new Product{ Sku = "Sco" } }
+                }},
+                new Session { PhoneNumber = "9265886080", Date = DateTime.Now.AddHours(-3), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 3, Product = new Product{ Sku = "Mnc" } }
                 }},                
-                new Session { PhoneNumber = "9647738476", Date = DateTime.Now.AddHours(-2), Items = new SessionProductLink[]{
-                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = _products.First(x => x.Sku == "Aby") },
-                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = _products.First(x => x.Sku == "Rus") }
+                new Session { PhoneNumber = "9647738476", Date = DateTime.Now.AddHours(-2), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Aby" } },
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Rus" } }
                 }},
-                new Session { PhoneNumber = "9186479109", Date = DateTime.Now.AddHours(-1), Items = new SessionProductLink[]{
-                    new SessionProductLink { Count = 1, UnitCredit = 2, Product = _products.First(x => x.Sku == "Sbr") },
-                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = _products.First(x => x.Sku == "Bir") },
-                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = _products.First(x => x.Sku == "Brt") }
-                }},
+                new Session { PhoneNumber = "9186479109", Date = DateTime.Now.AddHours(-1), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 2, Product = new Product{ Sku = "Sbr" } },
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Bir" } },
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Brt" } }
+                }},               
+                new Session { PhoneNumber = "9262147116", Date = DateTime.Now.AddSeconds(-1), Items = new SessionProductLink[] {
+                    new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Ori" } }
+                }}
             });
         }
 

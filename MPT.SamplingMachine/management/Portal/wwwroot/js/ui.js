@@ -23,5 +23,11 @@
             }
             new bootstrap.Popover(el, opts);
         })
+    },
+    hidePopover() {
+        const elements = document.getElementsByClassName("popover");
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
+        }
     }
 }

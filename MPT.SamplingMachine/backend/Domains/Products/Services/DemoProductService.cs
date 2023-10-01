@@ -6,8 +6,20 @@ namespace MPT.Vending.Domains.Products.Services
 {
     public class DemoProductService : IProductService
     {
+        private IEnumerable<Product> listOfProducts;
+        public Product Get(string sku)
+        {
+            if (listOfProducts == null || !listOfProducts.Any())
+                listOfProducts = Get();
+
+            return listOfProducts.FirstOrDefault(x => x.Sku == sku);
+        }
+
         public IEnumerable<Product> Get()
         {
+            if (listOfProducts != null && listOfProducts.Any())
+                return listOfProducts;
+
             List<Product> result = new List<Product>();
             result.Add(new Product
             {
@@ -65,7 +77,7 @@ namespace MPT.Vending.Domains.Products.Services
                 Picture = Properties.Resources.Bombay
             });
 
-            result.Add( new Product
+            result.Add(new Product
             {
                 Sku = "Brt",
                 Names = new LocalizedValue[] { LocalizedValue.Bind(Language.English, "British Shorthair"), LocalizedValue.Bind(Language.Hindi, "ब्रिटिश शॉर्टहेयर") },
@@ -100,7 +112,17 @@ namespace MPT.Vending.Domains.Products.Services
                 Picture = Properties.Resources.Burmilla
             });
 
-            return result;
+            listOfProducts = result;
+
+            return listOfProducts;
+        }
+
+        public IEnumerable<Product> Get(IEnumerable<string> sku)
+        {
+            if (listOfProducts == null || !listOfProducts.Any())
+                listOfProducts = Get();
+
+            return listOfProducts.Where(x => sku.Contains(x.Sku));
         }
     }
 }

@@ -15,6 +15,14 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        public Product Get(string sku)
+            => _productService.Get(sku);
+
+        [HttpPost]
+        public IEnumerable<Product> Get([FromBody] ProductRequest request)
+            => _productService.Get(request.Sku);
+
         [HttpGet("all")]
         public IEnumerable<Product> GetAll()
             => _productService.Get();

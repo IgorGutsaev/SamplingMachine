@@ -7,8 +7,9 @@
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject NavigationManager _uriHelper
+@inject SessionStateContainer sessionStateContainer
 
 <PageTitle>Sessions</PageTitle>
 
@@ -30,11 +31,11 @@
         {
             foreach (var session in sessions)
             {
-                string id = PopoverContentId(session);
+                string popoverId = PopoverContentId(session);
                 <tr>
                     <td>
-                        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToSessionDetails(session)" data-bs-trigger="hover" title="Session @session.PhoneNumber" data-bs-content-id="@id">@session.PhoneNumber</button>
-                        <div id="@id" class="d-none">
+                        <button id="@SessionId(session)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToSessionDetails(session)" data-bs-trigger="hover" title="Session @session.PhoneNumber" data-bs-content-id="@popoverId">@session.PhoneNumber</button>
+                        <div id="@popoverId" class="d-none">
                             @foreach (var item in session.Items)
                             {
                                 <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
@@ -45,10 +46,10 @@
                         </div>
                     </td>
                     <td>
-                        @session.Date?.ToString("HH:mm:ss dd-MM-yyyy")
+                        @session.Date?.ToString("HH:mm:ss dd/MMM/yyyy")
                     </td>
                     <td>
-                        <span class="badge bg-warning text-dark">@session.Items.Sum(x=>x.UnitCredit * x.Count)</span>
+                        <span class="badge bg-warning text-dark">@session.Items.Sum(x => x.UnitCredit * x.Count)</span>
                     </td>
                 </tr>
             }
@@ -88,11 +89,16 @@
         await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
     }
 
-    private void GoToSessionDetails(Session session)
+    private async Task GoToSessionDetails(Session session)
     {
-
+        await JSRuntime.InvokeVoidAsync("ui.hidePopover");
+        sessionStateContainer.SetValue(session);
+        navigationManager.NavigateTo($"/session/{session.PhoneNumber}");
     }
 
     private string PopoverContentId(Session session)
-        => $"popover-content-{session.PhoneNumber}-{session.Date.Value:ddMMyyHHmmss}";
+        => $"popover-content-{SessionId(session)}";
+
+    private string SessionId(Session session)
+            => $"{session.PhoneNumber}-{session.Date.Value:ddMMyyHHmmss}";
 }

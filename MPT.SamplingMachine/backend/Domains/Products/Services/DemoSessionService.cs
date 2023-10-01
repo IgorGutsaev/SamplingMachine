@@ -14,7 +14,7 @@ namespace MPT.Vending.Domains.Products.Services
             if (phone != null && phone.Length < 3)
                 phone = null;
 
-            return DemoData._sessions.Where(x => x.Date >= request.From && x.Date <= request.To && (phone == null || x.PhoneNumber.Contains(phone))).OrderByDescending(x => x.Date);
+            return DemoData._sessions.Where(x => (request.From == DateTime.MinValue || x.Date >= request.From) && (request.To == DateTime.MinValue || x.Date <= request.To) && (phone == null || x.PhoneNumber.Contains(phone))).OrderByDescending(x => x.Date);
         }
 
         public void Put(Session session)

@@ -1,5 +1,6 @@
 ﻿using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -133,6 +134,23 @@ namespace MPT.SamplingMachine.ApiClient
         #endregion
 
         #region products
+        public async Task<Product> GetProductAsync(string sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products?sku={sku}"));
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<Product>(result);
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> sku)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(new ProductRequest { Sku = sku }), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/"), httpContent);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
+        }
+
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);

@@ -4,6 +4,8 @@ namespace MPT.Vending.Domains.Products.Abstractions
 {
     public interface IProductService
     {
-        IEnumerable<Product> Get(); // Change ProductDto to Product entity
+        Product Get(string sku);
+        IEnumerable<Product> Get();
+        IEnumerable<Product> Get(IEnumerable<string> sku);
     }
 }
