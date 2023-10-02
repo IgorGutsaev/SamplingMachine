@@ -105,7 +105,8 @@
         mounted() { 
             this.emitter.on('sync', async kiosk => {
                 this.credit = kiosk.credit;
-                //todo: remove or add products according to the new credit limit
+                this.products = CatalogModule.products.filter(x => x.credit <= this.credit);
+                this.buildChunks();
             });
         },
         methods: {
@@ -124,27 +125,7 @@
                             });
 
                             self.credit = KioskSettings.credit;
-
-                            let chunkIndex = 0;
-                            self.productChunks = [];
-                            for (let i = 0; i < self.products.length; i += 9) { // max 9 products per page
-                                self.productChunks[chunkIndex] = self.products.slice(i, i + 9);
-                                chunkIndex++;
-                            }
-
-                            if (self.products.length == 1) // add product automatically if it's the only one in the list
-                            {
-                                self.addToCart(self.products[0]);
-                                self.marginTop = '30%';
-                            }
-                            else if (self.products.length == 2)
-                                self.marginTop = '40%';
-                            else if (self.products.length == 3)
-                                self.marginTop = '50%';
-                            else if (self.products.length == 4)
-                                self.marginTop = '15%';
-                            else if (self.products.length == 5 || self.products.length == 6)
-                                self.marginTop = '30%';
+                            self.buildChunks();
 
                             self.loading = false;
                         }
@@ -152,6 +133,32 @@
                 };
 
                 check();
+            },
+            buildChunks() {
+                let self = this;
+
+                let chunkIndex = 0;
+                self.productChunks = [];
+
+                for (let i = 0; i < self.products.length; i += 9) { // max 9 products per page
+                    self.productChunks[chunkIndex] = self.products.slice(i, i + 9);
+                    chunkIndex++;
+                }
+
+                if (self.products.length == 1) // add product automatically if it's the only one in the list
+                {
+                    self.addToCart(self.products[0]);
+                    self.marginTop = '30%';
+                }
+                else if (self.products.length == 2)
+                    self.marginTop = '40%';
+                else if (self.products.length == 3)
+                    self.marginTop = '50%';
+                else if (self.products.length == 4)
+                    self.marginTop = '15%';
+                else if (self.products.length == 5 || self.products.length == 6)
+                    self.marginTop = '30%';
+                else self.marginTop = '0';
             },
             removeFromCart(product) {
                 if (product.count <= 0)

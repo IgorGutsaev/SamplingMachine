@@ -121,6 +121,7 @@
                 this.exitPopupOpened = false;
             },
             sync(kiosk) {
+                KioskSettings.credit = kiosk.credit;
                 this.emitter.emit('sync', kiosk);
             }
         }

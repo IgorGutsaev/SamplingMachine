@@ -9,9 +9,13 @@ namespace webapi.Communication
         {
             string queueName = $"smp_{kioskUid}";
 
-            _busClient = new ServiceBusClient(serviceBusConnectionString);
-            _processor = _busClient.CreateProcessor(queueName);
+            var clientOptions = new ServiceBusClientOptions {
+                TransportType = ServiceBusTransportType.AmqpWebSockets
+            };
 
+            _busClient = new ServiceBusClient(serviceBusConnectionString, clientOptions);
+            _processor = _busClient.CreateProcessor(queueName, new ServiceBusProcessorOptions());
+            
             _processor.ProcessMessageAsync += async (ProcessMessageEventArgs args) => {
                 string body = args.Message.Body.ToString();
                 await hubContext.Clients.All.SendAsync("syncKiosk", body);

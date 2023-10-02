@@ -1,7 +1,6 @@
 using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using MPT.SamplingMachine.ApiClient;
 using webapi.Communication;
 using webapi.Services;
