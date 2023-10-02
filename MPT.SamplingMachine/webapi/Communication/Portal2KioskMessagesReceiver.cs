@@ -20,8 +20,7 @@ namespace webapi.Communication
                 await args.CompleteMessageAsync(args.Message);
             };
 
-            _processor.ProcessErrorAsync += async (ProcessErrorEventArgs args) =>
-            {
+            _processor.ProcessErrorAsync += async (ProcessErrorEventArgs args) => {
                 //Console.WriteLine(args.Exception.ToString());
                 await Task.CompletedTask;
             };
@@ -29,7 +28,6 @@ namespace webapi.Communication
 
         public async Task Run()
             => await _processor.StartProcessingAsync();
-
 
         private readonly ServiceBusClient _busClient;
         private readonly ServiceBusProcessor _processor;

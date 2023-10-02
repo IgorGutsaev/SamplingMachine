@@ -83,7 +83,7 @@ namespace MPT.Vending.Domains.SharedContext
             {
                 UID = "foo",
                 IsOn = true,
-                Credit = 7,
+                Credit = 6,
                 IdleTimeout = TimeSpan.FromMinutes(1),
                 Languages = new Language[] { Language.Hindi, Language.English },
                 ProductLinks = new KioskProductLink[] {
