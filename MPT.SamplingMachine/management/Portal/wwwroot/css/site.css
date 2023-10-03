@@ -96,3 +96,12 @@ a, .btn-link {
 .smallicon {
     font-size: 10px !important;
 }
+
+
+.inputFilePicker {
+    position: absolute;
+    text-shadow: #FFF 1px 0 10px;
+    margin-top: 44%;
+    margin-left: 44%;
+    opacity: 90%;
+}

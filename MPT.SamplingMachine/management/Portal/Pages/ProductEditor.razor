@@ -8,10 +8,26 @@
 @using System.Drawing.Imaging;
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
 @inject SamplingMachineApiClient _client
 @inject ProductStateContainer productStateContainer
 
-<PageTitle>Product</PageTitle>
+<PageTitle>@sku</PageTitle>
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-absolute top-0 end-0 p-3">
+        <div id="toastNotice" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto"><i class="bi bi-exclamation-triangle-fill text-warning"></i> OgmentO</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                The picture is too large. Limit is 100Kb
+            </div>
+        </div>
+    </div>
+</div>
 
 <h1>@sku</h1>
 
@@ -22,10 +38,32 @@
 else
 {
     <p>@product.Names.FirstOrDefault()?.Value</p>
-    <img src="data:image/*;base64,@product.Picture" width="300" />
+
+    <div class="card" style="width: 300px">
+        <img class="card-img rounded-top" src="data:image/*;base64,@product.Picture" width="300" />
+        <button type="button" class="btn btn-dark inputFilePicker" onclick="document.getElementById('flpicker').click()"><i class="bi bi-arrow-repeat text-light"></i></button>
+        <InputFile id="flpicker" OnChange="@LoadFiles" hidden />
+    </div>
+
+ 
 }
 
+<script>
+    window.showPictureAlert = () => {
+        var myAlert = document.getElementById('toastNotice');//select id of toast
+        var bsAlert = new bootstrap.Toast(myAlert);//inizialize it
+        bsAlert.show();//show it
+    };
+</script>
+
 @code {
+    public class Model
+    {
+        public string Email { get; set; }
+    }
+
+    private Model model { get; set; } = new Model() { Email = "me@you.com" };
+
     [Parameter]
     public string sku { get; set; }
 
@@ -34,5 +72,20 @@ else
     protected override async Task OnInitializedAsync()
     {
         product = productStateContainer.Value;
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        using Stream stream = e.File.OpenReadStream();
+
+        if (stream.Length > 100000) // 200 Kb
+        {
+            await JSRuntime.InvokeVoidAsync("showPictureAlert");
+            return;
+        }
+
+        byte[] bytes = new byte[stream.Length];
+        await stream.ReadAsync(bytes, 0, bytes.Length);
+        string base64 = Convert.ToBase64String(bytes);
     }
 }
