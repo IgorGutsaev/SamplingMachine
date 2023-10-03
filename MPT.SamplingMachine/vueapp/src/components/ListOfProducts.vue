@@ -37,7 +37,7 @@
                                         </button>
 
                                         <!-- <a href="#" class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</a> -->
-                                        <button class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}<span class="badge bg-warning" style="margin-left: 0.25em; color: black"> {{product.credit}}</span></button>
+                                        <button class="btn btn-primary btn-sm lmButton" v-if="productAvailable(product)" v-on:click="addToCart(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}<span v-if="this.credit > 1" class="badge bg-warning" style="margin-left: 0.25em; color: black"> {{product.credit}}</span></button>
                                         <button disabled class="btn btn-secondary btn-sm lmButton" v-if="!productAvailable(product)">{{(product.count > 0 ? $t('buttons.more'): $t('buttons.add'))}}</button>
                                     </div>
                                 </div>
