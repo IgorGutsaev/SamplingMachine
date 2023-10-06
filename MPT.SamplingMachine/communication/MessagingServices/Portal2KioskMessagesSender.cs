@@ -27,15 +27,26 @@ namespace MessagingServices
         }
 
         public async Task OnKioskHasChanged(object? sender, Kiosk revision)
+            => await sendMessageToKiosk(revision.UID, "kiosk;" + JsonSerializer.Serialize(revision.OptimizeForCommunication(), _serializerOptions));
+
+        public async Task OnProductHasChanged(object? sender, Product revision, IEnumerable<Kiosk> kiosks)
         {
-            string queueName = $"smp_{revision.UID}";
+            revision.Picture = null;
+
+            foreach (var kiosk in kiosks)
+                await sendMessageToKiosk(kiosk.UID, "product;" + JsonSerializer.Serialize(revision, _serializerOptions));
+        }
+
+        private async Task sendMessageToKiosk(string kioskUid, string message)
+        {
+            string queueName = $"smp_{kioskUid}";
             if (!_senders.ContainsKey(queueName))
                 _senders.AddOrUpdate(queueName, x => _busClient.CreateSender(queueName), (x, oldValue) => _senders[queueName]);
 
             if (!await _administrationClient.QueueExistsAsync(queueName))
                 await _administrationClient.CreateQueueAsync(queueName);
 
-            await _senders[queueName].SendMessageAsync(new ServiceBusMessage(JsonSerializer.Serialize(revision.OptimizeForCommunication(), _serializerOptions)));
+            await _senders[queueName].SendMessageAsync(new ServiceBusMessage(message));
         }
 
         private readonly ServiceBusClient _busClient;

@@ -124,7 +124,7 @@
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         mounted() {
-            this.emitter.on('sync', async kiosk => {
+            this.emitter.on('syncKiosk', async kiosk => {
                 this.languages = await getLanguagesAsync(this.languages, kiosk.languages);
                 KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);

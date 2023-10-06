@@ -28,13 +28,15 @@
     import $ from 'jquery'
     import Sampling from './components/SamplingPage.vue'
     import KioskSettings from '/src/modules/settings.module.js'
+    import CatalogModule from '/src/modules/catalog.module.js'
     import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr';
 
     export default {
         name: 'App',
         components: {
             Sampling,
-            KioskSettings
+            KioskSettings,
+            CatalogModule
         },
         data() {
             idleTimer: null;
@@ -66,7 +68,8 @@
             // Start the connection.
             start();
 
-            connection.on("syncKiosk", message => this.sync(JSON.parse(message)));
+            connection.on("syncKiosk", message => this.syncKiosk(JSON.parse(message)));
+            connection.on("syncProduct", message => this.syncProduct(JSON.parse(message)));
 
             let startIdleTimer = () => {
                 if (KioskSettings.canLogOff && !this.exitPopupOpened)
@@ -120,9 +123,22 @@
                 $('#idleModal').hide();
                 this.exitPopupOpened = false;
             },
-            sync(kiosk) {
+            syncKiosk(kiosk) {
                 KioskSettings.credit = kiosk.credit;
-                this.emitter.emit('sync', kiosk);
+                this.emitter.emit('syncKiosk', kiosk);
+            },
+            syncProduct(product) {
+                let p = CatalogModule.products.find(x => x.sku == product.sku);
+                if (p) {
+                    if (product.picture) {
+                        p.picture = product.picture;
+                    }
+
+                    p.names = product.names;
+                }
+                else this.products.push(product);
+
+                this.emitter.emit('syncProduct', p);
             }
         }
     }

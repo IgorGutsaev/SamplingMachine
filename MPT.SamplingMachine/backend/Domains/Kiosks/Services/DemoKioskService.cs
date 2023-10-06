@@ -7,7 +7,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
 {
     public class DemoKioskService : IKioskService
     {
-        public event EventHandler<Kiosk> onKioskHasChanged;
+        public event EventHandler<Kiosk> onKioskChanged;
 
         public Kiosk Get(string uid)
         {
@@ -25,13 +25,16 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 if (kiosk.IsOn != enabled)
                 {
                     kiosk.IsOn = enabled;
-                    onKioskHasChanged?.Invoke(this, kiosk);
+                    onKioskChanged?.Invoke(this, kiosk);
                 }
             }
         }
 
         public IEnumerable<Kiosk> GetAll()
             => DemoData._kiosks;
+
+        public IEnumerable<Kiosk> Get(Func<Kiosk, bool> predicate)
+            => DemoData._kiosks.Where(predicate);
 
         public Kiosk Add(string uid)
         {
@@ -71,7 +74,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
             existedKiosk.Merge(kiosk);
             if (!isNewKiosk)
-                onKioskHasChanged?.Invoke(this, kiosk);
+                onKioskChanged?.Invoke(this, kiosk);
         }
 
         public void DisableProductLink(string kioskUid, string sku)
@@ -122,7 +125,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             }
 
             if (changed)
-                onKioskHasChanged?.Invoke(this, kiosk);
+                onKioskChanged?.Invoke(this, kiosk);
         }
 
         public void SetMaxCountPerSession(string kioskUid, string sku, int limit)

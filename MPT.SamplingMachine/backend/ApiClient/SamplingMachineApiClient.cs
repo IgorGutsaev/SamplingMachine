@@ -142,6 +142,13 @@ namespace MPT.SamplingMachine.ApiClient
             return JsonSerializer.Deserialize<Product>(result);
         }
 
+        public async Task PutProductAsync(Product product)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/products"), httpContent);
+        }
+
         public async Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> sku)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
@@ -165,6 +172,13 @@ namespace MPT.SamplingMachine.ApiClient
             HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/disable"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
+        }
+
+        public async Task PutPicture(string sku, string picture)
+        {
+            var httpContent = new StringContent(JsonSerializer.Serialize(new ProductPictureUpdateRequest { Sku = sku, Picture = picture }), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/products/picture"), httpContent);
+            await response.Content.ReadAsStringAsync();
         }
         #endregion
 

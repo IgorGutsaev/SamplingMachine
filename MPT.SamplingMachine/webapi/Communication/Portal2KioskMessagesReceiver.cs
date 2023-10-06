@@ -18,7 +18,21 @@ namespace webapi.Communication
             
             _processor.ProcessMessageAsync += async (ProcessMessageEventArgs args) => {
                 string body = args.Message.Body.ToString();
-                await hubContext.Clients.All.SendAsync("syncKiosk", body);
+
+                string action = body.Substring(0, body.IndexOf(';', StringComparison.Ordinal));
+                string message = body.Substring(body.IndexOf(';', StringComparison.Ordinal) + 1);
+
+                switch (action)
+                {
+                    case "kiosk":
+                        await hubContext.Clients.All.SendAsync("syncKiosk", message);
+                        break;
+                    case "product":
+                        await hubContext.Clients.All.SendAsync("syncProduct", message);
+                        break;
+                    default:
+                        break;
+                }
 
                 // complete the message. message is deleted from the queue
                 await args.CompleteMessageAsync(args.Message);

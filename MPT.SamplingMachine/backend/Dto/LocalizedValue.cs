@@ -11,6 +11,6 @@ namespace MPT.Vending.API.Dto
         public string Value { get; set; }
 
         public static LocalizedValue Bind(Language language, string value)
-         => new LocalizedValue { Language = language, Value = value };
+            => new LocalizedValue { Language = language, Value = value };
     }
 }

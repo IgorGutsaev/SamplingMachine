@@ -23,16 +23,24 @@ namespace API.Controllers
         public IEnumerable<Product> Get([FromBody] ProductRequest request)
             => _productService.Get(request.Sku);
 
+        [HttpPut]
+        public void Put([FromBody] Product product)
+            => _productService.Put(product);
+
         [HttpGet("all")]
         public IEnumerable<Product> GetAll()
             => _productService.Get();
+
+        [HttpPut("picture")]
+        public void PutPicture([FromBody] ProductPictureUpdateRequest request)
+            => _productService.PutPicture(request);
 
         [HttpPut("session")]
         public void GetSessions([FromBody] Session session)
             => _sessionService.Put(session);
 
         [HttpPost("sessions")]
-        public IEnumerable<Session> GetSessions([FromBody]SessionsRequest request)
+        public IEnumerable<Session> GetSessions([FromBody] SessionsRequest request)
             => _sessionService.Get(request);
 
         private readonly IProductService _productService;

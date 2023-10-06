@@ -103,8 +103,12 @@
             '$route': 'fetchData'
         },
         mounted() { 
-            this.emitter.on('sync', async kiosk => {
+            this.emitter.on('syncKiosk', async kiosk => {
                 this.credit = kiosk.credit;
+                this.products = CatalogModule.products.filter(x => x.credit <= this.credit);
+                this.buildChunks();
+            });
+            this.emitter.on('syncProduct', async product => {
                 this.products = CatalogModule.products.filter(x => x.credit <= this.credit);
                 this.buildChunks();
             });

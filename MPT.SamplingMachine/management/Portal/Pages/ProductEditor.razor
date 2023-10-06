@@ -1,4 +1,6 @@
 ﻿@page "/product/{sku}"
+@using Filuet.Infrastructure.Abstractions.Helpers;
+@using Filuet.Infrastructure.Abstractions.Enums;
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using System.Text.Json;
@@ -13,6 +15,8 @@
 @inject ProductStateContainer productStateContainer
 
 <PageTitle>@sku</PageTitle>
+
+<button type="button" class="btn btn-success" @onclick="SaveProduct">Save</button>
 
 <div aria-live="polite" aria-atomic="true" class="position-relative">
     <div class="toast-container position-absolute top-0 end-0 p-3">
@@ -42,50 +46,113 @@ else
     <div class="card" style="width: 300px">
         <img class="card-img rounded-top" src="data:image/*;base64,@product.Picture" width="300" />
         <button type="button" class="btn btn-dark inputFilePicker" onclick="document.getElementById('flpicker').click()"><i class="bi bi-arrow-repeat text-light"></i></button>
-        <InputFile id="flpicker" OnChange="@LoadFiles" hidden />
+        <InputFile id="flpicker" accept=".jpg,.jpeg" OnChange="@LoadFiles" hidden />
+    </div>
+    <br>
+    <p class="h3">Localization</p>
+    <button class="btn btn-primary" style="margin-bottom: 1em" data-bs-toggle="modal" data-bs-target="#newLanguageModal">Add language</button>
+    <div class="accordion" id="accordionLocalization">
+        @foreach (var localization in product.Names.OrderBy(x => x.Language.ToString()).ToList()) // if description exists merge Languages
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading@(localization.Language.GetCode())">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(localization.Language.GetCode())" aria-controls="collapse@(localization.Language.GetCode())">
+                        @localization.Language.ToString()
+                    </button>
+                </h2>
+                <div id="collapse@(localization.Language.GetCode())" class="accordion-collapse collapse" aria-labelledby="heading@(localization.Language.GetCode())" data-bs-parent="#accordionLocalization">
+                    <div class="accordion-body">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="nameInput@($"{product.Sku}{localization.Language.GetCode()}")">Name</span>
+                            <input type="text" class="form-control" aria-label="Name" aria-describedby="nameInput@($"{product.Sku}{localization.Language.GetCode()}")" @bind="localization.Value">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 
- 
+
+    <!-- Modal: new language -->
+    <div class="modal fade" id="newLanguageModal" tabindex="-1" aria-labelledby="newLanguageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newLanguageModalLabel">Select language</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @{
+                        IEnumerable<Language> languages = EnumHelpers.GetValues<Language>().Where(x => !product.Names.Select(n => n.Language).Contains(x)).OrderBy(x => x.ToString());
+
+                        <select class="form-select" aria-label="Language" @bind="newLanguage">
+                            @foreach (var language in languages)
+                            {
+                                <option value="@language">@language.ToString()</option>
+                            }
+                        </select> 
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary close" data-dismiss="modal" data-bs-dismiss="modal" @onclick="AddLanguage">Add</button>
+                    <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 }
 
 <script>
     window.showPictureAlert = () => {
-        var myAlert = document.getElementById('toastNotice');//select id of toast
+        var myAlert = document.getElementById('toastNotice');
         var bsAlert = new bootstrap.Toast(myAlert);//inizialize it
-        bsAlert.show();//show it
+        bsAlert.show();
     };
 </script>
 
 @code {
-    public class Model
-    {
-        public string Email { get; set; }
-    }
-
-    private Model model { get; set; } = new Model() { Email = "me@you.com" };
-
     [Parameter]
     public string sku { get; set; }
 
     private Product product;
 
+    private Language newLanguage;
+
     protected override async Task OnInitializedAsync()
     {
         product = productStateContainer.Value;
+
+        newLanguage = EnumHelpers.GetValues<Language>().Where(x => !product.Names.Select(n => n.Language).Contains(x)).OrderBy(x => x.ToString()).First();
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         using Stream stream = e.File.OpenReadStream();
 
-        if (stream.Length > 100000) // 200 Kb
+        if (stream.Length > 150000) // 150 Kb
         {
             await JSRuntime.InvokeVoidAsync("showPictureAlert");
             return;
         }
 
         byte[] bytes = new byte[stream.Length];
-        await stream.ReadAsync(bytes, 0, bytes.Length);
-        string base64 = Convert.ToBase64String(bytes);
+        await stream.ReadExactlyAsync(bytes, 0, bytes.Length);
+        product.Picture = Convert.ToBase64String(bytes);
+
+        await _client.PutPicture(product.Sku, product.Picture);
+    }
+
+    private async Task SaveProduct(MouseEventArgs e)
+    {
+        await _client.PutProductAsync(product);
+    }
+
+    private void AddLanguage(MouseEventArgs e)
+    {
+        List<LocalizedValue> values = product.Names.ToList();
+        values.Add(new LocalizedValue { Language = newLanguage });
+        product.Names = values;
+        this.StateHasChanged();
     }
 }

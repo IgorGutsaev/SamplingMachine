@@ -21,10 +21,15 @@ builder.Services.AddControllers()
      });
 
 builder.Services.AddSingleton(new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54="));
-builder.Services.AddTransient<IProductService, DemoProductService>();
 builder.Services.AddTransient<IKioskService>(sp => {
     DemoKioskService result = new DemoKioskService();
-    result.onKioskHasChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e);
+    result.onKioskChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e);
+    return result;
+});
+builder.Services.AddTransient<IProductService>(sp => {
+    DemoProductService result = new DemoProductService();
+    IKioskService kioskService = sp.GetService<IKioskService>();
+    result.onProductChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnProductHasChanged(sender, e, kioskService.Get(x => x.ProductLinks.Any(l => l.Product.Sku == e.Sku)));
     return result;
 });
 builder.Services.AddTransient<ISessionService>(sp => {
