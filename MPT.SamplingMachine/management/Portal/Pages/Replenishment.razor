@@ -1,0 +1,71 @@
+﻿@page "/replenishment/{uid}"
+@using Filuet.Hardware.Dispensers.Abstractions.Models;
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@using Portal.StateContainers;
+@attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@inject SamplingMachineApiClient _client;
+@inject KioskStateContainer kioskStateContainer
+
+<PageTitle>Replenishment</PageTitle>
+
+<h1>Replenishment</h1>
+
+<p>List of addresses</p>
+
+@if (planogram == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="accordion" id="accordionReplenishment">
+        @foreach (var address in planogram.Addresses)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading@(address)">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(address)" aria-controls="collapse@(address)">
+                        Motor&nbsp;<b>@address</b>
+                    </button>
+                </h2>
+                <div id="collapse@(address)" class="accordion-collapse collapse" aria-labelledby="heading@(address)" data-bs-parent="#accordionReplenishment">
+                    <div class="accordion-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-1 left-align">
+                                <img src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x=>x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' style="width: 100%" />
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group mb-3">
+                                        <label class="input-group-text" for="inputGroupSelect01">Credit</label>
+                                        <input class="form-control" type="number" min="0" max="@planogram.GetRoute(address).MaxQuantity" @bind="planogram.GetRoute(address).Quantity" disabled>
+                                        <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-success" type="button" @onclick="() => planogram.GetRoute(address).Quantity--"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                                        <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity">Fill to max</button>
+                                        <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-danger" type="button" @onclick="() => planogram.GetRoute(address).Quantity++"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string uid { get; set; }
+
+    private Kiosk kiosk;
+
+    private PoG planogram;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kiosk = kioskStateContainer.Value;
+        planogram = await _client.GetPlanogramAsync(uid);
+    }
+}

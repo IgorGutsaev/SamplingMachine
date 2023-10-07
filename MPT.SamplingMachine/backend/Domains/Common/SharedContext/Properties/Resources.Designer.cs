@@ -142,6 +142,53 @@ namespace MPT.Vending.Domains.SharedContext.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;product&quot;: &quot;Aby&quot;,
+        ///    &quot;routes&quot;: [
+        ///      {
+        ///        &quot;r&quot;: &quot;1&quot;,
+        ///        &quot;q&quot;: 10,
+        ///        &quot;m&quot;: 10,
+        ///        &quot;a&quot;: 1
+        ///      }
+        ///    ]
+        ///  },
+        ///  {
+        ///    &quot;product&quot;: &quot;Ori&quot;,
+        ///    &quot;routes&quot;: [
+        ///      {
+        ///        &quot;r&quot;: &quot;2&quot;,
+        ///        &quot;q&quot;: 10,
+        ///        &quot;m&quot;: 10,
+        ///        &quot;a&quot;: 1
+        ///      }
+        ///    ]
+        ///  },
+        ///  {
+        ///    &quot;product&quot;: &quot;Sav&quot;,
+        ///    &quot;routes&quot;: [
+        ///      {
+        ///        &quot;r&quot;: &quot;3&quot;,
+        ///        &quot;q&quot;: 10,
+        ///        &quot;m&quot;: 10,
+        ///        &quot;a&quot;: 1
+        ///      }
+        ///    ]
+        ///  },
+        ///  {
+        ///    &quot;product&quot;: &quot;Rus&quot;,
+        ///    &quot;routes&quot;: [
+        ///      {
+        ///        &quot;r&quot;: &quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Planogram {
+            get {
+                return ResourceManager.GetString("Planogram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to iVBORw0KGgoAAAANSUhEUgAAAe8AAAHvCAIAAADy68CaAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhedP3pliRJji/4+Warr7FlZGZVdQ+7D4dnXmDe/x3ID/wwvIe3l6rOzMgIX23zjb8/oKbhmX2JsFAXhUAgAAQCgaiqqR3+H//H/+Og4Ojo6LWgTw8PDx3HUzCWiyrlpunjgdbHzy9HL0eHh68vL4ev0EezyXw6mWzW28V8MZvMdLGYLSYnk+vr699++2Uxn/3w04/z2eLL199/+/Lby+vr8vRsMpkeTaYn0+m//cd/bHePl5fvTs/Pnh53//i3f5+dnPzf/uVfnp+ff/vty8nJyQ8/fFouTx8eHr59/fr09PTTTz9Bqv2Xf/3X2elysjz9/Je/LufLx83qabv7x7//+//7//X//O2//nF3c3N0+DqfT+eTycvLy263psnx8cmOSiT2 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string RussianBlue {

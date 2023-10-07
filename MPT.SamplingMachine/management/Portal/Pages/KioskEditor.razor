@@ -27,6 +27,8 @@
 }
 else
 {
+    <h5>Settings</h5>
+
     <div class="container">
         <div class="row">
             <div class="col-2">
@@ -95,6 +97,13 @@ else
 
             </div>
         </div>
+    </div>
+
+    <h5>Replenishment</h5>
+
+    <div class="btn-group" style="margin-bottom: 1rem" role="group" aria-label="Basic mixed styles example">
+        <button type="button" class="btn btn-primary" @onclick="() => Replenish()">Replenish</button>
+        <button type="button" class="btn btn-warning">Change planogram</button>
     </div>
 
     <h5>Products</h5>
@@ -190,7 +199,7 @@ else
                         <td class="col-md-2">
                             @if (!link.Disabled)
                             {
-                                <button type="button" class="btn btn-warning" @onclick="() => DisableProduct(link.Product.Sku)">Disable</button>
+                                <button type="button" class="btn btn-secondary" @onclick="() => DisableProduct(link.Product.Sku)">Disable</button>
                             }
                             else
                             {
@@ -351,5 +360,11 @@ else
     protected override void OnAfterRender(bool firstRender)
     {
         JSRuntime.InvokeVoidAsync("ui.activateTooltips");
+    }
+
+    private void Replenish()
+    {
+        kioskStateContainer.SetValue(kiosk);
+        navigationManager.NavigateTo($"/replenishment/{uid}");
     }
 }

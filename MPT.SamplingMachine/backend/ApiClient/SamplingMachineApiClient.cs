@@ -1,4 +1,5 @@
-﻿using Filuet.Infrastructure.Abstractions.Converters;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
 using System.Net.Http;
 using System.Text;
@@ -206,6 +207,16 @@ namespace MPT.SamplingMachine.ApiClient
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
             return await _client.PostAsync(new Uri(new Uri(_url), "/api/customers/login"), httpContent);
+        }
+        #endregion
+
+        #region replenishment
+        public async Task<PoG> GetPlanogramAsync(string uid)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/replenishment/planogram?uid={uid}"));
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<PoG>(result);
         }
         #endregion
     }

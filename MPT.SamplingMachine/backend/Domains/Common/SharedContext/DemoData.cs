@@ -1,5 +1,7 @@
-﻿using Filuet.Infrastructure.Abstractions.Enums;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.Abstractions.Enums;
 using MPT.Vending.API.Dto;
+using MPT.Vending.Domains.SharedContext.Properties;
 
 namespace MPT.Vending.Domains.SharedContext
 {
@@ -8,6 +10,7 @@ namespace MPT.Vending.Domains.SharedContext
         public static List<Kiosk> _kiosks = new List<Kiosk>();
         public static List<Product> _products = new List<Product>();
         public static List<Session> _sessions = new List<Session>();
+        public static PoG _planogram;
 
         static DemoData()
         {
@@ -159,12 +162,12 @@ namespace MPT.Vending.Domains.SharedContext
                         RemainingQuantity = 4,
                         Product = _products.First(x => x.Sku == "Sco")
                     },
-                    new KioskProductLink {
-                        Credit = 2,
-                        MaxCountPerSession = 1,
-                        RemainingQuantity = 2,
-                        Product = _products.First(x => x.Sku == "Bur")
-                    }
+                    //new KioskProductLink {
+                    //    Credit = 2,
+                    //    MaxCountPerSession = 1,
+                    //    RemainingQuantity = 2,
+                    //    Product = _products.First(x => x.Sku == "Bur")
+                    //}
                 }
             });
 
@@ -195,6 +198,8 @@ namespace MPT.Vending.Domains.SharedContext
                     new SessionProductLink { Count = 1, UnitCredit = 1, Product = new Product{ Sku = "Ori" } }
                 }}
             });
+
+            _planogram = PoG.Read(Resources.Planogram);
         }
 
         public static void Link(string kioskUid, string sku)

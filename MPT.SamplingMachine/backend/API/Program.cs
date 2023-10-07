@@ -52,6 +52,12 @@ builder.Services.AddTransient<ISessionService>(sp => {
     return result;
 });
 
+builder.Services.AddTransient<IReplenishmentService>(sp => {
+    DemoReplenishmentService result = new DemoReplenishmentService();
+    //result.onPlanogramChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnPlanogramHasChanged(sender, e));
+    return result;
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
