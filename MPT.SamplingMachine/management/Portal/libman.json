@@ -17,6 +17,11 @@
     {
       "library": "bootstrap-icons@1.11.1",
       "destination": "wwwroot/lib/bootstrap/bootstrap-icons/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "bootstrap@5.3.2",
+      "destination": "wwwroot/lib/bootstrap/"
     }
   ]
 }

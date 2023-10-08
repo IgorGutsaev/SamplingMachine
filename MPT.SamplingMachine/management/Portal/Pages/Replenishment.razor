@@ -3,6 +3,8 @@
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using Portal.StateContainers;
+@using System.Text.Json;
+@using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
@@ -13,7 +15,14 @@
 
 <h1>Replenishment</h1>
 
-<p>List of addresses</p>
+@if (saving)
+{
+    <p class="rainbow_text_animated">Saving</p>
+}
+else
+{
+    <p>List of addresses</p>
+}
 
 @if (planogram == null)
 {
@@ -21,51 +30,89 @@
 }
 else
 {
-    <div class="accordion" id="accordionReplenishment">
+    <table>
         @foreach (var address in planogram.Addresses)
         {
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading@(address)">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(address)" aria-controls="collapse@(address)">
-                        Motor&nbsp;<b>@address</b>
-                    </button>
-                </h2>
-                <div id="collapse@(address)" class="accordion-collapse collapse" aria-labelledby="heading@(address)" data-bs-parent="#accordionReplenishment">
-                    <div class="accordion-body">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-1 left-align">
-                                <img src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x=>x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' style="width: 100%" />
-                                </div>
-                                <div class="col-3">
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="inputGroupSelect01">Credit</label>
-                                        <input class="form-control" type="number" min="0" max="@planogram.GetRoute(address).MaxQuantity" @bind="planogram.GetRoute(address).Quantity" disabled>
-                                        <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-success" type="button" @onclick="() => planogram.GetRoute(address).Quantity--"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
-                                        <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity">Fill to max</button>
-                                        <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-danger" type="button" @onclick="() => planogram.GetRoute(address).Quantity++"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
-                                    </div>
-                                </div>
+            <tr>
+                <td>
+                    <div class="card" style="width: 18rem; align-items: center">
+                        <img class="card-img-top card-img-top_1" src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' />
+                        <div class="card-body">
+                            <h5 class="card-title center">Motor&nbsp;<b>@address</b></h5>
+                            <div class="progress">
+                                <div class="progress-bar bg-@GetStockLevel(planogram.GetRoute(address))" style="width: @((100 * planogram.GetRoute(address).Quantity)/planogram.GetRoute(address).MaxQuantity)%" role="progressbar" aria-valuenow="@planogram.GetRoute(address).Quantity" aria-valuemin="0" aria-valuemax="@planogram.GetRoute(address).MaxQuantity">@planogram.GetRoute(address).Quantity / @planogram.GetRoute(address).MaxQuantity</div>
+                            </div>
+                            <br/>
+                            <div class="input-group mb-3">
+                                <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                                <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">Fill to maximum</button>
+                                <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity++; OnPlanogramChanged(); }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </td>
+               
+            </tr>
         }
-    </div>
+    </table>
 }
+
+<script>
+    window.alert = (x) => {
+        console.info(x);
+    };
+</script>
 
 @code {
     [Parameter]
     public string uid { get; set; }
 
+    private bool saving;
+
     private Kiosk kiosk;
 
     private PoG planogram;
+
+    private Guid actualCommandUid = new Guid();
 
     protected override async Task OnInitializedAsync()
     {
         kiosk = kioskStateContainer.Value;
         planogram = await _client.GetPlanogramAsync(uid);
+    }
+
+    private async void OnPlanogramChanged()
+    {
+        saving = true;
+
+        actualCommandUid = Guid.NewGuid();
+        Guid token = actualCommandUid;
+
+        await Task.Delay(1000).ContinueWith(async t =>
+        {
+            await Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                if (token == actualCommandUid)
+                {
+                    //await JSRuntime.InvokeVoidAsync("alert", JsonSerializer.Serialize(planogram));
+                    Debug.Print(JsonSerializer.Serialize(planogram));
+                    //await _client.PutPlanogramAsync(uid, planogram);
+                    saving = false;
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
+        });
+    }
+
+    private string GetStockLevel(PoGRoute route)
+    {
+        if (route.Quantity == route.MaxQuantity)
+            return "success";
+        else if (route.Quantity >= route.MaxQuantity / 2)
+            return "primary";
+        else if (route.Quantity < route.MaxQuantity / 2 && route.Quantity >= route.MaxQuantity / 4)
+            return "warning";
+        else return "danger";
     }
 }

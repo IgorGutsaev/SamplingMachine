@@ -211,12 +211,30 @@ namespace MPT.SamplingMachine.ApiClient
         #endregion
 
         #region replenishment
+        /// <summary>
+        /// Kiosk Uid
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
         public async Task<PoG> GetPlanogramAsync(string uid)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/replenishment/planogram?uid={uid}"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<PoG>(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uid">Kiosk Uid</param>
+        /// <param name="planogram"></param>
+        /// <returns></returns>
+        public async Task PutPlanogramAsync(string uid, PoG planogram)
+        {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/replenishment/planogram?uid={uid}"), httpContent);
         }
         #endregion
     }
