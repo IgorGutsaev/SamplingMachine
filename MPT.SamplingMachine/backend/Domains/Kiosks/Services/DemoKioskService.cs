@@ -79,14 +79,22 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public void DisableProductLink(string kioskUid, string sku)
         {
-            if (DemoData._kiosks.Any(x => x.UID == kioskUid))
-                DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = true;
+            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            if (kiosk != null)
+            {
+                kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = true;
+                onKioskChanged?.Invoke(this, kiosk);
+            }
         }
 
         public void EnableProductLink(string kioskUid, string sku)
         {
-            if (DemoData._kiosks.Any(x => x.UID == kioskUid))
-                DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
+            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            if (kiosk != null)
+            {
+                kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
+                onKioskChanged?.Invoke(this, kiosk);
+            }
         }
 
         public void AddProductLink(string kioskUid, string sku)

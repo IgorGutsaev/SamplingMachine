@@ -23,7 +23,7 @@ namespace MPT.Vending.Domains.Products.Services
             }
             else
             {
-                List<Product> products = (List<Product>)DemoData._products;
+                List<Product> products = DemoData._products;
                 products.Add(product);
                 DemoData._products = products;
                 onProductChanged?.Invoke(this, product);

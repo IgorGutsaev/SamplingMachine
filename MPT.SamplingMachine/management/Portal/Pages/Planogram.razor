@@ -1,4 +1,4 @@
-﻿@page "/replenishment/{uid}"
+﻿@page "/planogram/{uid}"
 @using Filuet.Hardware.Dispensers.Abstractions.Models;
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
@@ -11,23 +11,18 @@
 @inject SamplingMachineApiClient _client;
 @inject KioskStateContainer kioskStateContainer
 
-<PageTitle>Replenishment</PageTitle>
+<PageTitle>Planogram</PageTitle>
 
-<h1>Replenishment</h1>
+<h1>Setup planogram</h1>
 
-<p>
-    @if (saving)
-    {
-        <button class="btn btn-primary btn-lg" type="button" disabled>
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Saving...
-        </button>
-    }
-    else
-    {
-        <a href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>
-    }
-</p>
+@if (saving)
+{
+    <p class="rainbow_text_animated">Saving</p>
+}
+else
+{
+    <p>List of addresses</p>
+}
 
 @if (planogram == null)
 {
@@ -118,9 +113,9 @@ else
     {
         if (route.Quantity == route.MaxQuantity)
             return "success";
-        else if (route.Quantity > route.MaxQuantity / 2)
+        else if (route.Quantity >= route.MaxQuantity / 2)
             return "primary";
-        else if (route.Quantity <= route.MaxQuantity / 2 && route.Quantity >- route.MaxQuantity / 4)
+        else if (route.Quantity < route.MaxQuantity / 2 && route.Quantity >= route.MaxQuantity / 4)
             return "warning";
         else return "danger";
     }

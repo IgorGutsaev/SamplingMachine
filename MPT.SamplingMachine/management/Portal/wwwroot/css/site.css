@@ -135,3 +135,15 @@ a, .btn-link {
     height: 150px !important;
     object-fit: cover;
 }
+
+.labelOnPicture {
+    position: absolute;
+    width: 100%;
+    padding-top: 5%;
+    color: white;
+    text-shadow: #000 1px 0 10px;
+}
+
+img.lowbrightness {
+    filter: brightness(67%);
+}

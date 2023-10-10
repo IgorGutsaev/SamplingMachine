@@ -16,8 +16,6 @@
 
 <PageTitle>@sku</PageTitle>
 
-<button type="button" class="btn btn-success" @onclick="SaveProduct">Save</button>
-
 <div aria-live="polite" aria-atomic="true" class="position-relative">
     <div class="toast-container position-absolute top-0 end-0 p-3">
         <div id="toastNotice" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -43,6 +41,20 @@ else
 {
     <p>@product.Names.FirstOrDefault()?.Value</p>
 
+    <p>
+        @if (isSaving)
+        {
+            <button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Saving...
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary" @onclick="SaveProduct">Save</button>
+        }
+    </p>
+
     <div class="card" style="width: 300px">
         <img class="card-img rounded-top" src="data:image/*;base64,@product.Picture" width="300" />
         <button type="button" class="btn btn-dark inputFilePicker" onclick="document.getElementById('flpicker').click()"><i class="bi bi-arrow-repeat text-light"></i></button>
@@ -66,6 +78,19 @@ else
                             <span class="input-group-text" id="nameInput@($"{product.Sku}{localization.Language.GetCode()}")">Name</span>
                             <input type="text" class="form-control" aria-label="Name" aria-describedby="nameInput@($"{product.Sku}{localization.Language.GetCode()}")" @bind="localization.Value">
                         </div>
+
+                        @if (!deleteLocPanelOpened.ContainsKey(localization.Language) || !deleteLocPanelOpened[localization.Language])
+                        {
+                            <button class="btn btn-outline-danger" @onclick="() => { if (deleteLocPanelOpened.ContainsKey(localization.Language)) { deleteLocPanelOpened[localization.Language] = true; } else { deleteLocPanelOpened.Add(localization.Language, true); } }">Delete</button>
+                        }
+
+                        @if (deleteLocPanelOpened.ContainsKey(localization.Language) && deleteLocPanelOpened[localization.Language])
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                Do you really want to delete @localization.Language.ToString() localization?&nbsp;
+                                <button class="btn btn-danger" @onclick="() => { product.Names = product.Names.Where(x => x.Language != localization.Language); }">Delete</button>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -88,7 +113,7 @@ else
                         <select class="form-select" aria-label="Language" @bind="newLanguage">
                             @foreach (var language in languages)
                             {
-                                <option value="@language">@language.ToString()</option>
+                                <option value="@language">@language.GetName()</option>
                             }
                         </select> 
                     }
@@ -119,6 +144,10 @@ else
 
     private Language newLanguage;
 
+    private Dictionary<Language, bool> deleteLocPanelOpened = new Dictionary<Language, bool>();
+
+    private bool isSaving = false;
+
     protected override async Task OnInitializedAsync()
     {
         product = productStateContainer.Value;
@@ -145,7 +174,10 @@ else
 
     private async Task SaveProduct(MouseEventArgs e)
     {
+        isSaving = true;
+        await Task.Delay(250);
         await _client.PutProductAsync(product);
+        isSaving = false;
     }
 
     private void AddLanguage(MouseEventArgs e)
@@ -153,6 +185,7 @@ else
         List<LocalizedValue> values = product.Names.ToList();
         values.Add(new LocalizedValue { Language = newLanguage });
         product.Names = values;
+        
         this.StateHasChanged();
     }
 }

@@ -145,16 +145,7 @@
                     .then(x => {
                         kiosk = x;
                         // set products
-                        CatalogModule.products = kiosk.links.map((l) => {
-                            return {
-                                maxQty: l.maxQty,
-                                remains: l.remains,
-                                credit: l.credit,
-                                sku: l.product.sku,
-                                names: l.product.names,
-                                picture: l.product.picture
-                            };
-                        });
+                        CatalogModule.bindProducts(kiosk);
 
                         return;
                     });

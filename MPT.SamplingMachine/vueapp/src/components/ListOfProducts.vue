@@ -26,7 +26,7 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <p class="product-title">{{product.names.find(x => x.lang == currentLang)?.value}}</p>
+                                        <p class="product-title">{{ product.names.find(x => x.lang == currentLang)?.value ?? product.names[0]?.value }}</p>
                                         <!-- hide +/- buttons, out of stock and lack of credit label if there's a single product -->
                                         <button type="button" class="btn btn-dark btn-sm position-relative lmButton" v-if="product.count > 0" v-on:click="removeFromCart(product)">
                                             {{$t('buttons.remove')}}
@@ -105,7 +105,7 @@
         mounted() { 
             this.emitter.on('syncKiosk', async kiosk => {
                 this.credit = kiosk.credit;
-                this.products = CatalogModule.products.filter(x => x.credit <= this.credit);
+                this.products = CatalogModule.products.filter(x => x.credit <= this.credit && !x.disabled);
                 this.buildChunks();
             });
             this.emitter.on('syncProduct', async product => {

@@ -4,6 +4,7 @@ using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
 using System.Collections.Concurrent;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace MessagingServices
 {
@@ -31,8 +32,6 @@ namespace MessagingServices
 
         public async Task OnProductHasChanged(object? sender, Product revision, IEnumerable<Kiosk> kiosks)
         {
-            revision.Picture = null;
-
             foreach (var kiosk in kiosks)
                 await sendMessageToKiosk(kiosk.UID, "product;" + JsonSerializer.Serialize(revision, _serializerOptions));
         }

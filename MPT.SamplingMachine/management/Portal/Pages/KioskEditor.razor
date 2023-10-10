@@ -8,18 +8,22 @@
 @using System.Drawing;
 @using System.Web;
 @using System.Drawing.Imaging;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Portal.Models;
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client
+@inject NavigationManager _uriHelper
 @inject KioskStateContainer kioskStateContainer
 @inject ProductStateContainer productStateContainer
 
 <PageTitle>Kiosk</PageTitle>
 
 <h1>@uid</h1>
+
+<p><a href="/kiosks" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Kiosks</a></p>
 
 @if (kiosk == null)
 {
@@ -264,9 +268,33 @@ else
         }
     }
 
+    private HubConnection hubConnectionEditBelt;
+
     protected override async Task OnInitializedAsync()
     {
         kiosk = kioskStateContainer.Value;
+
+        hubConnectionEditBelt = new HubConnectionBuilder()
+           .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+           .Build();
+
+        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) =>
+        {
+            Session session = JsonSerializer.Deserialize<Session>(sessionData);
+
+            foreach (var link in session.Items)
+            {
+                KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
+                if (existingLink != null)
+                    existingLink.RemainingQuantity -= link.Count;
+            }
+
+            await InvokeAsync(() => StateHasChanged());
+
+            await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
+        });
+
+        await hubConnectionEditBelt.StartAsync();
 
         _credit = kiosk.Credit;
         products = await _client.GetProductsAsync();

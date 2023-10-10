@@ -124,6 +124,7 @@
                 this.exitPopupOpened = false;
             },
             syncKiosk(kiosk) {
+                CatalogModule.bindProducts(kiosk);
                 KioskSettings.credit = kiosk.credit;
                 this.emitter.emit('syncKiosk', kiosk);
             },
