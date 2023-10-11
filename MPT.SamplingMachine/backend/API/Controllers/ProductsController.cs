@@ -28,8 +28,8 @@ namespace API.Controllers
             => _productService.Put(product);
 
         [HttpGet("all")]
-        public IEnumerable<Product> GetAll()
-            => _productService.Get();
+        public IAsyncEnumerable<Product> GetAll(string filter = "")
+            => _productService.GetByFilter(filter);
 
         [HttpPut("picture")]
         public void PutPicture([FromBody] ProductPictureUpdateRequest request)

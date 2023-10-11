@@ -107,7 +107,7 @@ else
 
     <div class="btn-group" style="margin-bottom: 1rem" role="group" aria-label="Basic mixed styles example">
         <button type="button" class="btn btn-primary" @onclick="() => Replenish()">Replenish</button>
-        <button type="button" class="btn btn-warning">Change planogram</button>
+        <button type="button" class="btn btn-warning" @onclick="() => SetPlanogram()">Change planogram</button>
     </div>
 
     <h5>Products</h5>
@@ -222,7 +222,7 @@ else
     public string uid { get; set; }
 
     private Kiosk kiosk;
-    private IEnumerable<Product> products;
+    private List<Product> products;
     private IEnumerable<Product> productsToLink;
 
     private List<LangSelector> LanguageList = new List<LangSelector>();
@@ -273,34 +273,61 @@ else
     protected override async Task OnInitializedAsync()
     {
         kiosk = kioskStateContainer.Value;
+        await JSRuntime.InvokeVoidAsync("console.log", DateTime.Now.ToString("HH:mm:ss.fff") + " kiosk extracted");
+        StateHasChanged();
 
-        hubConnectionEditBelt = new HubConnectionBuilder()
-           .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
-           .Build();
-
-        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) =>
+        Task.Run(async () =>
         {
-            Session session = JsonSerializer.Deserialize<Session>(sessionData);
+            hubConnectionEditBelt = new HubConnectionBuilder()
+               .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+               .Build();
 
-            foreach (var link in session.Items)
+            hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) =>
             {
-                KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
-                if (existingLink != null)
-                    existingLink.RemainingQuantity -= link.Count;
-            }
+                Session session = JsonSerializer.Deserialize<Session>(sessionData);
 
-            await InvokeAsync(() => StateHasChanged());
+                foreach (var link in session.Items)
+                {
+                    KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
+                    if (existingLink != null)
+                        existingLink.RemainingQuantity -= link.Count;
+                }
 
-            await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
+                await InvokeAsync(() => StateHasChanged());
+                await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
+            });
+            
+            await hubConnectionEditBelt.StartAsync();
         });
-
-        await hubConnectionEditBelt.StartAsync();
-
+        
+        await JSRuntime.InvokeVoidAsync("console.log", DateTime.Now.ToString("HH:mm:ss.fff") + " Hub created");
         _credit = kiosk.Credit;
-        products = await _client.GetProductsAsync();
-        productsToLink = kiosk.ProductLinks == null ? products : products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
 
         SetupBindVariables();
+        StateHasChanged();
+        Task.Run(() => GetProducts());
+    }
+
+    private async Task GetProducts()
+    {
+        products = new List<Product>();
+
+        IAsyncEnumerator<Product> e = _client.GetProductsAsync(null, default(CancellationToken));
+        try
+        {
+            while (await e.MoveNextAsync())
+            {
+                products.Add(e.Current);
+            }
+        }
+        finally
+        {
+            if (e != null)
+                await e.DisposeAsync();
+        }
+
+        productsToLink = kiosk.ProductLinks == null ? products : products.Where(x => !kiosk.ProductLinks.Any(l => l.Product.Sku == x.Sku));
+        await InvokeAsync(() => StateHasChanged());
     }
 
     private void SetupBindVariables()
@@ -394,5 +421,11 @@ else
     {
         kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/replenishment/{uid}");
+    }
+
+    private void SetPlanogram()
+    {
+        kioskStateContainer.SetValue(kiosk);
+        navigationManager.NavigateTo($"/planogram/{uid}");
     }
 }

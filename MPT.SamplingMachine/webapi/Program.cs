@@ -17,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
-builder.Services.AddSingleton(sp => new SamplingMachineApiClient("https://localhost:7189/"));
+builder.Services.AddSingleton(sp => new SamplingMachineApiClient(sp.GetService<IConfiguration>()["ApiUrl"]));
 builder.Services.AddSingleton(sp => new KioskService(sp.GetRequiredService<SamplingMachineApiClient>(), sp.GetRequiredService<IMemoryCachingService>(), kioskUid));
 
 //builder.Services.AddScoped<NotificationHub>();

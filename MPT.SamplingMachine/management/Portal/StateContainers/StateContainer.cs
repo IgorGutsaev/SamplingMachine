@@ -1,6 +1,4 @@
-﻿using MPT.Vending.API.Dto;
-
-namespace Portal.StateContainers
+﻿namespace Portal.StateContainers
 {
     public abstract class StateContainer<T> where T : class
     {

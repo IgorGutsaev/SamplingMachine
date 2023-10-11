@@ -2,7 +2,9 @@
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using Portal.StateContainers;
+@using System.Diagnostics;
 @attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
 @inject ProductStateContainer productStateContainer
@@ -19,6 +21,27 @@
 }
 else
 {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-5">
+                <div class="input-group input-group-lg mb-3">
+                    <span class="input-group-text" id="filterGroup">Filter</span>
+                    <input type="text" class="form-control" placeholder="Sku or name" @bind-value="filter" aria-label="Username" aria-describedby="filterGroup">
+
+                    @if (stillReceivingProducts)
+                    {
+                        <button class="btn btn-secondary btn-large" onclick="@Cancel">Stop</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary btn-large" @onclick="() => { SearchProducts(); }">Search</button>
+                    }
+                </div>
+            </div>
+            <div class="col-7"></div>
+        </div>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -38,21 +61,71 @@ else
                     </td>
                 </tr>
             }
+
         </tbody>
     </table>
+
+    @if (stillReceivingProducts)
+    {
+        <p><em>Loading...</em></p>
+    }
 }
 
 @code {
-    private IEnumerable<Product> products;
+    bool stillReceivingProducts = false;
+
+    private List<Product> products = new List<Product>();
+    CancellationTokenSource loadingTokenSource;
+
+    string filter;
 
     protected override async Task OnInitializedAsync()
     {
-        products = await _client.GetProductsAsync();
+        await SearchProducts();
+    }
+
+    private async Task SearchProducts()
+    {
+        products = new List<Product>();
+        loadingTokenSource = new CancellationTokenSource();
+
+        IAsyncEnumerator<Product> e = _client.GetProductsAsync(filter, loadingTokenSource.Token);
+        try
+        {
+            while (await e.MoveNextAsync())
+            {
+                products.Add(e.Current);
+                stillReceivingProducts = true;
+
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("console.info", $"Product received: {e.Current.Sku}");
+                }
+                catch { }
+
+                StateHasChanged();
+            }
+        }
+        finally
+        {
+            if (e != null)
+                await e.DisposeAsync();
+
+            stillReceivingProducts = false;
+            StateHasChanged();
+        }
     }
 
     private void EditProduct(string sku)
     {
         productStateContainer.SetValue(products.First(x => x.Sku == sku));
         navigationManager.NavigateTo($"/product/{sku}");
+    }
+
+    private void Cancel()
+    {
+        JSRuntime.InvokeVoidAsync("console.info", "Cancelled");
+        loadingTokenSource.Cancel();
+        StateHasChanged();
     }
 }

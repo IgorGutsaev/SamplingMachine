@@ -90,12 +90,12 @@ namespace MPT.Vending.Domains.SharedContext
                 IdleTimeout = TimeSpan.FromMinutes(1),
                 Languages = new Language[] { Language.Hindi, Language.English },
                 ProductLinks = new KioskProductLink[] {
-                    new KioskProductLink {
-                        Credit = 1,
-                        MaxCountPerSession = 2,
-                        RemainingQuantity = 10,
-                        Product = _products.First(x => x.Sku == "Aby")
-                    },
+                    //new KioskProductLink {
+                    //    Credit = 1,
+                    //    MaxCountPerSession = 2,
+                    //    RemainingQuantity = 10,
+                    //    Product = _products.First(x => x.Sku == "Aby")
+                    //},
                     new KioskProductLink {
                         Credit = 2,
                         MaxCountPerSession = 1,

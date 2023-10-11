@@ -39,12 +39,16 @@ builder.Services.AddTransient<ISessionService>(sp => {
         int index = 0;
         while (true)
         {
-            string apiUrl = config[$"Api:{index++}"];
-            if (!string.IsNullOrWhiteSpace(apiUrl))
+            string portalUrl = config[$"Portal:{index++}"];
+            if (!string.IsNullOrWhiteSpace(portalUrl))
             {
                 HttpClient client = new HttpClient();
                 var httpContent = new StringContent(JsonSerializer.Serialize(new SessionHookRequest { Message = HookHelpers.Encrypt(config["HookSecret"], JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(apiUrl), "/api/hook/session"), httpContent);
+                try
+                {
+                    HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/session"), httpContent);
+                }
+                catch { }
             }
             else break;
         }

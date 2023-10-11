@@ -13,16 +13,21 @@
 
 <PageTitle>Planogram</PageTitle>
 
-<h1>Setup planogram</h1>
+<h1>Planogram</h1>
 
-@if (saving)
-{
-    <p class="rainbow_text_animated">Saving</p>
-}
-else
-{
-    <p>List of addresses</p>
-}
+<p>
+    @if (saving)
+    {
+        <button class="btn btn-primary btn-lg" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Saving...
+        </button>
+    }
+    else
+    {
+        <a href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>
+    }
+</p>
 
 @if (planogram == null)
 {
@@ -36,21 +41,44 @@ else
             <div class="row">
                 @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4))
                 {
+                    PoGRoute route = planogram.GetRoute(address);
                     <div class="col-3">
                         <div class="card" style="max-width: 18rem; align-items: center">
-                            <img class="card-img-top card-img-top_1 lowbrightness" src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' />
-                            <div class="labelOnPicture display-6" align="center">
-                                <label>Motor @address</label>
+                            <label><b>Motor @address</b></label>
+                            <div class="form-check form-switch" style="padding-top: 0.5rem">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="route.Active" />
+                                <label class="form-check-label" for="flexSwitchCheckDefault">@(route.Active.HasValue && route.Active.Value ? "On" : "Off")</label>
                             </div>
-                            <div class="card-body" style="padding: 7px 0 0 0 !important">
-                                <div class="progress">
-                                    <div class="progress-bar bg-@GetStockLevel(planogram.GetRoute(address))" style="width: @((100 * planogram.GetRoute(address).Quantity)/planogram.GetRoute(address).MaxQuantity)%" role="progressbar" aria-valuenow="@planogram.GetRoute(address).Quantity" aria-valuemin="0" aria-valuemax="@planogram.GetRoute(address).MaxQuantity">@planogram.GetRoute(address).Quantity / @planogram.GetRoute(address).MaxQuantity</div>
-                                </div>
-                                <div class="input-group" style="padding: 7px 0 7px 0 !important">
-                                    <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
-                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">Fill to maximum</button>
-                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity++; OnPlanogramChanged(); }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
-                                </div>
+
+                            <div class="input-group mb-3 ps-3 pe-3">
+                                <label class="input-group-text" for="inputGroupSelect01">Max quantity</label>
+                                <input type="text" class="form-control" placeholder="Credit" aria-label="Max quantity" @bind="route.MaxQuantity" disabled>
+                                @if (route.MaxQuantity > 1)
+                                {
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity > 1) route.MaxQuantity--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                                }
+                                @if (route.MaxQuantity < 10)
+                                {
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity < 10) route.MaxQuantity++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                                }
+                            </div>
+
+                            <div class="input-group mb-3 ps-3 pe-3">
+                                <label class="input-group-text" for="inputGroupSelect01">Product</label>
+                                <select class="form-select" id="inputGroupSelect01" @onchange="(e) => onProductChanged(e, address)">
+                                    <option selected value="empty">Choose...</option>
+                                    @foreach (var p in Products()) {
+                                        var product = planogram.GetProduct(address);
+                                        if (product != null && p.Sku == product.ProductUid)
+                                        {
+                                            <option selected value="@p.Sku">@($"{p.Sku} / {p.Names.FirstOrDefault()?.Value}")</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@p.Sku">@($"{p.Sku} / {p.Names.FirstOrDefault()?.Value}")</option>
+                                        }
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -83,6 +111,16 @@ else
     {
         kiosk = kioskStateContainer.Value;
         planogram = await _client.GetPlanogramAsync(uid);
+    }
+
+    private IEnumerable<Product> Products()
+    {
+        return kiosk.ProductLinks.Select(x => x.Product).Distinct();        
+    }
+
+    private void onProductChanged(ChangeEventArgs e, string address)
+    {
+        Debug.Print($"product/address: > {e.Value}/{address}");
     }
 
     private async void OnPlanogramChanged()

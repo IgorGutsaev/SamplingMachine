@@ -1,7 +1,6 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -147,7 +146,7 @@ namespace MPT.SamplingMachine.ApiClient
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/products"), httpContent);
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), "/api/products"), httpContent);
         }
 
         public async Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> sku)
@@ -159,12 +158,33 @@ namespace MPT.SamplingMachine.ApiClient
             return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async IAsyncEnumerator<Product> GetProductsAsync(string filter, CancellationToken token)
         {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products/all"));
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
+            using HttpResponseMessage response = await _client.GetAsync(
+                new Uri(new Uri(_url), $"/api/products/all?filter={filter ?? string.Empty}"),
+                HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            using Stream responseStream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            var products = JsonSerializer.DeserializeAsyncEnumerable<Product>(
+                responseStream,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    DefaultBufferSize = 128
+                });
+
+            await foreach (var p in products)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    responseStream.Close();
+                    break;
+                }
+                else yield return p;
+            }
         }
 
         public async Task<IEnumerable<Product>> DisableProductAsync(string kioskUid, string sku)

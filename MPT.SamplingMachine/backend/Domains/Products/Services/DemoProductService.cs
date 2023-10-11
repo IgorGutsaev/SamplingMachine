@@ -30,8 +30,11 @@ namespace MPT.Vending.Domains.Products.Services
             }
         }
 
-        public IEnumerable<Product> Get()
-            => DemoData._products;
+        public async IAsyncEnumerable<Product> GetByFilter(string filter)
+        {
+            foreach (var p in DemoData._products.Where(x => string.IsNullOrWhiteSpace(filter) || x.Sku.Contains(filter, StringComparison.InvariantCultureIgnoreCase) || (x.Names?.Any(n => n.Value.Contains(filter, StringComparison.InvariantCultureIgnoreCase)) ?? false)))
+                yield return p;
+        }
 
         public IEnumerable<Product> Get(IEnumerable<string> sku)
             => DemoData._products.Where(x => sku.Contains(x.Sku));

@@ -106,6 +106,12 @@
             this.emitter.on('syncKiosk', async kiosk => {
                 this.credit = kiosk.credit;
                 this.products = CatalogModule.products.filter(x => x.credit <= this.credit && !x.disabled);
+
+                let cart = this.products.filter(x => x.count > 0); // some products credit may have changed. We have to recalculate used credit
+                let recalCreditUsed = 0;
+                cart.forEach(x => recalCreditUsed += x.count * x.credit);
+                this.creditUsed = recalCreditUsed;
+
                 this.buildChunks();
             });
             this.emitter.on('syncProduct', async product => {
