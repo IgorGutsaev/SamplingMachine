@@ -18,6 +18,10 @@ public class KiosksController : ControllerBase
     public async Task<Kiosk> GetAsync()
         => await _kioskService.GetAsync();
 
+    [HttpGet("cache/clear")]
+    public void ClearCache()
+        => _kioskService.ClearCache();
+
     [HttpPost("login")]
     public async Task<HttpResponseMessage> LoginAsync([FromBody] LoginRequest request)
         => await _kioskService.LoginAsync(request);

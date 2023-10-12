@@ -60,3 +60,9 @@ export async function commitSessionAsync(phone, products) {
         })
     });
 };
+
+export async function clearCache() {
+    return await fetch('kiosks/cache/clear', {
+        method: 'GET'
+    });
+};

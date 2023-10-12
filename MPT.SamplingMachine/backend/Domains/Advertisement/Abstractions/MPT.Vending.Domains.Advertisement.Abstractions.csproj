@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Backend\Dto\MPT.Vending.API.Dto.csproj" />
+    <ProjectReference Include="..\..\..\Dto\MPT.Vending.API.Dto.csproj" />
   </ItemGroup>
 
 </Project>

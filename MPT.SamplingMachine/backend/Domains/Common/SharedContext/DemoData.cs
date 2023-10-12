@@ -10,10 +10,14 @@ namespace MPT.Vending.Domains.SharedContext
         public static List<Kiosk> _kiosks = new List<Kiosk>();
         public static List<Product> _products = new List<Product>();
         public static List<Session> _sessions = new List<Session>();
+        public static List<AdMedia> _media = new List<AdMedia>();
         public static PoG _planogram;
 
         static DemoData()
         {
+            _media = new List<AdMedia>(new AdMedia[] { new AdMedia { Type = AdMediaType.mp4, Uid = Guid.NewGuid(), Hash = "0123" },
+                new AdMedia { Type = AdMediaType.gif, Uid = Guid.NewGuid(), Hash = "1234"  }});
+
             _products.AddRange(new[] {
                 new Product {
                     Sku = "Aby",
@@ -156,19 +160,21 @@ namespace MPT.Vending.Domains.SharedContext
                         RemainingQuantity = 2,
                         Product = _products.First(x => x.Sku == "Sbr")
                     },
-                    //new KioskProductLink {
-                    //    Credit = 1,
-                    //    MaxCountPerSession = 2,
-                    //    RemainingQuantity = 4,
-                    //    Product = _products.First(x => x.Sku == "Sco")
-                    //},
+                    new KioskProductLink {
+                        Credit = 1,
+                        MaxCountPerSession = 2,
+                        RemainingQuantity = 4,
+                        Product = _products.First(x => x.Sku == "Sco")
+                    },
                     //new KioskProductLink {
                     //    Credit = 2,
                     //    MaxCountPerSession = 1,
                     //    RemainingQuantity = 2,
                     //    Product = _products.First(x => x.Sku == "Bur")
                     //}
-                }
+                },
+                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 11, 0, 0) }, 
+                    new KioskMediaLink { Active = true, Media = _media.LastOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x=>x.Start)
             });
 
             _sessions.AddRange(new[] {

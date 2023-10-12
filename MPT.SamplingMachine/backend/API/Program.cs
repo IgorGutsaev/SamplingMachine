@@ -2,6 +2,7 @@ using Filuet.Infrastructure.Abstractions.Converters;
 using Filuet.Infrastructure.Communication.Helpers;
 using MessagingServices;
 using MPT.Vending.API.Dto;
+using MPT.Vending.Domains.Advertisement.Abstractions;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Products.Abstractions;
@@ -26,12 +27,14 @@ builder.Services.AddTransient<IKioskService>(sp => {
     result.onKioskChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e);
     return result;
 });
+
 builder.Services.AddTransient<IProductService>(sp => {
     DemoProductService result = new DemoProductService();
     IKioskService kioskService = sp.GetService<IKioskService>();
     result.onProductChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnProductHasChanged(sender, e, kioskService.Get(x => x.ProductLinks.Any(l => l.Product.Sku == e.Sku)));
     return result;
 });
+
 builder.Services.AddTransient<ISessionService>(sp => {
     DemoSessionService result = new DemoSessionService();
     result.OnNewSession += async (sender, e) => {
@@ -55,6 +58,8 @@ builder.Services.AddTransient<ISessionService>(sp => {
     };
     return result;
 });
+
+builder.Services.AddTransient<IMediaService, MediaService>();
 
 builder.Services.AddTransient<IReplenishmentService>(sp => {
     DemoReplenishmentService result = new DemoReplenishmentService();

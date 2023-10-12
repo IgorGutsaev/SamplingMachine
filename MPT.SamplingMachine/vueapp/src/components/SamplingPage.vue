@@ -8,7 +8,7 @@
             {{$t('titles.oos')}}
         </h1>
 
-        <div v-if="languages && isOn" class="content">
+        <div v-if="!loading && isOn" class="content">
             <div class="container-fluid">
                 <div class="row mb-1">
                     <div class="col-lg-12 d-flex justify-content-between">
@@ -21,6 +21,9 @@
             <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
+                        <Advertisement />
+                    </div>
+                    <div class="carousel-item" id="languages-screen">
                         <img src="https://www.petful.com/wp-content/uploads/2013/12/Abyssinian-1-750x398.jpg" class="d-block w-100">
                         <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block w-50 mx-auto" v-on:click="setLanguage(lang, true)" v-for="lang in languages" :key="lang.code" role="button">{{languages.length <= 1 ? $t('buttons.start') : lang.value}}</div>
                     </div>
@@ -54,8 +57,9 @@
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
     import CatalogModule from '/src/modules/catalog.module.js'
-    import { getLanguagesAsync } from '/src/modules/sync.module.js';
+    import { getLanguagesAsync, clearCache } from '/src/modules/sync.module.js';
     import { getSecTimeoutFromTimespan } from '/src/modules/helpers.module.js';
+    import Advertisement from './Advertisement.vue'
     import Terms from './TermsOfService.vue'
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
@@ -66,14 +70,15 @@
     export default defineComponent({
         data() {
             return {
-                loading: false,
+                loading: true,
                 languages: null,
-                currentLang: false,
-                homeButtonEnabled: false,
+                currentLang: null,
+                homeButtonEnabled: true,
                 isOn: true
             };
         },
         components: {
+            Advertisement,
             CatalogModule,
             Terms,
             Identification,
@@ -89,6 +94,7 @@
             // already being observed
             this.fetchData();
 
+            KioskSettings.languages = [];
             KioskSettings.canLogOff = false;
             KioskSettings.isEmulation = true;
         },
@@ -123,16 +129,28 @@
             $("#dispensing-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
+        toLanguages() {
+            if (KioskSettings.languages.length <= 1) {
+                this.toIdentification();
+            }
+            else {
+                $("#globalCarousel .carousel-item.active").removeClass("active");
+                $("#languages-screen").addClass("active");
+                console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            }
+        },
         mounted() {
             this.emitter.on('syncKiosk', async kiosk => {
-                this.languages = await getLanguagesAsync(this.languages, kiosk.languages);
+                clearCache();
+                KioskSettings.languages = await getLanguagesAsync(KioskSettings.languages, kiosk.languages);
+                this.languages = KioskSettings.languages;
                 KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
                 ListOfProducts.credit = KioskSettings.credit;
 
-                if (this.languages.length == 1)
-                    this.setLanguage(this.languages[0], false);
+                if (KioskSettings.languages.length == 1)
+                    this.setLanguage(KioskSettings.languages[0], false);
             });
         },
         methods: {
@@ -151,10 +169,13 @@
                     });
 
                 // get localized list of languages
-                this.languages = await getLanguagesAsync(null, kiosk.languages);
+                KioskSettings.languages = await getLanguagesAsync(null, kiosk.languages);
+                this.languages = KioskSettings.languages;
+                this.currentLang = KioskSettings.languages[0].code;
                 KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
+                KioskSettings.media = kiosk.media;
 
                 this.loading = false;
             },

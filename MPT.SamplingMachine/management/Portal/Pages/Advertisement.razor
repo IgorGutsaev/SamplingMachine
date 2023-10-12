@@ -1,0 +1,47 @@
+﻿@page "/advertisement"
+@using Filuet.Hardware.Dispensers.Abstractions.Models;
+@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto;
+@using Portal.StateContainers;
+@using System.Text.Json;
+@using System.Diagnostics;
+@attribute [StreamRendering(true)]
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@inject SamplingMachineApiClient _client;
+@inject KioskStateContainer kioskStateContainer
+
+<PageTitle>Advertisement</PageTitle>
+
+<h1>Advertisement</h1>
+
+<p>
+    @if (saving)
+    {
+@*         <button class="btn btn-primary btn-lg" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Saving...
+        </button> *@
+    }
+    else
+    {
+       @*  <a href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>*@
+    } 
+</p>
+
+@if (true)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+}
+
+@code {
+    private bool saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}

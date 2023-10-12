@@ -18,6 +18,8 @@ namespace MPT.Vending.API.Dto
         public TimeSpan IdleTimeout { get; set; }
         [JsonPropertyName("links")]
         public IEnumerable<KioskProductLink> ProductLinks { get; set; }
+        [JsonPropertyName("media")]
+        public IEnumerable<KioskMediaLink> Media { get; set; }
         [JsonPropertyName("isOn")]
         public bool IsOn { get; set; }
     }

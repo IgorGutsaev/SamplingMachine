@@ -8,6 +8,10 @@ export default {
             type: Object,
             required: false
         },
+        languages: {
+            type: Object,
+            required: false
+        },
         // reflects max samples count per session
         credit: {
             type: Number,
@@ -20,6 +24,10 @@ export default {
         canLogOff: {
             type: Boolean,
             required: true
-        }
+        },
+        media: {
+            type: Object,
+            required: false
+        },
     }
 }

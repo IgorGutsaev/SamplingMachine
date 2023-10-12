@@ -47,6 +47,11 @@ namespace webapi.Services
             await _client.CommitSessionsAsync(session);
         }
 
+        public void ClearCache()
+        {
+            _kioskCache.Clear();
+        }
+
         private readonly SamplingMachineApiClient _client;
         private readonly IMemoryCachingService _memCache;
         private readonly MemoryCacher _kioskCache;
