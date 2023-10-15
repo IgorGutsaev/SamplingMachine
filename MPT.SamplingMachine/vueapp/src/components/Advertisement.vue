@@ -32,6 +32,7 @@
         },
         methods: {
             resolveActiveMedia() {
+            console.info(JSON.stringify(KioskSettings.media));
                 KioskSettings.media.forEach(x => {
                     let next = KioskSettings.media.find(m => m.startTime > x.startTime);
                     if (!next) {
