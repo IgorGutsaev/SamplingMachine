@@ -44,7 +44,7 @@
 
                     let now = new Date();
 
-                    if (now >= x.startTime && now < next) {
+                    if (now >= x.startTime && now < next.startTime) {
                         if (x.media.type == 'mp4') {
                             this.activeMp4 = x.media;
                             this.activeGif = null;

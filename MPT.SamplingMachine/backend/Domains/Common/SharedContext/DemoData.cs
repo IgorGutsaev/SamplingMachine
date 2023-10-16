@@ -173,8 +173,8 @@ namespace MPT.Vending.Domains.SharedContext
                     //    Product = _products.First(x => x.Sku == "Bur")
                     //}
                 },
-                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 11, 0, 0) }, 
-                    new KioskMediaLink { Active = true, Media = _media.LastOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x=>x.Start)
+                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 9, 0, 0) }, 
+                    new KioskMediaLink { Active = true, Media = _media.LastOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x => x.Start)
             });
 
             _sessions.AddRange(new[] {

@@ -120,7 +120,7 @@ else
             return "success";
         else if (route.Quantity > route.MaxQuantity / 2)
             return "primary";
-        else if (route.Quantity <= route.MaxQuantity / 2 && route.Quantity >- route.MaxQuantity / 4)
+        else if (route.Quantity <= route.MaxQuantity / 2 && route.Quantity >= route.MaxQuantity / 4)
             return "warning";
         else return "danger";
     }
