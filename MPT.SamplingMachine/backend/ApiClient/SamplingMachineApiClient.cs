@@ -1,6 +1,7 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -255,6 +256,43 @@ namespace MPT.SamplingMachine.ApiClient
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/replenishment/planogram?uid={uid}"), httpContent);
+        }
+        #endregion
+
+        #region media
+        public async Task<IEnumerable<AdMedia>> GetMediaAsync() {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/media"));
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<AdMedia>>(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uid">Kiosk Uid</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<KioskMediaLink>> GetKioskMediaAsync(string uid) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/media/kiosk?uid={uid}"));
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<KioskMediaLink>>(result);
+        }
+
+        public async Task<string> UploadMefiaFileAsync(string fileName, byte[] data) {
+            using (var content = new MultipartFormDataContent()) {
+                content.Add(new StreamContent(new MemoryStream(data)) {
+                    Headers =
+                    {
+                        ContentLength = data.Length,
+                        ContentType = new MediaTypeHeaderValue("text/plain")
+                    }
+                }, "File", fileName);
+
+                var response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/media/upload"), content);
+
+                return await response.Content.ReadAsStringAsync();
+            }
         }
         #endregion
     }

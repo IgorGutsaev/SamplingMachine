@@ -15,8 +15,8 @@ namespace MPT.Vending.Domains.SharedContext
 
         static DemoData()
         {
-            _media = new List<AdMedia>(new AdMedia[] { new AdMedia { Type = AdMediaType.mp4, Uid = Guid.NewGuid(), Hash = "0123" },
-                new AdMedia { Type = AdMediaType.gif, Uid = Guid.NewGuid(), Hash = "1234"  }});
+            _media = new List<AdMedia>(new AdMedia[] { new AdMedia { Name = "Earth", Type = AdMediaType.mp4, Hash = "d9061d3da8601932e98f79ec8ba1c877" },
+                new AdMedia { Name = "Cat abduction", Type = AdMediaType.gif, Hash = "e0c97924582e58c67a4142a80e3dcdcb"  }});
 
             _products.AddRange(new[] {
                 new Product {

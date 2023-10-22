@@ -4,7 +4,8 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
 {
     public interface IMediaService
     {
-        IEnumerable<KioskMediaLink> Get(string kioskUid);
-        void Put(Guid uid, AdMediaType media, string name);
+        IEnumerable<AdMedia> Get();
+        IEnumerable<KioskMediaLink> GetByKiosk(string kioskUid);
+        void Put(NewMediaRequest request);
     }
 }

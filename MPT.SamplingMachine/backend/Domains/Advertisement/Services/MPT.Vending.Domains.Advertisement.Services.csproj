@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\SharedContext\MPT.Vending.Domains.SharedContext.csproj" />
     <ProjectReference Include="..\Abstractions\MPT.Vending.Domains.Advertisement.Abstractions.csproj" />
+    <ProjectReference Include="..\Infrastructure\MPT.Vanding.Domains.Advertisement.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

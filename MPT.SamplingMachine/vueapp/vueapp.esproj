@@ -12,6 +12,7 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\assets\promo\gifs\" />
     <Folder Include="src\assets\promo\videos\" />
   </ItemGroup>
 </Project>

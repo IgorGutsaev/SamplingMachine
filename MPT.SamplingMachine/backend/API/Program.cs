@@ -9,6 +9,7 @@ using MPT.Vending.Domains.Products.Abstractions;
 using MPT.Vending.Domains.Products.Services;
 using System.Text.Json;
 using System.Text;
+using MPT.Vending.Domains.Advertisement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +60,11 @@ builder.Services.AddTransient<ISessionService>(sp => {
     return result;
 });
 
-builder.Services.AddTransient<IMediaService, MediaService>();
+builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x => {
+    x.ConnectionString = "DefaultEndpointsProtocol=https;AccountName=ascdevstorage;AccountKey=X5lm0IwRvY7gzf7EChalkTLTwCWk5croT7MESc44MkCY3y3EKXLfL9IRd1wSdUH5tyGcsWH7vUIrD5vXydcsEg==;EndpointSuffix=core.windows.net";
+    x.ContainerName = "ogmento";
+}))
+.AddTransient<IMediaService, DemoMediaService>();
 
 builder.Services.AddTransient<IReplenishmentService>(sp => {
     DemoReplenishmentService result = new DemoReplenishmentService();
