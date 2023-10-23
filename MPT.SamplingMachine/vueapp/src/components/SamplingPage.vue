@@ -21,7 +21,7 @@
             <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
-                        <Advertisement />
+                        <Advertisement @homeButtonEnabled="changeHomeButton" />
                     </div>
                     <div class="carousel-item" id="languages-screen">
                         <img src="https://www.petful.com/wp-content/uploads/2013/12/Abyssinian-1-750x398.jpg" class="d-block w-100">
@@ -147,6 +147,7 @@
                 KioskSettings.isOn = this.isOn = kiosk.isOn;
                 KioskSettings.idleTimeoutSec = getSecTimeoutFromTimespan(kiosk.idleTimeout);
                 KioskSettings.credit = kiosk.credit;
+                KioskSettings.media = kiosk.media;
                 ListOfProducts.credit = KioskSettings.credit;
 
                 if (KioskSettings.languages.length == 1)

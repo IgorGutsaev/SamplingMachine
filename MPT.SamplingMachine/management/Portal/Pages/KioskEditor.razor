@@ -237,8 +237,7 @@ else
             _isOn = value;
             kiosk.IsOn = _isOn;
 
-            new Task(async () =>
-            {
+            new Task(async () => {
                 if (kiosk.IsOn)
                     await _client.KioskEnableAsync(kiosk.UID);
                 else await _client.KioskDisableAsync(kiosk.UID);

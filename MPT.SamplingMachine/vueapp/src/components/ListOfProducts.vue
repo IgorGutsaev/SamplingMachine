@@ -216,7 +216,7 @@
                 return isAvailable;
             },
             async issueProducts() {
-                this.$emit('homeButtonEnabled', false)
+                this.$emit('homeButtonEnabled', false);
                 Sampling.toDispensing();
 
                 await Dispensing.extract(ShoppingCart.items);

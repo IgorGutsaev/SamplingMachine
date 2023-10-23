@@ -30,6 +30,7 @@ namespace webapi.Services
             if (result == null)
             {
                 result = await _client.GetKioskAsync(_kioskUid);
+                result = result.PrepareForCommunication();
                 _kioskCache.Set(_kioskUid, result, TimeSpan.FromDays(KIOSK_CACHE_LIFETIME_DAYS).TotalMilliseconds);
             }
 
@@ -48,9 +49,7 @@ namespace webapi.Services
         }
 
         public void ClearCache()
-        {
-            _kioskCache.Clear();
-        }
+            => _kioskCache.Clear();
 
         private readonly SamplingMachineApiClient _client;
         private readonly IMemoryCachingService _memCache;

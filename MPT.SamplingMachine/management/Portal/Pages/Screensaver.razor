@@ -16,10 +16,11 @@
 
 <h1>Screensaver</h1>
 
-<button type="button" class="btn btn-primary me-2">Add</button>
-
-@if (resourcesChanged) {
-    <button type="button" class="btn btn-success">Save</button>
+@if (!saving)
+{
+    <button type="button" class="btn btn-primary me-2">Add</button>
+} else {
+    <button type="button" class="btn btn-primary" disabled>Saving...</button>
 }
 
 @if (loading)
@@ -55,10 +56,10 @@ else {
                         </td>
                         <td>
                             @if (!r.Active) {
-                                <button type="button" class="btn btn-secondary" @onclick="async e => { r.Active = true; await OnResourcesChangedAsync(); }">Inactive</button>
+                                <button type="button" class="btn btn-secondary" @onclick="async e => await SetActive(r, true)">Inactive</button>
                             }
                             else {
-                                <button type="button" class="btn btn-primary" @onclick="async e => { r.Active = false; await OnResourcesChangedAsync(); }">Active</button>
+                                <button type="button" class="btn btn-primary" @onclick="async e => await SetActive(r, false)">Active</button>
                             }
                         </td>
                     </tr>
@@ -73,17 +74,14 @@ else {
 
     private bool loading = true;
     private bool saving = false;
-    private bool resourcesChanged = false;
     private IEnumerable<KioskMediaLink> _resources;
     private IEnumerable<AdMedia> _media;
-    private string _resourcesOriginal;
+    private string newMediaSerialized;
 
     protected override async Task OnInitializedAsync()
     {
         _resources = await _client.GetKioskMediaAsync(kioskUid);
         _media = await _client.GetMediaAsync();
-
-        _resourcesOriginal = JsonSerializer.Serialize(_resources);
 
         loading = false;
         StateHasChanged();
@@ -94,17 +92,28 @@ else {
         newStartTime =  DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
         _resources.FirstOrDefault(x => x.Media.Hash == hash).Start = newStartTime;
 
+        newMediaSerialized = JsonSerializer.Serialize(_resources);
+
         await Task.Delay(1000).ContinueWith(async t => {
             await Task.Run(async () => {
                 _resources = _resources.OrderBy(x => x.Start).ToList(); // do not remove toList, otherwise blazor tracks ordering changes
-                await InvokeAsync(StateHasChanged);
                 await OnResourcesChangedAsync();
             });
         });
     }
 
     private async Task OnResourcesChangedAsync() {
-        resourcesChanged = _resourcesOriginal != JsonSerializer.Serialize(_resources);
-        await _client.PutKioskMediaAsync(kioskUid, _resources);
+        if (newMediaSerialized == JsonSerializer.Serialize(_resources)) {
+            saving = true;
+            await _client.PutKioskMediaAsync(kioskUid, _resources);
+            saving = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SetActive(KioskMediaLink link, bool active) {
+        link.Active = active;
+        newMediaSerialized = JsonSerializer.Serialize(_resources);
+        await OnResourcesChangedAsync();
     }
 }

@@ -2,8 +2,7 @@
 {
     public static class DtoExtensions
     {
-        public static Kiosk Merge(this Kiosk target, Kiosk source)
-        {
+        public static Kiosk Merge(this Kiosk target, Kiosk source) {
             target.Credit = source.Credit;
             target.IdleTimeout = source.IdleTimeout;
             target.Languages = source.Languages;
@@ -20,19 +19,23 @@
                 Credit = source.Credit,
                 IdleTimeout = source.IdleTimeout,
                 Languages = source.Languages,
-                ProductLinks = source.ProductLinks.Select(x => new KioskProductLink
-                {
+                ProductLinks = source.ProductLinks.Select(x => new KioskProductLink {
                     Credit = x.Credit,
                     Disabled = x.Disabled,
                     MaxCountPerSession = x.MaxCountPerSession,
                     RemainingQuantity = x.RemainingQuantity,
-                    Product = new Product
-                    {
+                    Product = new Product {
                         Names = x.Product.Names,
                         Sku = x.Product.Sku
                     }
                 }),
-                IsOn = source.IsOn
+                IsOn = source.IsOn,
+                Media = source.Media.Where(x => x.Active)
             };
+
+        public static Kiosk PrepareForCommunication(this Kiosk source) {
+            source.Media = source.Media.Where(x => x.Active);
+            return source;
+        }
     }
 }
