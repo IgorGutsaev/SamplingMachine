@@ -142,5 +142,11 @@ namespace MPT.Vending.Domains.Kiosks.Services
             if (link != null)
                 link.MaxCountPerSession = limit;
         }
+
+        public void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links) {
+            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            kiosk.Media = links;
+            onKioskChanged?.Invoke(this, kiosk);
+        }
     }
 }

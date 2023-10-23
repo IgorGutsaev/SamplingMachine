@@ -108,6 +108,7 @@ else
     <div class="btn-group" style="margin-bottom: 1rem" role="group" aria-label="Basic mixed styles example">
         <button type="button" class="btn btn-primary" @onclick="() => Replenish()">Replenish</button>
         <button type="button" class="btn btn-warning" @onclick="() => SetPlanogram()">Change planogram</button>
+        <button type="button" class="btn btn-info" @onclick="() => Screensaver()">Screensaver</button>
     </div>
 
     <h5>Products</h5>
@@ -296,10 +297,10 @@ else
                 await InvokeAsync(() => StateHasChanged());
                 await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
             });
-            
+
             await hubConnectionEditBelt.StartAsync();
         });
-        
+
         await JSRuntime.InvokeVoidAsync("console.log", DateTime.Now.ToString("HH:mm:ss.fff") + " Hub created");
         _credit = kiosk.Credit;
 
@@ -412,20 +413,22 @@ else
         await _client.AddOrUpdateKioskAsync(kiosk);
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
+    protected override void OnAfterRender(bool firstRender) {
         JSRuntime.InvokeVoidAsync("ui.activateTooltips");
     }
 
-    private void Replenish()
-    {
+    private void Replenish() {
         kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/replenishment/{uid}");
     }
 
-    private void SetPlanogram()
-    {
+    private void SetPlanogram() {
         kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/planogram/{uid}");
+    }
+
+    private void Screensaver() {
+        kioskStateContainer.SetValue(kiosk);
+        navigationManager.NavigateTo($"/screensaver/{uid}");
     }
 }

@@ -270,16 +270,16 @@ namespace MPT.SamplingMachine.ApiClient
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="uid">Kiosk Uid</param>
+        /// <param name="kioskUid">Kiosk Uid</param>
         /// <returns></returns>
-        public async Task<IEnumerable<KioskMediaLink>> GetKioskMediaAsync(string uid) {
+        public async Task<IEnumerable<KioskMediaLink>> GetKioskMediaAsync(string kioskUid) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/media/kiosk?uid={uid}"));
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/media/kiosk?uid={kioskUid}"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<KioskMediaLink>>(result);
         }
 
-        public async Task<string> UploadMefiaFileAsync(string fileName, byte[] data) {
+        public async Task<string> UploadMediaFileAsync(string fileName, byte[] data) {
             using (var content = new MultipartFormDataContent()) {
                 content.Add(new StreamContent(new MemoryStream(data)) {
                     Headers =
@@ -293,6 +293,11 @@ namespace MPT.SamplingMachine.ApiClient
 
                 return await response.Content.ReadAsStringAsync();
             }
+        }
+
+        public async Task PutKioskMediaAsync(string kioskUid, IEnumerable<KioskMediaLink> resources) {
+            var httpContent = new StringContent(JsonSerializer.Serialize(resources), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/media/{kioskUid}"), httpContent);
         }
         #endregion
     }

@@ -17,5 +17,6 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
         void DeleteProductLink(string kioskUid, string sku);
         void SetCredit(string kioskUid, string sku, int credit);
         void SetMaxCountPerSession(string kioskUid, string sku, int limit);
+        void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links);
     }
 }

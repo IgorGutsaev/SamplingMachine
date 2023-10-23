@@ -16,7 +16,10 @@ namespace MPT.Vending.Domains.SharedContext
         static DemoData()
         {
             _media = new List<AdMedia>(new AdMedia[] { new AdMedia { Name = "Earth", Type = AdMediaType.mp4, Hash = "d9061d3da8601932e98f79ec8ba1c877" },
-                new AdMedia { Name = "Cat abduction", Type = AdMediaType.gif, Hash = "e0c97924582e58c67a4142a80e3dcdcb"  }});
+                new AdMedia { Name = "Cat abduction", Type = AdMediaType.gif, Hash = "e0c97924582e58c67a4142a80e3dcdcb"  },
+                new AdMedia { Name = "Flowers", Type = AdMediaType.mp4, Hash = "8bd6dd38d72fafdbe3a4ec39a020b8a4"  },
+                new AdMedia { Name = "Train", Type = AdMediaType.mp4, Hash = "750977106211b214b50f4bc5591210ca"  },
+            });
 
             _products.AddRange(new[] {
                 new Product {
@@ -173,8 +176,8 @@ namespace MPT.Vending.Domains.SharedContext
                     //    Product = _products.First(x => x.Sku == "Bur")
                     //}
                 },
-                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 9, 0, 0) }, 
-                    new KioskMediaLink { Active = true, Media = _media.LastOrDefault(), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x => x.Start)
+                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(x => x.Name == "Earth"), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 9, 0, 0) }, 
+                    new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(x => x.Name == "Cat abduction"), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x => x.Start)
             });
 
             _sessions.AddRange(new[] {

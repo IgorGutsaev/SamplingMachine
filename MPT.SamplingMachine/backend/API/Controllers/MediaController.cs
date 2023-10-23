@@ -2,7 +2,6 @@
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace API.Controllers
 {

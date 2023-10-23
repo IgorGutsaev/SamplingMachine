@@ -62,6 +62,10 @@ namespace API.Controllers
         public void SetMaxCountPerSession(string kioskUid, string sku, int limit)
             => _kioskService.SetMaxCountPerSession(kioskUid, sku, limit);
 
+        [HttpPut("media/{kioskUid}")]
+        public void PutMedia([FromBody] IEnumerable<KioskMediaLink> links, string kioskUid)
+            => _kioskService.SetMedia(kioskUid, links);
+
         private readonly IKioskService _kioskService;
         private readonly ILogger<KiosksController> _logger;
     }
