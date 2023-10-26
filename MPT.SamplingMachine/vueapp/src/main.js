@@ -17,7 +17,8 @@ const router = createRouter({
     history: createWebHistory(),
     routes : [
         { path: '/', component: UI },
-        { path: '/login', component: LoginService, alias: ['/l'], }
+        { path: '/login', component: LoginService, alias: ['/l'], },
+        { path: "/:pathMatch(.*)*", component: UI } // no 404 page. Redirect to the SamplingUI instead
     ]
 })
 

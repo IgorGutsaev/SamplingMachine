@@ -34,7 +34,6 @@
             SimpleKeyboard
         },
         created() {
-            alert('!');
             this.init();
         },
         methods: {
