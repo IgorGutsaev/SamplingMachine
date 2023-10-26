@@ -16,19 +16,17 @@
 
 <h1>Screensaver</h1>
 
-@if (!saving)
-{
+@if (!saving) {
     <button type="button" class="btn btn-primary me-2">Add</button>
-} else {
+}
+else {
     <button type="button" class="btn btn-primary" disabled>Saving...</button>
 }
 
-@if (loading)
-{
+@if (loading) {
     <p><em>Loading...</em></p>
 }
 else {
-
     <table class="table">
         <thead>
             <tr>
@@ -43,7 +41,7 @@ else {
                 foreach (var r in _resources) {
                     <tr>
                         <td>
-                         @*    @r.Start.ToString("HH:mm:ss") *@
+                            @* @r.Start.ToString("HH:mm:ss") *@
                             <div class="cs-form">
                                 <input id="time_@r.Media.Hash" type="time" class="form-control" value="@r.Start.ToString("HH:mm:ss")" @onchange="e => StartTimeChanged(e, r.Media.Hash)" />
                             </div>
@@ -78,8 +76,7 @@ else {
     private IEnumerable<AdMedia> _media;
     private string newMediaSerialized;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         _resources = await _client.GetKioskMediaAsync(kioskUid);
         _media = await _client.GetMediaAsync();
 
@@ -89,7 +86,7 @@ else {
 
     private async Task StartTimeChanged(ChangeEventArgs e, string hash) {
         DateTime newStartTime = DateTime.Parse(e.Value.ToString());
-        newStartTime =  DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
+        newStartTime = DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
         _resources.FirstOrDefault(x => x.Media.Hash == hash).Start = newStartTime;
 
         newMediaSerialized = JsonSerializer.Serialize(_resources);
