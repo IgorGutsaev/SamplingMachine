@@ -2,6 +2,7 @@
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
@@ -298,6 +299,14 @@ namespace MPT.SamplingMachine.ApiClient
         public async Task PutKioskMediaAsync(string kioskUid, IEnumerable<KioskMediaLink> resources) {
             var httpContent = new StringContent(JsonSerializer.Serialize(resources), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/media/{kioskUid}"), httpContent);
+        }
+
+        public async Task<byte[]> DownloadMediaAsync(string hash, string format) {
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/media/find/{format}/{hash}"));
+            Stream result = await response.Content.ReadAsStreamAsync();
+            byte[] buffer = new byte[result.Length];
+            await result.ReadAsync(buffer, 0, (int)result.Length);
+            return buffer;
         }
         #endregion
     }

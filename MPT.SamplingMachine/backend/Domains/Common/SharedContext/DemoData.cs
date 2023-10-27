@@ -176,7 +176,7 @@ namespace MPT.Vending.Domains.SharedContext
                     //    Product = _products.First(x => x.Sku == "Bur")
                     //}
                 },
-                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(x => x.Name == "Earth"), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 9, 0, 0) }, 
+                Media = new KioskMediaLink[] { new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(x => x.Name == "Earth"), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 17, 0, 0) }, 
                     new KioskMediaLink { Active = true, Media = _media.FirstOrDefault(x => x.Name == "Cat abduction"), Start = new DateTime(DateTime.MinValue.Year, 1, 1, 12, 0, 0) } }.OrderBy(x => x.Start)
             });
 

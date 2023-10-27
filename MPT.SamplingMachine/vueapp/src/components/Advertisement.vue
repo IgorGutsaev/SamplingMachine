@@ -1,11 +1,11 @@
-<template>
+﻿<template>
     <div v-if="!activeMp4 && !activeGif" class="loading" id="mainSpinner">
         <font-awesome-icon :icon="['fas', 'spinner']" size="3x" spin />
     </div>
-    <video v-show="activeMp4" v-on:click="toLanguages" style="object-fit: fill" muted autoplay loop>
-        <source type="video/mp4" src="../assets/promo/videos/demo1.mp4" />
+    <video id="mp4video" v-if="activeMp4" v-on:click="toLanguages" style="object-fit: fill" muted autoplay loop>
+        <source type="video/mp4" v-bind:src="'https://localhost:7244/media/find/mp4/' + activeMp4?.hash" />
     </video>
-    <img v-show="activeGif" v-on:click="toLanguages" src='../assets/promo/gifs/cat-abduction.gif' class="overlay" />
+    <img v-if="activeGif" v-on:click="toLanguages" v-bind:src="'https://localhost:7244/media/find/gif/' + activeGif?.hash" class="overlay" />
 </template>
 
 <script lang="js">
@@ -19,9 +19,11 @@
             return {
                 activeMp4: null,
                 activeGif: null,
-                media: null
+                media: null,
+                prevVideoHash: null
             };
         },
+        filename: null,
         components: {
             KioskSettings
         },
@@ -80,10 +82,28 @@
                     }
                 });
 
+                if (media.length > 0 && !media.some(x => x.startTime < new Date())) { // show the last video (it lasts from yesterday)
+                    console.log(JSON.stringify(media));
+                    let m = media.at(-1);
+                    if (m.media.type == 'mp4') {
+                        this.activeMp4 = m.media;
+                        this.activeGif = null;
+                    }
+                    else if (m.media.type == 'gif') {
+                        this.activeMp4 = null;
+                        this.activeGif = m.media;
+                    }
+                }
+
                 // No active media
                 if (this.activeMp4 == null && this.activeGif == null) {
                     this.$emit('homeButtonEnabled', false);
                     Sampling.toLanguages();
+                }
+
+                if (this.activeMp4 && this.prevVideoHash !== this.activeMp4.hash) {
+                    document.getElementById('mp4video')?.load(); // refresh video
+                    this.prevVideoHash = this.activeMp4.hash;
                 }
             },
             fetchData() {

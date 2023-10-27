@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic.FileIO;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
 using System.Security.Cryptography;
+using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 
 namespace API.Controllers
 {
@@ -42,6 +44,15 @@ namespace API.Controllers
             string uid = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
 
             return await _blobRepository.UploadAsync(stream.ToArray(), $"media/{extension}/{uid}");
+        }
+
+        [HttpGet("find/{format}/{hash}")]
+        public async Task<IActionResult> GetByHash(string format, string hash) {
+            if (string.Equals(hash, "undefined", StringComparison.InvariantCultureIgnoreCase))
+                return StatusCode(StatusCodes.Status204NoContent);
+
+            Blob blob = await _blobRepository.DownloadAsync($"media/{format}/{hash}");
+            return File(blob.Data, "application/octet-stream", $"{hash}.{format}");
         }
 
         private readonly IMediaService _mediaService;

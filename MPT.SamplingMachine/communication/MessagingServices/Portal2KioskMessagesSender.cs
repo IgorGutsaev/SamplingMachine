@@ -4,7 +4,6 @@ using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace MessagingServices
 {

@@ -16,26 +16,26 @@
 
 <h1>Screensaver</h1>
 
-@if (!saving)
-{
-    <button type="button" class="btn btn-primary me-2">Add</button>
-} else {
-    <button type="button" class="btn btn-primary" disabled>Saving...</button>
-}
-
-@if (loading)
-{
+@if (loading) {
     <p><em>Loading...</em></p>
 }
 else {
+    @if (!saving) {
+        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#tuneMedia">Add</button>
+    }
+    else {
+        <button type="button" class="btn btn-primary" disabled>Saving...</button>
+    }
 
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>Start</th>
                 <th>Name</th>
                 <th>Type</th>
                 <th>Status</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -43,7 +43,12 @@ else {
                 foreach (var r in _resources) {
                     <tr>
                         <td>
-                         @*    @r.Start.ToString("HH:mm:ss") *@
+                            @if (IsCurrent(r)) {
+                                <i class="oi oi-check graphite mt-2" aria-hidden="true" />
+                            }
+                        </td>
+                        <td>
+                            @*    @r.Start.ToString("HH:mm:ss") *@
                             <div class="cs-form">
                                 <input id="time_@r.Media.Hash" type="time" class="form-control" value="@r.Start.ToString("HH:mm:ss")" @onchange="e => StartTimeChanged(e, r.Media.Hash)" />
                             </div>
@@ -62,10 +67,41 @@ else {
                                 <button type="button" class="btn btn-primary" @onclick="async e => await SetActive(r, false)">Active</button>
                             }
                         </td>
+                        <td>
+                            <button type="button" class="btn btn-dark" @onclick="async e => await Delete(r)">Delete</button>
+                        </td>
                     </tr>
                 }
         </tbody>
     </table>
+
+    <!-- Modal: tune media -->
+    <div class="modal fade" id="tuneMedia" tabindex="-1" aria-labelledby="tuneMediaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tuneMediaLabel">Add media</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <select class="form-select" id="inputMediaSelect" @bind="_addMediaHash">
+                            <option selected>Choose...</option>
+                            @foreach (var m in _media) {
+                                <option value="@m.Hash">@m.Name</option>
+                            }
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" @onclick="AddMedia">Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
@@ -76,10 +112,9 @@ else {
     private bool saving = false;
     private IEnumerable<KioskMediaLink> _resources;
     private IEnumerable<AdMedia> _media;
-    private string newMediaSerialized;
+    public string _addMediaHash;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         _resources = await _client.GetKioskMediaAsync(kioskUid);
         _media = await _client.GetMediaAsync();
 
@@ -89,10 +124,8 @@ else {
 
     private async Task StartTimeChanged(ChangeEventArgs e, string hash) {
         DateTime newStartTime = DateTime.Parse(e.Value.ToString());
-        newStartTime =  DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
+        newStartTime = DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
         _resources.FirstOrDefault(x => x.Media.Hash == hash).Start = newStartTime;
-
-        newMediaSerialized = JsonSerializer.Serialize(_resources);
 
         await Task.Delay(1000).ContinueWith(async t => {
             await Task.Run(async () => {
@@ -103,17 +136,53 @@ else {
     }
 
     private async Task OnResourcesChangedAsync() {
-        if (newMediaSerialized == JsonSerializer.Serialize(_resources)) {
-            saving = true;
-            await _client.PutKioskMediaAsync(kioskUid, _resources);
-            saving = false;
-            await InvokeAsync(StateHasChanged);
-        }
+        saving = true;
+        await _client.PutKioskMediaAsync(kioskUid, _resources);
+        saving = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SetActive(KioskMediaLink link, bool active) {
         link.Active = active;
-        newMediaSerialized = JsonSerializer.Serialize(_resources);
+        await OnResourcesChangedAsync();
+    }
+
+    private async Task Delete(KioskMediaLink link) {
+        _resources = _resources.Where(x => x != link);
+        await OnResourcesChangedAsync();
+    }
+
+    private bool IsCurrent(KioskMediaLink link) {
+        if (!link.Active)
+            return false;
+
+        Func<KioskMediaLink, DateTime> today = x => {
+            DateTime d = DateTime.Now.Date;
+            d = d.AddHours(x.Start.Hour);
+            d = d.AddMinutes(x.Start.Minute);
+            d = d.AddSeconds(x.Start.Second);
+            return d;
+        };
+
+        DateTime date = today(link);
+
+        IEnumerable<KioskMediaLink> active = _resources.Where(x => x.Active);
+
+        return (date <= DateTime.Now && !active.Any(x => today(x) > date && today(x) <= DateTime.Now)) ||
+            (DateTime.Now < today(active.OrderBy(x => x.Start).FirstOrDefault()) && active.Last() == link); // If the video lasts from yesterday
+    }
+
+    private async Task AddMedia() {
+        if (_addMediaHash == "Choose...")
+            return;
+
+        DateTime min20 = DateTime.Now.AddMinutes(20);
+        DateTime start = DateTime.MinValue.AddHours(min20.Hour).AddMinutes(min20.Minute).AddSeconds(min20.Second);
+
+        KioskMediaLink l = new KioskMediaLink { Active = false, Media = _media.FirstOrDefault(x => x.Hash == _addMediaHash), Start = start };
+        List<KioskMediaLink> kioskMedias = _resources.ToList();
+        kioskMedias.Add(l);
+        _resources = kioskMedias.OrderBy(x => x.Start).ToList(); // do not remove toList, otherwise blazor tracks ordering changes
         await OnResourcesChangedAsync();
     }
 }
