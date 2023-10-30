@@ -12,7 +12,7 @@
             <div class="container-fluid">
                 <div class="row mb-1">
                     <div class="col-lg-12 d-flex justify-content-between">
-                        <img alt="OgmentO" src="../assets/logo.png" width="24" />
+                        <img alt="OgmentO" src="../assets/logo.png" width="24" v-on:dblclick="goToDashboard" />
                         <div v-if="homeButtonEnabled"><font-awesome-icon icon="house" style="color: darkgrey" size="xl" v-on:click="goHome" /></div>
                     </div>
                 </div>
@@ -203,6 +203,9 @@
             },
             syncKiosk(revision) {
                 KioskSettings.credit = revision.credit;
+            },
+            goToDashboard() {
+                this.$router.push('/login')
             }
         }
     });

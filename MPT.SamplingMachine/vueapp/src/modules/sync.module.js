@@ -42,6 +42,25 @@ export async function loginAsync(phone, pin) {
     );
 };
 
+export async function loginServiceAsync(pin) {
+    return await fetch('kiosks/loginService', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({ pin })
+    }).then(r => r.json()
+        .then((res) => {
+            if (res.statusCode === 200) {
+                return true;
+            }
+            if (res.statusCode === 401) {
+                return false;
+            }
+        })
+    );
+};
+
 export async function commitSessionAsync(phone, products) {
     return await fetch('kiosks/session', {
         method: 'PUT',

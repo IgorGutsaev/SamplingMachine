@@ -16,16 +16,24 @@
 
 <h1>Screensaver</h1>
 
-@if (loading) {
+@if (!saving)
+{
+    <button type="button" class="btn btn-primary me-2">Add</button>
+} else {
+    <button type="button" class="btn btn-primary" disabled>Saving...</button>
+}
+
+@if (loading)
+{
     <p><em>Loading...</em></p>
 }
-else {
     @if (!saving) {
         <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#tuneMedia">Add</button>
     }
     else {
         <button type="button" class="btn btn-primary" disabled>Saving...</button>
     }
+
 
     <table class="table">
         <thead>
@@ -42,13 +50,13 @@ else {
             @if (_resources != null)
                 foreach (var r in _resources) {
                     <tr>
-                        <td>
                             @if (IsCurrent(r)) {
                                 <i class="oi oi-check graphite mt-2" aria-hidden="true" />
                             }
                         </td>
                         <td>
                             @*    @r.Start.ToString("HH:mm:ss") *@
+                         @*    @r.Start.ToString("HH:mm:ss") *@
                             <div class="cs-form">
                                 <input id="time_@r.Media.Hash" type="time" class="form-control" value="@r.Start.ToString("HH:mm:ss")" @onchange="e => StartTimeChanged(e, r.Media.Hash)" />
                             </div>
