@@ -48,17 +48,12 @@ export async function loginServiceAsync(pin) {
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify({ pin })
-    }).then(r => r.json()
-        .then((res) => {
-            if (res.statusCode === 200) {
-                return true;
-            }
-            if (res.statusCode === 401) {
-                return false;
-            }
-        })
-    );
+        body: JSON.stringify({ pin: pin })
+    }).then(r => r.json()).then(r => {
+        if (r.replenishmentUrl)
+            return { url: r.replenishmentUrl };
+        else return false;
+    });
 };
 
 export async function commitSessionAsync(phone, products) {

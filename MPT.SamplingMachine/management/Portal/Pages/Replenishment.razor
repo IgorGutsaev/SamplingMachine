@@ -1,4 +1,4 @@
-﻿@page "/replenishment/{uid}"
+﻿@page "/replenishment/{uid}/{limited:bool?}"
 @using Filuet.Hardware.Dispensers.Abstractions.Models;
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
@@ -13,34 +13,46 @@
 
 <PageTitle>Replenishment</PageTitle>
 
-<h1>Replenishment</h1>
+<h1 id="title">Replenishment</h1>
 
-<p>
-    @if (saving)
-    {
-        <button class="btn btn-primary btn-lg" type="button" disabled>
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Saving...
-        </button>
-    }
-    else
-    {
-        <a href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>
-    }
-</p>
-
-@if (planogram == null)
-{
+@if (planogram == null || kiosk == null) {
     <p><em>Loading...</em></p>
 }
-else
-{
+else {
+
+    <p>
+        @if (!limited) {
+            if (saving) {
+                <button id="saveButton" class="btn btn-primary btn-lg" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Saving...
+                </button>
+            }
+            else {
+                <a id="backButton" href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>
+            }
+        }
+        else {
+            <div class="container">
+                <div class="text-center">
+                    @if (saving) {
+                        <button id="saveButton" class="btn btn-dark btn-lg mt-4 mb-4 col-6" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Saving...
+                        </button>
+                    }
+                    else {
+                        <a id="backButton" href="https://localhost:5002" type="button" class="btn btn-dark btn-lg mt-4 mb-4 col-6">Go back to UI</a>
+                    }
+                </div>
+            </div>
+        }
+    </p>
+
     <div class="container">
-        @for (int i = 0; i < (int)Math.Ceiling(planogram.Addresses.Count() / 4m); i++)
-        {
+        @for (int i = 0; i < (int)Math.Ceiling(planogram.Addresses.Count() / 4m); i++) {
             <div class="row">
-                @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4))
-                {
+                @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4)) {
                     <div class="col-3">
                         <div class="card" style="max-width: 18rem; align-items: center">
                             <img class="card-img-top card-img-top_1 lowbrightness" src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' />
@@ -53,7 +65,14 @@ else
                                 </div>
                                 <div class="input-group" style="padding: 7px 0 7px 0 !important">
                                     <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
-                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">Fill to maximum</button>
+                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">
+                                        @if (limited) {
+                                            <i class="oi oi-arrow-thick-top" aria-hidden="true" />
+                                        }
+                                        else {
+                                            <div>Fill to maximum</div>
+                                        }
+                                    </button>
                                     <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity++; OnPlanogramChanged(); }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                                 </div>
                             </div>
@@ -70,11 +89,20 @@ else
     window.alert = (x) => {
         console.info(x);
     };
+
+    window.toLimited = () => {
+        document.getElementsByClassName('sidebar')[0].style.display = 'none';
+        document.getElementById('topRow').style.display = 'none';
+        document.getElementById('title').style.display = 'none';
+    };
 </script>
 
 @code {
     [Parameter]
     public string uid { get; set; }
+
+    [Parameter]
+    public bool limited { get; set; }
 
     private bool saving;
 
@@ -84,26 +112,23 @@ else
 
     private Guid actualCommandUid = new Guid();
 
-    protected override async Task OnInitializedAsync()
-    {
-        kiosk = kioskStateContainer.Value;
-        planogram = await _client.GetPlanogramAsync(uid);
+    protected override async Task OnInitializedAsync() {
+        if (!limited) {
+            kiosk = kioskStateContainer.Value ?? await _client.GetKioskAsync(uid);
+            planogram = await _client.GetPlanogramAsync(uid);
+        }
     }
 
-    private async void OnPlanogramChanged()
-    {
+    private async void OnPlanogramChanged() {
         saving = true;
 
         actualCommandUid = Guid.NewGuid();
         Guid token = actualCommandUid;
 
-        await Task.Delay(1000).ContinueWith(async t =>
-        {
-            await Task.Run(async () =>
-            {
+        await Task.Delay(1000).ContinueWith(async t => {
+            await Task.Run(async () => {
                 await Task.Delay(TimeSpan.FromSeconds(1));
-                if (token == actualCommandUid)
-                {
+                if (token == actualCommandUid) {
                     //await JSRuntime.InvokeVoidAsync("alert", JsonSerializer.Serialize(planogram));
                     Debug.Print(JsonSerializer.Serialize(planogram));
                     //await _client.PutPlanogramAsync(uid, planogram);
@@ -114,8 +139,16 @@ else
         });
     }
 
-    private string GetStockLevel(PoGRoute route)
-    {
+    protected override async void OnAfterRender(bool firstRender) {
+        if (firstRender && limited) { // this means the page is ready for replenishment on the kiosk
+            await JSRuntime.InvokeVoidAsync("toLimited");
+            kiosk = await _client.GetKioskAsync(uid);
+            planogram =  await _client.GetPlanogramAsync(uid);
+            StateHasChanged();
+        }
+    }
+
+    private string GetStockLevel(PoGRoute route) {
         if (route.Quantity == route.MaxQuantity)
             return "success";
         else if (route.Quantity > route.MaxQuantity / 2)

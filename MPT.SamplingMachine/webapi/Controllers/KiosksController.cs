@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using MPT.Vending.API.Dto;
 using webapi.Services;
 
@@ -8,9 +9,10 @@ namespace webapi.Controllers;
 [Route("[controller]")]
 public class KiosksController : ControllerBase
 {
-    public KiosksController(KioskService kioskService, ILogger<KiosksController> logger)
+    public KiosksController(KioskService kioskService, IConfiguration configuration, ILogger<KiosksController> logger)
     {
         _kioskService = kioskService;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -30,6 +32,15 @@ public class KiosksController : ControllerBase
     public async Task PutSessionAsync([FromBody] Session request)
         => await _kioskService.CommitSessionAsync(request);
 
+    [HttpPost("loginService")]
+    public IActionResult LoginService([FromBody] ServiceLoginRequest loginRequest) {
+        if (loginRequest.Pin == "1234")
+            return Ok(new { replenishmentUrl = new Uri(new Uri(_configuration["Portal"]), $"replenishment/{_configuration["KioskUid"]}") });
+
+        return StatusCode(StatusCodes.Status401Unauthorized);
+    }
+
     private readonly KioskService _kioskService;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<KiosksController> _logger;
 }

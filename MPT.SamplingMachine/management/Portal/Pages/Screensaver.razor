@@ -50,6 +50,7 @@
             @if (_resources != null)
                 foreach (var r in _resources) {
                     <tr>
+                        <td>
                             @if (IsCurrent(r)) {
                                 <i class="oi oi-check graphite mt-2" aria-hidden="true" />
                             }

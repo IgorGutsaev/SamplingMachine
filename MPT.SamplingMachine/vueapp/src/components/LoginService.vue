@@ -1,19 +1,23 @@
 <template>
-    <div class="col">
-        <p class="h3">{{$t('titles.pinCode')}}</p>
-        <div>
-            <div class="input-group-lg">
-                <input id="pinInput" class="form-control is-invalid" pattern="^\d{4}$" :maxlength="4" :value="pin" @input="onPinInputChange" :placeholder="$t('titles.formatCode')" required />
+    <div class="btn btn-alt btn-lg btn-dark btn-filled mt-4 mb-4 col-6" v-on:click="goToUI" role="button">{{$t('buttons.goBackToUI')}}</div>
+    <form class="was-validated">
+        <div class="col">
+            <p class="h1">{{$t('titles.serviceLogin')}}</p>
+            <label v-if="showPinWarning" class="alert alert-warning" role="alert" v-html="$t('titles.checkServicePinWarning')" />
+            <div>
+                <div class="input-group-lg">
+                    <input id="pinInput" class="form-control is-invalid" pattern="^\d{4}$" :maxlength="4" :value="pin" @input="onPinInputChange" :placeholder="$t('titles.formatCode')" required />
 
-                <SimpleKeyboard @onChange="onPinChange" :input="pin" :maxLength="4" />
-                <div class="valid-feedback">
-                    <div class="btn btn-alt btn-lg btn-primary btn-filled mt-3 d-block mx-auto" v-on:click="loginAsync" role="button">{{$t('buttons.confirm')}}</div>
+                    <SimpleKeyboard @onChange="onPinChange" :input="pin" :maxLength="4" />
+                    <div class="valid-feedback">
+                        <div class="btn btn-alt btn-lg btn-primary btn-filled mt-4 mb-4 col-6" v-on:click="loginAsync" role="button">{{$t('buttons.confirm')}}</div>
+                    </div>
                 </div>
             </div>
+            <br />
+            <h5 v-if="countdown < 60 && countdown > 0">00:{{('0' + countdown).slice(-2)}}</h5>
         </div>
-        <br />
-        <h5 v-if="countdown < 60 && countdown > 0">00:{{('0' + countdown).slice(-2)}}</h5>
-    </div>
+    </form>
 </template>
 
 <script lang="js">
@@ -27,7 +31,8 @@
         data() {
             return {
                 pin: null,
-                countdown: 60
+                countdown: 60,
+                showPinWarning: false
             };
         },
         components:{
@@ -45,7 +50,7 @@
                     countdownTimer = setTimeout(tick, 1000);
                     self.countdown--;
                     if (self.countdown <= 0) {
-                        goToUI();
+                        self.goToUI();
                         clearInterval(countdownTimer);
                         return;
                     }
@@ -53,16 +58,23 @@
             },
             async loginAsync() {
                 let loginResult = await loginServiceAsync(this.pin);
-                if (loginResult) {
-                    //Sampling.toCatalog();
+                if (loginResult.url) {
+                    window.location.href = loginResult.url + '/true';
                 }
                 else {
                     this.countdown = 60;
-                   // this.pin = '';
-                //    this.showPinWarning = true;
+                    this.pin = '';
+                    this.showPinWarning = true;
                 }
             },
+            onPinChange(input) {
+                this.pin = input;
+            },
+            onPinInputChange(input) {
+                this.pin = input.target.value;
+            },
             goToUI() {
+                window.location.href = location.origin;
             }
         }
     });

@@ -11,6 +11,7 @@ const i18n = createI18n({
                 phoneNumber: 'आपका फोन नंबर',
                 checkPhoneWarning: 'कृपया अपना फोन नंबर दर्ज करें',
                 checkPinWarning: 'ग़लत पिन या फ़ोन नंबर.<br>कृपया पुन: प्रयास करें',
+                checkServicePinWarning: 'गलत पिन।<br>कृपया पुनः प्रयास करें',
                 pinCode: 'पिन कोड',
                 credit: 'श्रेय',
                 lackOfCredit: 'अपर्याप्त क्रेडिट',
@@ -23,7 +24,8 @@ const i18n = createI18n({
                 idleModalTitle: 'क्या आप अभी भी यहीं हैं?',
                 exit: 'बाहर निकलना',
                 yes: 'हाँ',
-                oos: 'क्षमा करें, कियोस्क सेवा से बाहर है'
+                oos: 'क्षमा करें, कियोस्क सेवा से बाहर है',
+                serviceLogin: 'अपना सेवा पिन दर्ज करें'
             },
             buttons: {
                 start: 'शुरू',
@@ -34,7 +36,8 @@ const i18n = createI18n({
                 dispense: 'उत्पाद जारी करें',
                 sendSMS: 'एसएमएस भेजें',
                 confirm: 'पुष्टि करना',
-                sendPinCode: 'पिन कोड दोबारा भेजें'
+                sendPinCode: 'पिन कोड दोबारा भेजें',
+                goBackToUI: 'यूआई पर वापस जाएं'
             }
         },
         en: {
@@ -43,7 +46,8 @@ const i18n = createI18n({
                 termsConfirmation: 'I accept the Terms of service and Privacy Policy',
                 phoneNumber: 'Your phone number',
                 checkPhoneWarning: 'Please enter your phone number',
-                checkPinWarning: 'Wrong PIN or phone number.<br>Please try again',
+                checkPinWarning: 'Incorrect PIN or phone number.<br>Please try again',
+                checkServicePinWarning: 'Incorrect PIN.<br>Please try again',
                 pinCode: 'PIN code',
                 credit: 'Credit',
                 lackOfCredit: 'insufficient<br/>credit',
@@ -56,7 +60,8 @@ const i18n = createI18n({
                 idleModalTitle: 'Are you still here?',
                 exit: 'Exit',
                 yes: 'Yes',
-                oos: 'Sorry, the kiosk is out of service'
+                oos: 'Sorry, the kiosk is out of service',
+                serviceLogin: 'Enter your service PIN'
             },
             buttons: {
                 start: 'Start',
@@ -67,7 +72,8 @@ const i18n = createI18n({
                 dispense: 'Issue products',
                 sendSMS: 'Send SMS',
                 confirm: 'Confirm',
-                sendPinCode: 'Send PIN code again'
+                sendPinCode: 'Send PIN code again',
+                goBackToUI: 'Back to UI'
             }
         }
     }
