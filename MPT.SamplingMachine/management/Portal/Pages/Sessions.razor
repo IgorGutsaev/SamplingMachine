@@ -17,6 +17,27 @@
 
 <p>List of sessions</p>
 
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <div class="input-group input-group-lg mb-3">
+                <input type="datetime-local" class="form-control" @bind-value="from" />
+                <input type="datetime-local" class="form-control" @bind-value="to" />
+                <input id="phone" type="tel" class="form-control" placeholder="Phone number" @bind-value="phoneNumber" aria-label="Number" aria-describedby="filterGroup">
+
+                @if (stillReceivingProducts) {
+                    <button class="btn btn-secondary btn-large" onclick="@Cancel">Stop</button>
+                }
+                else {
+                    <button class="btn btn-primary btn-large" @onclick="() => { SearchSessions(); }">Search</button>
+                }
+            </div>
+        </div>
+        <div class="col-7"></div>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -27,17 +48,14 @@
     </thead>
     <tbody>
 
-        @if (sessions != null)
-        {
-            foreach (var session in sessions)
-            {
+        @if (sessions != null) {
+            foreach (var session in sessions) {
                 string popoverId = PopoverContentId(session);
                 <tr>
                     <td>
                         <button id="@SessionId(session)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToSessionDetails(session)" data-bs-trigger="hover" title="Session @session.PhoneNumber" data-bs-content-id="@popoverId">@session.PhoneNumber</button>
                         <div id="@popoverId" class="d-none">
-                            @foreach (var item in session.Items)
-                            {
+                            @foreach (var item in session.Items) {
                                 <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
                                 <strong>&nbsp;@item.Product.Sku</strong>
                                 <span>&nbsp;x&nbsp;@item.Count</span>
@@ -46,7 +64,7 @@
                         </div>
                     </td>
                     <td>
-                        @session.Date?.ToString("HH:mm:ss dd/MMM/yyyy")
+                        @session.Date.ToString("HH:mm:ss dd/MMM/yyyy")
                     </td>
                     <td>
                         <span class="badge bg-warning text-dark">@session.Items.Sum(x => x.UnitCredit * x.Count)</span>
@@ -57,25 +75,43 @@
     </tbody>
 </table>
 
+<script>
+    window.onload = () => {
+        $('#phone').on('keypress', function (event) {
+            var regex = new RegExp("^[0-9]+$");
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    };
+</script>
+
 @code {
-    private IEnumerable<Session> sessions;
+    private List<Session> sessions;
     private HubConnection hubConnectionEditBelt;
 
-    protected override async Task OnInitializedAsync()
-    {
+    CancellationTokenSource loadingTokenSource;
+    bool stillReceivingProducts = false;
+    string phoneNumber;
+    DateTime from = DateTime.Now.Date;
+    DateTime to = DateTime.Now.Date.AddDays(1);
+
+    protected override async Task OnInitializedAsync() {
+
+
         hubConnectionEditBelt = new HubConnectionBuilder()
            .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
            .Build();
 
-        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) =>
-        {
+        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) => {
             Session session = JsonSerializer.Deserialize<Session>(sessionData);
             List<Session> listOfSessions = sessions.ToList();
             listOfSessions.Insert(0, session);
             sessions = listOfSessions;
 
-            await InvokeAsync(() =>
-            {
+            await InvokeAsync(() => {
                 StateHasChanged();
             });
 
@@ -83,14 +119,11 @@
         });
 
         await hubConnectionEditBelt.StartAsync();
-
-        sessions = await _client.GetSessionsAsync(new SessionsRequest { From = DateTime.Now.Date, To = DateTime.Now });
-        StateHasChanged();
+        await SearchSessions();
         await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
     }
 
-    private async Task GoToSessionDetails(Session session)
-    {
+    private async Task GoToSessionDetails(Session session) {
         await JSRuntime.InvokeVoidAsync("ui.hidePopover");
         sessionStateContainer.SetValue(session);
         navigationManager.NavigateTo($"/session/{session.PhoneNumber}");
@@ -100,5 +133,43 @@
         => $"popover-content-{SessionId(session)}";
 
     private string SessionId(Session session)
-            => $"{session.PhoneNumber}-{session.Date.Value:ddMMyyHHmmss}";
+        => $"{session.PhoneNumber}-{session.Date:ddMMyyHHmmss}";
+
+    protected override async void OnAfterRender(bool firstRender) {
+        if (firstRender) {
+            await JSRuntime.InvokeVoidAsync("onload");
+        }
+    }
+
+    private async Task SearchSessions() {
+        sessions = new List<Session>();
+        loadingTokenSource = new CancellationTokenSource();
+
+        IAsyncEnumerator<Session> e = _client.GetSessionsAsync(new SessionsRequest { From = from, To = to, MobileNumber = phoneNumber }, loadingTokenSource.Token);
+         try {
+             while (await e.MoveNextAsync()) {
+                 sessions.Add(e.Current);
+                 stillReceivingProducts = true;
+
+                 try {
+                     await JSRuntime.InvokeVoidAsync("console.info", $"Session received: {e.Current.PhoneNumber}");
+                 }
+                 catch { }
+
+                 StateHasChanged();
+             }
+         }
+         finally {
+             if (e != null)
+                 await e.DisposeAsync();
+
+             stillReceivingProducts = false;
+             StateHasChanged();
+         }
+    }
+
+    private void Cancel() {
+        loadingTokenSource.Cancel();
+        StateHasChanged();
+    }
 }

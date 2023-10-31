@@ -213,13 +213,30 @@ namespace MPT.SamplingMachine.ApiClient
             await _client.PutAsync(new Uri(new Uri(_url), "/api/products/session"), httpContent);
         }
 
-        public async Task<IEnumerable<Session>> GetSessionsAsync(SessionsRequest request)
-        {
+        public async IAsyncEnumerator<Session> GetSessionsAsync(SessionsRequest filter, CancellationToken? token = null) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), "/api/products/sessions"), httpContent);
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<Session>>(result);
+            var httpContent = new StringContent(JsonSerializer.Serialize(filter), Encoding.UTF8, "application/json");
+            using HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), "/api/products/sessions"), httpContent).ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            using Stream responseStream =
+                token.HasValue ? await response.Content.ReadAsStreamAsync(token.Value).ConfigureAwait(false) :
+                await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var sessions = JsonSerializer.DeserializeAsyncEnumerable<Session>(
+                responseStream,
+                new JsonSerializerOptions {
+                    PropertyNameCaseInsensitive = true,
+                    DefaultBufferSize = 128
+                });
+
+            await foreach (var s in sessions) {
+                if (token != null && token.Value.IsCancellationRequested) {
+                    responseStream.Close();
+                    break;
+                }
+                else yield return s;
+            }
         }
         #endregion
 
@@ -308,6 +325,9 @@ namespace MPT.SamplingMachine.ApiClient
             await result.ReadAsync(buffer, 0, (int)result.Length);
             return buffer;
         }
+
+        public async Task DeleteMediaAsync(string hash)
+             => await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/media/{hash}"));
         #endregion
     }
 }

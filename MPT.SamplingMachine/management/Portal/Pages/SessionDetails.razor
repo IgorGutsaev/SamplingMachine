@@ -16,7 +16,10 @@
 
 <h1>@session.PhoneNumber</h1>
 
-<p>@session.Date?.ToString("HH:mm:ss dd/MMM/yyyy")</p>
+<p>@session.Date.ToString("HH:mm:ss dd/MMM/yyyy")</p>
+
+<p><a href="/sessions" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Sessions</a></p>
+
 
 @if (!loading)
 {
@@ -61,7 +64,7 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading_@i">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@i" aria-controls="collapse_@i">
-                                        <span class="badge bg-warning text-dark">Credit used: @entry.Items.Sum(x => x.Count * x.UnitCredit)</span>&nbsp;@entry.Date?.ToString("HH:mm:ss dd/MMM/yyyy")
+                                        <span class="badge bg-warning text-dark">Credit used: @entry.Items.Sum(x => x.Count * x.UnitCredit)</span>&nbsp;@entry.Date.ToString("HH:mm:ss dd/MMM/yyyy")
                                     </button>
                                 </h2>
                                 <div id="collapse_@i" class="accordion-collapse collapse" aria-labelledby="heading_@i" data-bs-parent="#accordionHistory">
@@ -89,7 +92,7 @@ else
     private Session session;
     private bool loading = true;
     private bool loadingHistory = false;
-    private IEnumerable<Session> history;
+    private List<Session> history;
     private List<Product> products = new List<Product>();
 
     protected override async Task OnInitializedAsync()
@@ -104,11 +107,11 @@ else
             foreach (var i in session.Items)
                 tasks.Add(_client.GetProductAsync(i.Product.Sku)
                 .ContinueWith(x =>
-                    {
-                        i.Product = x.Result;
-                        if (!products.Any(p => p.Sku == i.Product.Sku))
-                            products.Add(x.Result);
-                    })
+                {
+                    i.Product = x.Result;
+                    if (!products.Any(p => p.Sku == i.Product.Sku))
+                        products.Add(x.Result);
+                })
                 );
 
             await Task.WhenAll(tasks.ToArray());
@@ -126,7 +129,32 @@ else
     private async Task LoadHistory()
     {
         loadingHistory = true;
-        history = await _client.GetSessionsAsync(new SessionsRequest { MobileNumber = session.PhoneNumber });
+        history = new List<Session>();
+
+        IAsyncEnumerator<Session> e = _client.GetSessionsAsync(new SessionsRequest {
+            MobileNumber = session.PhoneNumber,
+            From = new DateTime(2023, 9, 1), 
+            To = DateTime.Now.AddDays(1)
+        });
+
+        try {
+            while (await e.MoveNextAsync()) {
+                history.Add(e.Current);
+
+                try {
+                    await JSRuntime.InvokeVoidAsync("console.info", $"Session received: {e.Current.PhoneNumber}");
+                }
+                catch { }
+
+                StateHasChanged();
+            }
+        }
+        finally {
+            if (e != null)
+                await e.DisposeAsync();
+
+            StateHasChanged();
+        }
 
         #region get missing product details
         List<string> skuToSync = new List<string>();

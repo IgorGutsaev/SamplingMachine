@@ -16,31 +16,25 @@
 <h1>Planogram</h1>
 
 <p>
-    @if (saving)
-    {
+    @if (saving) {
         <button class="btn btn-primary btn-lg" type="button" disabled>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Saving...
         </button>
     }
-    else
-    {
+    else {
         <a href="/kiosk/@uid" type="button" class="btn btn-primary btn-lg">Back to @kiosk.UID</a>
     }
 </p>
 
-@if (planogram == null)
-{
+@if (planogram == null) {
     <p><em>Loading...</em></p>
 }
-else
-{
+else {
     <div class="container">
-        @for (int i = 0; i < (int)Math.Ceiling(planogram.Addresses.Count() / 4m); i++)
-        {
+        @for (int i = 0; i < (int)Math.Ceiling(planogram.Addresses.Count() / 4m); i++) {
             <div class="row">
-                @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4))
-                {
+                @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4)) {
                     PoGRoute route = planogram.GetRoute(address);
                     <div class="col-3">
                         <div class="card" style="max-width: 18rem; align-items: center">
@@ -53,12 +47,10 @@ else
                             <div class="input-group mb-3 ps-3 pe-3">
                                 <label class="input-group-text" for="inputGroupSelect01">Max quantity</label>
                                 <input type="text" class="form-control" placeholder="Credit" aria-label="Max quantity" @bind="route.MaxQuantity" disabled>
-                                @if (route.MaxQuantity > 1)
-                                {
+                                @if (route.MaxQuantity > 1) {
                                     <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity > 1) route.MaxQuantity--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
                                 }
-                                @if (route.MaxQuantity < 10)
-                                {
+                                @if (route.MaxQuantity < 10) {
                                     <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity < 10) route.MaxQuantity++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                                 }
                             </div>
@@ -69,12 +61,10 @@ else
                                     <option selected value="empty">Choose...</option>
                                     @foreach (var p in Products()) {
                                         var product = planogram.GetProduct(address);
-                                        if (product != null && p.Sku == product.ProductUid)
-                                        {
+                                        if (product != null && p.Sku == product.ProductUid) {
                                             <option selected value="@p.Sku">@($"{p.Sku} / {p.Names.FirstOrDefault()?.Value}")</option>
                                         }
-                                        else
-                                        {
+                                        else {
                                             <option value="@p.Sku">@($"{p.Sku} / {p.Names.FirstOrDefault()?.Value}")</option>
                                         }
                                     }
@@ -107,36 +97,29 @@ else
 
     private Guid actualCommandUid = new Guid();
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         kiosk = kioskStateContainer.Value;
         planogram = await _client.GetPlanogramAsync(uid);
     }
 
-    private IEnumerable<Product> Products()
-    {
-        return kiosk.ProductLinks.Select(x => x.Product).Distinct();        
+    private IEnumerable<Product> Products() {
+        return kiosk.ProductLinks.Select(x => x.Product).Distinct();
     }
 
-    private void onProductChanged(ChangeEventArgs e, string address)
-    {
+    private void onProductChanged(ChangeEventArgs e, string address) {
         Debug.Print($"product/address: > {e.Value}/{address}");
     }
 
-    private async void OnPlanogramChanged()
-    {
+    private async void OnPlanogramChanged() {
         saving = true;
 
         actualCommandUid = Guid.NewGuid();
         Guid token = actualCommandUid;
 
-        await Task.Delay(1000).ContinueWith(async t =>
-        {
-            await Task.Run(async () =>
-            {
+        await Task.Delay(1000).ContinueWith(async t => {
+            await Task.Run(async () => {
                 await Task.Delay(TimeSpan.FromSeconds(1));
-                if (token == actualCommandUid)
-                {
+                if (token == actualCommandUid) {
                     //await JSRuntime.InvokeVoidAsync("alert", JsonSerializer.Serialize(planogram));
                     Debug.Print(JsonSerializer.Serialize(planogram));
                     //await _client.PutPlanogramAsync(uid, planogram);
@@ -147,8 +130,7 @@ else
         });
     }
 
-    private string GetStockLevel(PoGRoute route)
-    {
+    private string GetStockLevel(PoGRoute route) {
         if (route.Quantity == route.MaxQuantity)
             return "success";
         else if (route.Quantity >= route.MaxQuantity / 2)

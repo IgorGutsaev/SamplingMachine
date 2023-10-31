@@ -8,8 +8,7 @@ namespace API.Controllers
     [ApiController]
     public class ReplenishmentController : ControllerBase
     {
-        public ReplenishmentController(IReplenishmentService replenishmentService, ILogger<ReplenishmentController> logger)
-        {
+        public ReplenishmentController(IReplenishmentService replenishmentService, ILogger<ReplenishmentController> logger) {
             _replenishmentService = replenishmentService;
             _logger = logger;
         }

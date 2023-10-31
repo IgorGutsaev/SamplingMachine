@@ -7,7 +7,9 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
     public class DemoMediaService : IMediaService
     {
         public IEnumerable<AdMedia> Get()
-            => DemoData._media;
+            => DemoData._media.Select(x=> { x.CanDelete = !DemoData._kiosks.SelectMany(k => k.Media).Select(m => m.Media.Hash).Distinct().Contains(x.Hash);
+                return x;
+            });
 
         public IEnumerable<KioskMediaLink> GetByKiosk(string kioskUid)
             => DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid)?.Media;
@@ -22,5 +24,8 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
                 Type = EnumHelpers.GetValueFromCode<AdMediaType>(Path.GetExtension(request.FileName).Replace(".", ""))
             });
         }
+
+        public void Delete(string hash)
+            => DemoData._media.RemoveAll(x => x.Hash == hash);
     }
 }

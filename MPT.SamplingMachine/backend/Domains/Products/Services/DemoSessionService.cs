@@ -8,22 +8,18 @@ namespace MPT.Vending.Domains.Products.Services
     {
         public event EventHandler<Session> OnNewSession;
 
-        public IEnumerable<Session> Get(SessionsRequest request)
-        {
-            string? phone = request.MobileNumber?.Trim();
-            if (phone != null && phone.Length < 3)
-                phone = null;
-
-            return DemoData._sessions.Where(x => (request.From == DateTime.MinValue || x.Date >= request.From) && (request.To == DateTime.MinValue || x.Date <= request.To) && (phone == null || x.PhoneNumber.Contains(phone))).OrderByDescending(x => x.Date);
+        public async IAsyncEnumerable<Session> Get(SessionsRequest filter) {
+            foreach (var s in DemoData._sessions.Where(x =>
+                (string.IsNullOrWhiteSpace(filter.MobileNumber) || x.PhoneNumber.Contains(filter.MobileNumber, StringComparison.InvariantCultureIgnoreCase))
+                && x.Date >= filter.From && filter.To > x.Date))
+                yield return s;
         }
 
-        public void Put(Session session)
-        {
+        public void Put(Session session) {
             OnNewSession?.Invoke(this, session);
 
             // fill with product details
-            foreach (var product in session.Items)
-            {
+            foreach (var product in session.Items) {
                 Product storedProduct = DemoData._products.First(x => x.Sku == product.Product.Sku);
                 product.Product.Names = storedProduct.Names;
                 product.Product.Picture = storedProduct.Picture;

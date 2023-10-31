@@ -15,25 +15,20 @@
 
 <p>List of products</p>
 
-@if (products == null)
-{
+@if (products == null) {
     <p><em>Loading...</em></p>
 }
-else
-{
+else {
     <div class="container-fluid">
         <div class="row">
             <div class="col-5">
                 <div class="input-group input-group-lg mb-3">
-                    <span class="input-group-text" id="filterGroup">Filter</span>
                     <input type="text" class="form-control" placeholder="Sku or name" @bind-value="filter" aria-label="Username" aria-describedby="filterGroup">
 
-                    @if (stillReceivingProducts)
-                    {
+                    @if (stillReceivingProducts) {
                         <button class="btn btn-secondary btn-large" onclick="@Cancel">Stop</button>
                     }
-                    else
-                    {
+                    else {
                         <button class="btn btn-primary btn-large" @onclick="() => { SearchProducts(); }">Search</button>
                     }
                 </div>
@@ -50,8 +45,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var product in products)
-            {
+            @foreach (var product in products) {
                 <tr>
                     <td>
                         <button class="btn btn-light" @onclick="() => EditProduct(product.Sku)">@product.Sku</button>
@@ -65,8 +59,7 @@ else
         </tbody>
     </table>
 
-    @if (stillReceivingProducts)
-    {
+    @if (stillReceivingProducts) {
         <p><em>Loading...</em></p>
     }
 }
@@ -79,26 +72,21 @@ else
 
     string filter;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         await SearchProducts();
     }
 
-    private async Task SearchProducts()
-    {
+    private async Task SearchProducts() {
         products = new List<Product>();
         loadingTokenSource = new CancellationTokenSource();
 
         IAsyncEnumerator<Product> e = _client.GetProductsAsync(filter, loadingTokenSource.Token);
-        try
-        {
-            while (await e.MoveNextAsync())
-            {
+        try {
+            while (await e.MoveNextAsync()) {
                 products.Add(e.Current);
                 stillReceivingProducts = true;
 
-                try
-                {
+                try {
                     await JSRuntime.InvokeVoidAsync("console.info", $"Product received: {e.Current.Sku}");
                 }
                 catch { }
@@ -106,8 +94,7 @@ else
                 StateHasChanged();
             }
         }
-        finally
-        {
+        finally {
             if (e != null)
                 await e.DisposeAsync();
 
@@ -116,15 +103,12 @@ else
         }
     }
 
-    private void EditProduct(string sku)
-    {
+    private void EditProduct(string sku) {
         productStateContainer.SetValue(products.First(x => x.Sku == sku));
         navigationManager.NavigateTo($"/product/{sku}");
     }
 
-    private void Cancel()
-    {
-        JSRuntime.InvokeVoidAsync("console.info", "Cancelled");
+    private void Cancel() {
         loadingTokenSource.Cancel();
         StateHasChanged();
     }

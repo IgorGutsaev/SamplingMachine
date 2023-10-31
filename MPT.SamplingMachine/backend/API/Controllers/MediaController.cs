@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic.FileIO;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
 using System.Security.Cryptography;
-using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 
 namespace API.Controllers
 {
@@ -30,6 +28,10 @@ namespace API.Controllers
         [HttpPut]
         public void Put([FromBody] NewMediaRequest request)
             => _mediaService.Put(request);
+
+        [HttpDelete("{hash}")]
+        public void Delete(string hash)
+            => _mediaService.Delete(hash);
 
         [HttpPost("upload")]
         public async Task<string> Upload(IFormFile file, CancellationToken cancellationToken) {

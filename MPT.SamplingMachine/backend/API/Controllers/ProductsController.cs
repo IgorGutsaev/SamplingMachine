@@ -40,8 +40,8 @@ namespace API.Controllers
             => _sessionService.Put(session);
 
         [HttpPost("sessions")]
-        public IEnumerable<Session> GetSessions([FromBody] SessionsRequest request)
-            => _sessionService.Get(request);
+        public IAsyncEnumerable<Session> GetSessions([FromBody] SessionsRequest filter)
+            => _sessionService.Get(filter);
 
         private readonly IProductService _productService;
         private readonly ISessionService _sessionService;

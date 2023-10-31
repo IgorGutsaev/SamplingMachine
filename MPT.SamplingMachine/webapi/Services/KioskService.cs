@@ -41,12 +41,7 @@ namespace webapi.Services
             => await _client.LoginAsync(login);
 
         public async Task CommitSessionAsync(Session session)
-        {
-            if (!session.Date.HasValue)
-                session.Date = DateTimeOffset.Now;
-
-            await _client.CommitSessionsAsync(session);
-        }
+            => await _client.CommitSessionsAsync(session);
 
         public void ClearCache()
             => _kioskCache.Clear();

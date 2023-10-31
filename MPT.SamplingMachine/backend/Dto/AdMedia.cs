@@ -17,5 +17,8 @@ namespace MPT.Vending.API.Dto
         [JsonPropertyName("type")]
         [JsonConverter(typeof(AdMediaTypeJsonConverter))]
         public AdMediaType Type { get; set; }
+
+        [JsonPropertyName("canDelete")]
+        public bool CanDelete { get; set; }
     }
 }
