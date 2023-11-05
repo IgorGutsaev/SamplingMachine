@@ -5,7 +5,7 @@ namespace MPT.Vending.Domains.Products.Abstractions
     public interface IProductService
     {
         event EventHandler<Product> onProductChanged;
-        Product Get(string sku);
+        Task<Product?> GetAsync(string sku);
         void Put(Product product);
         IAsyncEnumerable<Product> GetByFilter(string filter);
         IEnumerable<Product> Get(IEnumerable<string> sku);

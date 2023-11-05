@@ -159,7 +159,7 @@
                 this.loading = true;
 
                 let kiosk;
-                await fetch('kiosks')
+                await fetch('kiosk')
                     .then(r => r.json())
                     .then(x => {
                         kiosk = x;

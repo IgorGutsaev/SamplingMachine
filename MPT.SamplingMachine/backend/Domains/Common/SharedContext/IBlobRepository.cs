@@ -1,4 +1,6 @@
-﻿namespace MPT.Vending.Domains.Advertisement.Abstractions
+﻿using MPT.Vending.Domains.SharedContext.Models;
+
+namespace MPT.Vending.Domains.SharedContext.Abstractions
 {
     public interface IBlobRepository
     {

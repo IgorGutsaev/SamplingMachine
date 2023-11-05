@@ -7,9 +7,9 @@ namespace webapi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class KiosksController : ControllerBase
+public class KioskController : ControllerBase
 {
-    public KiosksController(KioskService kioskService, IConfiguration configuration, ILogger<KiosksController> logger)
+    public KioskController(KioskService kioskService, IConfiguration configuration, ILogger<KioskController> logger)
     {
         _kioskService = kioskService;
         _configuration = configuration;
@@ -42,5 +42,5 @@ public class KiosksController : ControllerBase
 
     private readonly KioskService _kioskService;
     private readonly IConfiguration _configuration;
-    private readonly ILogger<KiosksController> _logger;
+    private readonly ILogger<KioskController> _logger;
 }

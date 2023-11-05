@@ -8,7 +8,7 @@ namespace MPT.Vending.Domains.Products.Services
     {
         public event EventHandler<Product> onProductChanged;
 
-        public Product Get(string sku)
+        public async Task<Product?> GetAsync(string sku)
             => DemoData._products.FirstOrDefault(x => x.Sku == sku);
 
         public void Put(Product product)

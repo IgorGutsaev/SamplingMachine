@@ -24,7 +24,7 @@ export async function getLanguagesAsync(currentLangs, newLangCodes) {
 };
 
 export async function loginAsync(phone, pin) {
-    return await fetch('kiosks/login', {
+    return await fetch('kiosk/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -43,7 +43,7 @@ export async function loginAsync(phone, pin) {
 };
 
 export async function loginServiceAsync(pin) {
-    return await fetch('kiosks/loginService', {
+    return await fetch('kiosk/loginService', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -57,7 +57,7 @@ export async function loginServiceAsync(pin) {
 };
 
 export async function commitSessionAsync(phone, products) {
-    return await fetch('kiosks/session', {
+    return await fetch('kiosk/session', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -76,7 +76,7 @@ export async function commitSessionAsync(phone, products) {
 };
 
 export async function clearCache() {
-    return await fetch('kiosks/cache/clear', {
+    return await fetch('kiosk/cache/clear', {
         method: 'GET'
     });
 };

@@ -1,4 +1,4 @@
-﻿namespace MPT.Vanding.Domains.Advertisement.Infrastructure
+﻿namespace MPT.Vending.Domains.SharedContext.Models
 {
     public class AzureBlobRepositorySettings
     {

@@ -9,13 +9,12 @@ namespace webapi.Services
     {
         const int KIOSK_CACHE_LIFETIME_DAYS = 31;
 
-        public KioskService(SamplingMachineApiClient client, IMemoryCachingService memCache, string kioskUid)
-        {
+        public KioskService(SamplingMachineApiClient client, IMemoryCachingService memCache, string kioskUid) {
             if (string.IsNullOrWhiteSpace(kioskUid))
                 throw new ArgumentException("Kiosk UID is mandatory");
 
             _client = client;
-            _memCache = memCache;            
+            _memCache = memCache;
             _kioskCache = _memCache.Get("kiosk");
             _kioskUid = kioskUid;
         }
@@ -24,11 +23,9 @@ namespace webapi.Services
         /// Retrieves current kiosk. Tries to get it from cache first, and if the cache is empty requests the API
         /// </summary>
         /// <returns></returns>
-        public async Task<Kiosk> GetAsync()
-        {
+        public async Task<Kiosk> GetAsync() {
             Kiosk result = _kioskCache.Get<Kiosk>(_kioskUid);
-            if (result == null)
-            {
+            if (result == null) {
                 result = await _client.GetKioskAsync(_kioskUid);
                 result = result.PrepareForCommunication();
                 _kioskCache.Set(_kioskUid, result, TimeSpan.FromDays(KIOSK_CACHE_LIFETIME_DAYS).TotalMilliseconds);

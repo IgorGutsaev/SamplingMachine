@@ -14,12 +14,10 @@
 
 <p>List of kiosks</p>
 
-@if (kiosks == null)
-{
+@if (loading) {
     <p><em>Loading...</em></p>
 }
-else
-{
+else {
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKioskModal">
         New
     </button>
@@ -33,10 +31,10 @@ else
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                   <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1">Name</span>
-                      <input type="text" class="form-control" placeholder="E.g. 'baz'" @bind="_newUid" aria-label="Name" aria-describedby="basic-addon1">
-                   </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Name</span>
+                        <input type="text" class="form-control" placeholder="E.g. 'baz'" @bind="_newUid" aria-label="Name" aria-describedby="basic-addon1">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
@@ -46,36 +44,38 @@ else
         </div>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var kiosk in kiosks)
-            {
+    if (kiosks.Any()) {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        <button class="btn btn-light btn-lg" @onclick="() => Edit(kiosk.UID)">@kiosk.UID</button>
-                    </td>
+                    <th>Name</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var kiosk in kiosks) {
+                    <tr>
+                        <td>
+                            <button class="btn btn-light btn-lg" @onclick="() => Edit(kiosk.UID)">@kiosk.UID</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 }
 
 @code {
+    private bool loading = false;
     private IEnumerable<Kiosk> kiosks;
     protected string _newUid;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
+        loading = true;
         kiosks = await _client.GetKiosksAsync();
+        loading = false;
     }
 
-    private async Task Create(string uid)
-    {
+    private async Task Create(string uid) {
         Kiosk newKiosk = await _client.AddKioskAsync(uid);
         var kioskList = kiosks.ToList();
         kioskList.Insert(0, newKiosk);
@@ -83,8 +83,7 @@ else
         await JSRuntime.InvokeVoidAsync("ui.hideModalManually", "addKioskModal");
     }
 
-    private void Edit(string uid)
-    {
+    private void Edit(string uid) {
         kioskStateContainer.SetValue(kiosks.First(x => x.UID == uid));
         navigationManager.NavigateTo($"/kiosk/{uid}");
     }

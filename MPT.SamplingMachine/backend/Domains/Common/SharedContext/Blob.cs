@@ -1,4 +1,4 @@
-﻿namespace MPT.Vending.Domains.Advertisement.Abstractions
+﻿namespace MPT.Vending.Domains.SharedContext.Models
 {
     public class Blob
     {

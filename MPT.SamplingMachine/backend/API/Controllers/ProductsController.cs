@@ -16,8 +16,8 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public Product Get(string sku)
-            => _productService.Get(sku);
+        public async Task<Product?> Get(string sku)
+            => await _productService.GetAsync(sku);
 
         [HttpPost]
         public IEnumerable<Product> Get([FromBody] ProductRequest request)

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
+using MPT.Vending.Domains.SharedContext.Abstractions;
+using MPT.Vending.Domains.SharedContext.Models;
 using System.Security.Cryptography;
 
 namespace API.Controllers

@@ -9,13 +9,15 @@ using MPT.Vending.Domains.Products.Abstractions;
 using MPT.Vending.Domains.Products.Services;
 using System.Text.Json;
 using System.Text;
-using MPT.Vending.Domains.Advertisement.Services;
+using Filuet.Infrastructure.DataProvider.Interfaces;
+using Filuet.Infrastructure.DataProvider;
+using MPT.Vending.Domains.SharedContext.Abstractions;
+using MPT.Vending.Domains.SharedContext.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
-     .AddJsonOptions(opts =>
-     {
+     .AddJsonOptions(opts => {
          opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
          opts.JsonSerializerOptions.Converters.Add(new CountryJsonConverter());
          opts.JsonSerializerOptions.Converters.Add(new LanguageJsonConverter());
@@ -23,33 +25,31 @@ builder.Services.AddControllers()
      });
 
 builder.Services.AddSingleton(new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54="));
-builder.Services.AddTransient<IKioskService>(sp => {
-    DemoKioskService result = new DemoKioskService();
-    result.onKioskChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e);
-    return result;
-});
 
-builder.Services.AddTransient<IProductService>(sp => {
-    DemoProductService result = new DemoProductService();
-    IKioskService kioskService = sp.GetService<IKioskService>();
-    result.onProductChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnProductHasChanged(sender, e, kioskService.Get(x => x.ProductLinks.Any(l => l.Product.Sku == e.Sku)));
-    return result;
-});
+string mode = builder.Configuration["Mode"];
+
+string connectionString = string.Empty;
+if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
+    connectionString = "Data Source=tcp:ascmwsql.database.windows.net,1433;Initial Catalog=ogmento;Persist Security Info=True;User ID=filuetadmin;Password=Filuet@123!;MultipleActiveResultSets=False;Connect Timeout=45;Encrypt=True;TrustServerCertificate=False;Column Encryption Setting=Enabled";
+}
+
+builder.Services.AddKiosk((sp, x) => x.onKioskChanged += async (sender, e) =>
+    await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e), connectionString);
+
+builder.Services.AddCatalog((sp, x) => x.onProductChanged += async (sender, e) =>
+    await sp.GetRequiredService<Portal2KioskMessagesSender>().OnProductHasChanged(sender, e, sp.GetService<IKioskService>().Get(x => x.ProductLinks.Any(l => l.Product.Sku == e.Sku))), connectionString);
 
 builder.Services.AddTransient<ISessionService>(sp => {
     DemoSessionService result = new DemoSessionService();
     result.OnNewSession += async (sender, e) => {
         IConfiguration config = sp.GetRequiredService<IConfiguration>();
         int index = 0;
-        while (true)
-        {
+        while (true) {
             string portalUrl = config[$"Portal:{index++}"];
-            if (!string.IsNullOrWhiteSpace(portalUrl))
-            {
+            if (!string.IsNullOrWhiteSpace(portalUrl)) {
                 HttpClient client = new HttpClient();
                 var httpContent = new StringContent(JsonSerializer.Serialize(new SessionHookRequest { Message = HookHelpers.Encrypt(config["HookSecret"], JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
-                try
-                {
+                try {
                     HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/session"), httpContent);
                 }
                 catch { }
@@ -72,13 +72,13 @@ builder.Services.AddTransient<IReplenishmentService>(sp => {
     return result;
 });
 
+builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }

@@ -1,9 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Filuet.Infrastructure.Abstractions.Helpers;
-using MPT.Vanding.Domains.Advertisement.Infrastructure;
-using MPT.Vending.Domains.Advertisement.Abstractions;
+using MPT.Vending.Domains.SharedContext.Models;
+using MPT.Vending.Domains.SharedContext.Abstractions;
 
-namespace MPT.Vending.Domains.Advertisement.Services
+namespace MPT.Vending.Domains.SharedContext.Services
 {
     public class AzureBlobRepository : IBlobRepository
     {
