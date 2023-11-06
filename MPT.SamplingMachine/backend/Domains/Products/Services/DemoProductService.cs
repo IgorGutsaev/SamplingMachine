@@ -11,7 +11,7 @@ namespace MPT.Vending.Domains.Products.Services
         public async Task<Product?> GetAsync(string sku)
             => DemoData._products.FirstOrDefault(x => x.Sku == sku);
 
-        public void Put(Product product)
+        public async Task PutAsync(Product product)
         {
             Product existed = DemoData._products.FirstOrDefault(x => x.Sku == product.Sku);
 
@@ -39,7 +39,7 @@ namespace MPT.Vending.Domains.Products.Services
         public IEnumerable<Product> Get(IEnumerable<string> sku)
             => DemoData._products.Where(x => sku.Contains(x.Sku));
 
-        public void PutPicture(ProductPictureUpdateRequest request)
+        public async Task PutPictureAsync(ProductPictureUpdateRequest request)
         {
             Product p = DemoData._products.FirstOrDefault(x => x.Sku == request.Sku);
             if (p != null)

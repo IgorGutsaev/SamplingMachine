@@ -6,9 +6,9 @@ namespace MPT.Vending.Domains.Products.Abstractions
     {
         event EventHandler<Product> onProductChanged;
         Task<Product?> GetAsync(string sku);
-        void Put(Product product);
+        Task PutAsync(Product product);
         IAsyncEnumerable<Product> GetByFilter(string filter);
         IEnumerable<Product> Get(IEnumerable<string> sku);
-        void PutPicture(ProductPictureUpdateRequest request);
+        Task PutPictureAsync(ProductPictureUpdateRequest request);
     }
 }

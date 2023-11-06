@@ -25,7 +25,7 @@ namespace API.Controllers
 
         [HttpPut]
         public void Put([FromBody] Product product)
-            => _productService.Put(product);
+            => _productService.PutAsync(product);
 
         [HttpGet("all")]
         public IAsyncEnumerable<Product> GetAll(string filter = "")
@@ -33,7 +33,7 @@ namespace API.Controllers
 
         [HttpPut("picture")]
         public void PutPicture([FromBody] ProductPictureUpdateRequest request)
-            => _productService.PutPicture(request);
+            => _productService.PutPictureAsync(request);
 
         [HttpPut("session")]
         public void GetSessions([FromBody] Session session)

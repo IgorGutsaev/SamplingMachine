@@ -9,16 +9,21 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Builders
     {
         private Product product = new Product();
 
-        public ProductBuilder WithSku(ProductEntity entity) {
+        /// <summary>
+        /// Set product sku
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public ProductBuilder WithData(ProductEntity entity) {
             product.Sku = entity.Sku;
             return this;
         }
 
-        public ProductBuilder WithPicture(string picture) {
-            product.Picture = picture;
-            return this;
-        }
-
+        /// <summary>
+        /// Set product localized names
+        /// </summary>
+        /// <param name="localizations"></param>
+        /// <returns></returns>
         public ProductBuilder WithNames(IEnumerable<ProductLocalizationEntity> localizations) {
             var names = new List<LocalizedValue>();
             foreach (var l in localizations) {
@@ -26,6 +31,21 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Builders
             }
 
             product.Names = names.ToArray();
+            return this;
+        }
+
+        /// <summary>
+        /// Set product localized names
+        /// </summary>
+        /// <param name="localizations"></param>
+        /// <returns></returns>
+        public ProductBuilder WithNames(IEnumerable<LocalizedValue>? localizations) {
+            product.Names = localizations;
+            return this;
+        }
+
+        public ProductBuilder WithPicture(string picture) {
+            product.Picture = picture;
             return this;
         }
 
