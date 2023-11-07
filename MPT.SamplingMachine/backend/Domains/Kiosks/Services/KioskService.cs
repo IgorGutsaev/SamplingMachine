@@ -42,8 +42,9 @@ namespace MPT.Vending.Domains.Kiosks.Services
         }
 
         public IEnumerable<Kiosk> GetAll() {
-            IEnumerable<KioskEntity> kiosks = _kioskRepository.Get(x => true);
-            IEnumerable<KioskSettingsEntity> settings = _kioskSettingsRepository.Get(x => kiosks.Select(k => k.Id).Contains(x.KioskId));
+            IEnumerable<KioskEntity> kiosks = _kioskRepository.Get(x => true).ToList();
+            IEnumerable<KioskSettingsEntity> settings = _kioskSettingsRepository.Get(x => kiosks.Select(k => k.Id).Contains(x.KioskId)).ToList();
+
             foreach (var k in kiosks) {
                 yield return new KioskBuilder()
                     .WithData(k)

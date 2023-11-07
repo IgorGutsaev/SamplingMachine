@@ -163,7 +163,22 @@ else
                 if (!products.Any(x => x.Sku == i.Product.Sku) && !skuToSync.Contains(i.Product.Sku))
                     skuToSync.Add(i.Product.Sku);
 
-        IEnumerable<Product> missingProducts = await _client.GetProductsAsync(skuToSync);
+        List<Product> missingProducts = new List<Product>();
+
+        IAsyncEnumerator<Product> en = _client.GetProductsAsync(skuToSync, default(CancellationToken));
+        try
+        {
+            while (await en.MoveNextAsync())
+            {
+                missingProducts.Add(en.Current);
+            }
+        }
+        finally
+        {
+            if (e != null)
+                await e.DisposeAsync();
+        }
+
         products.AddRange(missingProducts);
 
         foreach (var s in history)

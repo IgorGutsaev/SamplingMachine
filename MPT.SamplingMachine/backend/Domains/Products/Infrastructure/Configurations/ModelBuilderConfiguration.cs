@@ -8,6 +8,7 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Configurations
             modelBuilder.ApplyConfiguration(new ProductConfiguration())
                 .ApplyConfiguration(new ProductLocalizationConfiguration())
                 .ApplyConfiguration(new KioskProductLinkConfiguration())
+                .ApplyConfiguration(new KioskProductLinkViewConfiguration())
                 .ApplyConfiguration(new PictureConfiguration());
             return modelBuilder;
         }

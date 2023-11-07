@@ -41,7 +41,11 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
             string data = cacher.Get<string>(uid);
 
             if (string.IsNullOrWhiteSpace(data)) {
-                Blob blob = await _blobRepository.DownloadAsync($"products/pictures/{uid}");
+                Blob blob = null;
+                try {
+                    blob = await _blobRepository.DownloadAsync($"products/pictures/{uid}");
+                }
+                catch (ArgumentException) { return string.Empty; }
                 data = Convert.ToBase64String(blob.Data);
             }
 
@@ -54,19 +58,27 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
         /// <param name="pictureId"></param>
         /// <param name="picture"></param>
         /// <returns></returns>
-        public async Task<int?> PutPictureAsBase64Async(int? pictureId, byte[] picture) {
+        public async Task<PictureEntity?> PutPictureAsBase64Async(int? pictureId, byte[] picture) {
             bool createAnEntity = false;
-
+            PictureEntity? result = null;
             Guid uid = Guid.Empty;
 
             if (pictureId.HasValue) {
                 PictureEntity? pEntity = Get(x => x.Id == pictureId.Value).FirstOrDefault();
                 if (pEntity != null) {
-                    string stored = await GetPictureAsBase64Async(pEntity.Uid);
+                    string stored = string.Empty;
+                    try {
+                        stored = await GetPictureAsBase64Async(pEntity.Uid);
+                    }
+                    catch (ArgumentException) {
+                        stored = string.Empty;
+                    }
+                    
                     if (stored != Convert.ToBase64String(picture)) { // a new picture 
                         uid = Guid.NewGuid();
                         await _blobRepository.UploadAsync(picture, $"products/pictures/{uid}");
                     }
+                    result = pEntity;
                 }
                 else createAnEntity = true;
             }
@@ -79,12 +91,13 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
                 _context.SaveChanges();
                 pictureId = e.Id;
                 await _blobRepository.UploadAsync(picture, $"products/pictures/{uid}");
+                result = e;
             }
 
             MemoryCacher cacher = _memCache.Get(PICTURES_CACHE_NAME, PICTURES_CACHE_SIZE_MB);
             cacher.Set(uid, Convert.ToBase64String(picture));
 
-            return pictureId;
+            return result;
         }
 
         private readonly CatalogDbContext _context;

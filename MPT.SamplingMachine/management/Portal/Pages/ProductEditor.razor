@@ -56,7 +56,13 @@ else
     </p>
 
     <div class="card" style="width: 300px">
-        <img class="card-img rounded-top" src="data:image/*;base64,@product.Picture" width="300" />
+        @if (!string.IsNullOrWhiteSpace(product.Picture))
+        {
+            <img class="card-img rounded-top" src="data:image/*;base64,@product.Picture" width="300" />
+        }
+        else {
+            <img class="card-img rounded-top" src="./img/no-product-image.png" width="300" />
+        }
         <button type="button" class="btn btn-dark inputFilePicker" onclick="document.getElementById('flpicker').click()"><i class="bi bi-arrow-repeat text-light"></i></button>
         <InputFile id="flpicker" accept=".jpg,.jpeg" OnChange="@LoadFiles" hidden />
     </div>

@@ -20,8 +20,8 @@ namespace API.Controllers
             => await _productService.GetAsync(sku);
 
         [HttpPost]
-        public IEnumerable<Product> Get([FromBody] ProductRequest request)
-            => _productService.Get(request.Sku);
+        public IAsyncEnumerable<Product> Get([FromBody] ProductRequest request)
+            => _productService.GetAsync(request.Sku);
 
         [HttpPut]
         public void Put([FromBody] Product product)
@@ -29,11 +29,11 @@ namespace API.Controllers
 
         [HttpGet("all")]
         public IAsyncEnumerable<Product> GetAll(string filter = "")
-            => _productService.GetByFilter(filter);
+            => _productService.GetByFilterAsync(filter);
 
         [HttpPut("picture")]
-        public void PutPicture([FromBody] ProductPictureUpdateRequest request)
-            => _productService.PutPictureAsync(request);
+        public async Task PutPicture([FromBody] ProductPictureUpdateRequest request)
+            => await _productService.PutPictureAsync(request);
 
         [HttpPut("session")]
         public void GetSessions([FromBody] Session session)

@@ -15,6 +15,7 @@ using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+Func<string, List<Kiosk>> _kioskWhereSkuLinked = null;
 
 builder.Services.AddControllers()
      .AddJsonOptions(opts => {
@@ -24,7 +25,7 @@ builder.Services.AddControllers()
          opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
      });
 
-builder.Services.AddSingleton(new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54="));
+Portal2KioskMessagesSender mediator = new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=");
 
 string mode = builder.Configuration["Mode"];
 
@@ -33,11 +34,19 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
     connectionString = "Data Source=tcp:ascmwsql.database.windows.net,1433;Initial Catalog=ogmento;Persist Security Info=True;User ID=filuetadmin;Password=Filuet@123!;MultipleActiveResultSets=False;Connect Timeout=45;Encrypt=True;TrustServerCertificate=False;Column Encryption Setting=Enabled";
 }
 
-builder.Services.AddKiosk((sp, x) => x.onKioskChanged += async (sender, e) =>
-    await sp.GetRequiredService<Portal2KioskMessagesSender>().OnKioskHasChanged(sender, e), connectionString);
+builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) =>
+    await mediator.OnKioskHasChanged(sender, e), connectionString);
 
-builder.Services.AddCatalog((sp, x) => x.onProductChanged += async (sender, e) =>
-    await sp.GetRequiredService<Portal2KioskMessagesSender>().OnProductHasChanged(sender, e, sp.GetService<IKioskService>().Get(x => x.ProductLinks.Any(l => l.Product.Sku == e.Sku))), connectionString);
+// Get kiosks with linked sku
+builder.Services.AddSingleton<Func<string, List<Kiosk>>>(sp => p => {
+    IKioskService kioskService = sp.GetRequiredService<IKioskService>();
+    IProductService productService = sp.GetRequiredService<IProductService>();
+    IEnumerable<string> kiosks = productService.GetKiosksWithSku(p);
+    return kioskService.Get(x => kiosks.Contains(x.UID)).ToList();
+});
+
+builder.Services.AddCatalog(x => x.onProductChanged += async (sender, e) =>
+    await mediator.OnProductHasChanged(sender, e, _kioskWhereSkuLinked?.Invoke(e.Sku)), connectionString);
 
 builder.Services.AddTransient<ISessionService>(sp => {
     DemoSessionService result = new DemoSessionService();
@@ -77,6 +86,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+_kioskWhereSkuLinked = app.Services.GetService<Func<string, List<Kiosk>>>();
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();

@@ -16,11 +16,11 @@ namespace MPT.Vending.Domains.Kiosks.Services
         /// <param name="setupAction"></param>
         /// <param name="connectionString">if cs is empty then show demo data</param>
         /// <returns></returns>
-        public static IServiceCollection AddKiosk(this IServiceCollection serviceCollection, Action<IServiceProvider, IKioskService> setupAction, string connectionString)
+        public static IServiceCollection AddKiosk(this IServiceCollection serviceCollection, Action<IKioskService> setupAction, string connectionString)
             => string.IsNullOrWhiteSpace(connectionString) ?
             serviceCollection.AddTransient<IKioskService>(sp => {
                 DemoKioskService result = new DemoKioskService();
-                setupAction?.Invoke(sp, result);
+                setupAction?.Invoke(result);
                 return result;
             }) : serviceCollection.AddDbContext<KioskDbContext>((sp, options) => {
                 options.UseSqlServer(connectionString);
@@ -31,7 +31,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             .AddTransient<KioskRepository>()
             .AddTransient<KioskSettingsRepository>()
             .AddTransient<IKioskService>(sp => { KioskService result = new KioskService(sp.GetRequiredService<KioskRepository>(), sp.GetRequiredService<KioskSettingsRepository>());
-                setupAction?.Invoke(sp, result);
+                setupAction?.Invoke(result);
                 return result;
             });
     }

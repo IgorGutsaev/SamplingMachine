@@ -1,7 +1,6 @@
 ﻿using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Products.Infrastructure.Entities;
 using MPT.Vending.Domains.SharedContext;
-using System.Security.Cryptography;
 
 namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
 {
@@ -12,7 +11,7 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
         }
 
         public override IEnumerable<ProductLocalizationEntity> Get(Func<ProductLocalizationEntity, bool> predicate)
-            => _context.ProductLocalizations.Where(x => predicate(x) && !x.Deleted);
+            => _context.ProductLocalizations.Where(predicate).Where(x => !x.Deleted);
 
         public IEnumerable<ProductLocalizationEntity> GetWithDeleted(Func<ProductLocalizationEntity, bool> predicate)
             => _context.ProductLocalizations.Where(predicate);
@@ -20,6 +19,9 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
         public override void Put(IEnumerable<ProductLocalizationEntity> entities) {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<int> FindProductsByFilter(string filter)
+            => _context.ProductLocalizations.Where(x => x.Value.Contains(filter)).Select(x=>x.ProductId).Distinct().ToList();
 
         /// <summary>
         /// 
@@ -50,7 +52,8 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
             IEnumerable<LocalizedValue>? newLanguages = actualNames.Where(x => !stored.Select(v => v.Language).Contains(x.Language));
             if (newLanguages != null && newLanguages.Any()) {
                 changed = true;
-
+                foreach (var l in newLanguages)
+                    _context.Add(new ProductLocalizationEntity { ProductId = productId, Language = l.Language, Attribute = "name", Value = l.Value });
             }
 
             // commit changes

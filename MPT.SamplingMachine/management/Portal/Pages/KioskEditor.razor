@@ -312,7 +312,7 @@ else
     {
         products = new List<Product>();
 
-        IAsyncEnumerator<Product> e = _client.GetProductsAsync(null, default(CancellationToken));
+        IAsyncEnumerator<Product> e = _client.GetProductsAsync(string.Empty, default(CancellationToken));
         try
         {
             while (await e.MoveNextAsync())

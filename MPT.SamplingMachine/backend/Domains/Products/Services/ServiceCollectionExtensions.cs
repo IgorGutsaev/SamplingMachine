@@ -16,11 +16,11 @@ namespace MPT.Vending.Domains.Products.Services
         /// <param name="setupAction"></param>
         /// <param name="connectionString">if cs is empty then show demo data</param>
         /// <returns></returns>
-        public static IServiceCollection AddCatalog(this IServiceCollection serviceCollection, Action<IServiceProvider, IProductService> setupAction, string connectionString)
+        public static IServiceCollection AddCatalog(this IServiceCollection serviceCollection, Action<IProductService> setupAction, string connectionString)
             => string.IsNullOrWhiteSpace(connectionString) ?
             serviceCollection.AddTransient<IProductService>(sp => {
                 DemoProductService result = new DemoProductService();
-                setupAction?.Invoke(sp, result);
+                setupAction?.Invoke(result);
                 return result;
             }) : serviceCollection.AddDbContext<CatalogDbContext>((sp, options) => {
                 options.UseSqlServer(connectionString);
@@ -31,13 +31,15 @@ namespace MPT.Vending.Domains.Products.Services
             .AddTransient<ProductRepository>()
             .AddTransient<ProductLocalizationRepository>()
             .AddTransient<KioskProductLinkRepository>()
+            .AddTransient<KioskProductLinkViewRepository>()
             .AddTransient<PictureRepository>()
             .AddTransient<IProductService>(sp => {
                 ProductService result = new ProductService(sp.GetRequiredService<ProductRepository>(),
                     sp.GetRequiredService<ProductLocalizationRepository>(),
                     sp.GetRequiredService<KioskProductLinkRepository>(),
+                    sp.GetRequiredService<KioskProductLinkViewRepository>(),
                     sp.GetRequiredService<PictureRepository>());
-                setupAction?.Invoke(sp, result);
+                setupAction?.Invoke(result);
                 return result;
             });
     }
