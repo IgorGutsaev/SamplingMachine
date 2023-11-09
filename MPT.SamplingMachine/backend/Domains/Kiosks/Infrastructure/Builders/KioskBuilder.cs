@@ -27,6 +27,17 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
             return this;
         }
 
+        public KioskBuilder WithLinks(IEnumerable<KioskProductLinkViewEntity> links, IEnumerable<Product>? products = null) {
+            kiosk.ProductLinks = links.Select(x => new KioskProductLink {
+                Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
+                Credit = x.Credit,
+                MaxCountPerSession = x.MaxCountPerSession,
+                //RemainingQuantity = , // to be done
+                Disabled = x.Disabled
+            });
+            return this;
+        }
+
         public Kiosk Build() => kiosk;
     }
 }

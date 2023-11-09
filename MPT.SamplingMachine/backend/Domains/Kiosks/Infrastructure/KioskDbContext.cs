@@ -8,6 +8,7 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure
     {
         public virtual DbSet<KioskEntity> Kiosks { get; set; }
         public virtual DbSet<KioskSettingsEntity> KioskSettings { get; set; }
+        public virtual DbSet<KioskProductLinkViewEntity> KioskProductLinksView { get; set; }
 
         public KioskDbContext(DbContextOptions<KioskDbContext> options)
             : base(options) { }

@@ -5,8 +5,7 @@ using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
-    public class DemoKioskService : IKioskService
-    {
+    public class DemoKioskService : IKioskService {
         public event EventHandler<Kiosk> onKioskChanged;
 
         public Kiosk Get(string uid) {
@@ -71,31 +70,6 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 onKioskChanged?.Invoke(this, kiosk);
         }
 
-        public void DisableProductLink(string kioskUid, string sku) {
-            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
-            if (kiosk != null) {
-                kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = true;
-                onKioskChanged?.Invoke(this, kiosk);
-            }
-        }
-
-        public void EnableProductLink(string kioskUid, string sku) {
-            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
-            if (kiosk != null) {
-                kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = false;
-                onKioskChanged?.Invoke(this, kiosk);
-            }
-        }
-
-        public void AddProductLink(string kioskUid, string sku)
-            => DemoData.Link(kioskUid, sku);
-
-        public void DeleteProductLink(string kioskUid, string sku) {
-            if (DemoData._kiosks.Any(x => x.UID == kioskUid) && DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Any(x => x.Product.Sku == sku))
-                DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks =
-                    DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Where(x => x.Product.Sku != sku);
-        }
-
         public void SetCredit(string kioskUid, string sku, int credit) {
             bool changed = false;
             Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
@@ -129,5 +103,8 @@ namespace MPT.Vending.Domains.Kiosks.Services
             kiosk.Media = links;
             onKioskChanged?.Invoke(this, kiosk);
         }
+
+        public IEnumerable<Kiosk> GetKiosksWithSku(string sku)
+            => DemoData._kiosks.Where(x => x.ProductLinks.Any(l => l.Product.Sku == sku));
     }
 }

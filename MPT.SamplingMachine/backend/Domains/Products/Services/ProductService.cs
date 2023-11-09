@@ -1,5 +1,6 @@
 ﻿using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Products.Abstractions;
+using MPT.Vending.Domains.Products.Abstractions.Events;
 using MPT.Vending.Domains.Products.Infrastructure.Builders;
 using MPT.Vending.Domains.Products.Infrastructure.Entities;
 using MPT.Vending.Domains.Products.Infrastructure.Repositories;
@@ -9,16 +10,15 @@ namespace MPT.Vending.Domains.Products.Services
     internal class ProductService : IProductService
     {
         public event EventHandler<Product> onProductChanged;
+        public event EventHandler<KioskProductsChangedEventArgs> onLinksChanged;
 
         public ProductService(ProductRepository productRepository,
             ProductLocalizationRepository productLocalizationRepository,
             KioskProductLinkRepository kioskProductLinkRepository,
-            KioskProductLinkViewRepository kioskProductLinkViewRepository,
             PictureRepository pictureRepository) {
             _productRepository = productRepository;
             _productLocalizationRepository = productLocalizationRepository;
             _kioskProductLinkRepository = kioskProductLinkRepository;
-            _kioskProductLinkViewRepository = kioskProductLinkViewRepository;
             _pictureRepository = pictureRepository;
         }
 
@@ -57,26 +57,6 @@ namespace MPT.Vending.Domains.Products.Services
 
             await foreach (var t in GetProductsAsync(entities))
                 yield return t;
-        }
-
-        private async IAsyncEnumerable<Product> GetProductsAsync(IEnumerable<ProductEntity> entities) {
-            IEnumerable<ProductLocalizationEntity> localizations = _productLocalizationRepository.Get(x => x.Attribute == "name" && entities.Select(p => p.Id).Contains(x.ProductId)).ToList();
-
-            IEnumerable<PictureEntity> pictures = _pictureRepository.Get(x => entities.Select(p => p.PictureId).Contains(x.Id)).ToList();
-            foreach (var p in entities) {
-                ProductBuilder builder = new ProductBuilder();
-                builder.WithData(p);
-                var pic = pictures.FirstOrDefault(x => x.Id == p.PictureId);
-                if (pic != null) {
-                    string picture = await _pictureRepository.GetPictureAsBase64Async(pic.Uid);
-                    builder.WithPicture(picture);
-                }
-
-                IEnumerable<ProductLocalizationEntity> pLocalizations = localizations.Where(x => x.ProductId == p.Id).ToList();
-                builder.WithNames(pLocalizations);
-
-                yield return builder.Build();
-            }
         }
 
         public async Task PutAsync(Product product) {
@@ -130,18 +110,49 @@ namespace MPT.Vending.Domains.Products.Services
             }
         }
 
-        public IEnumerable<string> GetKiosksWithSku(string sku) { 
-            ProductEntity? p = _productRepository.Get(x => x.Sku == sku).FirstOrDefault();
-            if (p == null)
-                return new List<string>();
+        public void LinkProduct(string kioskUid, string sku)
+            => _kioskProductLinkRepository.Link(kioskUid, sku);
 
-            return _kioskProductLinkViewRepository.Get(x => x.ProductId == p.Id).Select(x => x.KioskUid).ToList().Distinct();
+        public void UnlinkProduct(string kioskUid, string sku)
+            => _kioskProductLinkRepository.Unlink(kioskUid, sku);
+
+        public void ToggleProductLink(string kioskUid, string sku, bool disable) {
+            _kioskProductLinkRepository.ToggleLink(kioskUid, sku, disable);
+            onLinksChanged?.Invoke(this, new KioskProductsChangedEventArgs {
+                KioskUid = kioskUid,
+                Links = _kioskProductLinkRepository.Get(kioskUid, sku).Select(x => new KioskProductLink {
+                    Credit = x.Credit,
+                    Disabled = x.Disabled,
+                    Product = new Product { Sku = sku },
+                    MaxCountPerSession = x.MaxCountPerSession
+                })
+            });
         }
 
+        private async IAsyncEnumerable<Product> GetProductsAsync(IEnumerable<ProductEntity> entities) {
+            IEnumerable<ProductLocalizationEntity> localizations = _productLocalizationRepository.Get(x => x.Attribute == "name" && entities.Select(p => p.Id).Contains(x.ProductId)).ToList();
+
+            IEnumerable<PictureEntity> pictures = _pictureRepository.Get(x => entities.Select(p => p.PictureId).Contains(x.Id)).ToList();
+            foreach (var p in entities) {
+                ProductBuilder builder = new ProductBuilder();
+                builder.WithData(p);
+                var pic = pictures.FirstOrDefault(x => x.Id == p.PictureId);
+                if (pic != null) {
+                    string picture = await _pictureRepository.GetPictureAsBase64Async(pic.Uid);
+                    builder.WithPicture(picture);
+                }
+
+                IEnumerable<ProductLocalizationEntity> pLocalizations = localizations.Where(x => x.ProductId == p.Id).ToList();
+                builder.WithNames(pLocalizations);
+
+                yield return builder.Build();
+            }
+        }
+
+
+        private readonly PictureRepository _pictureRepository;
         private readonly ProductRepository _productRepository;
         private readonly ProductLocalizationRepository _productLocalizationRepository;
         private readonly KioskProductLinkRepository _kioskProductLinkRepository;
-        private readonly KioskProductLinkViewRepository _kioskProductLinkViewRepository;
-        private readonly PictureRepository _pictureRepository;
     }
 }

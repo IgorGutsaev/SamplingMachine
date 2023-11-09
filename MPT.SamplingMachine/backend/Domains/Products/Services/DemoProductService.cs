@@ -1,5 +1,6 @@
 ﻿using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Products.Abstractions;
+using MPT.Vending.Domains.Products.Abstractions.Events;
 using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Products.Services
@@ -7,6 +8,7 @@ namespace MPT.Vending.Domains.Products.Services
     public class DemoProductService : IProductService
     {
         public event EventHandler<Product> onProductChanged;
+        public event EventHandler<KioskProductsChangedEventArgs> onLinksChanged;
 
         public async Task<Product?> GetAsync(string sku)
             => DemoData._products.FirstOrDefault(x => x.Sku == sku);
@@ -46,7 +48,24 @@ namespace MPT.Vending.Domains.Products.Services
                 onProductChanged?.Invoke(this, p);
             }
         }
-        public IEnumerable<string> GetKiosksWithSku(string sku)
-            => DemoData._kiosks.Where(x => x.ProductLinks.Any(l => l.Product.Sku == sku)).Select(x => x.UID).Distinct();
+
+        public void LinkProduct(string kioskUid, string sku)
+            => DemoData.Link(kioskUid, sku);
+
+        public void UnlinkProduct(string kioskUid, string sku) {
+            if (DemoData._kiosks.Any(x => x.UID == kioskUid) && DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Any(x => x.Product.Sku == sku))
+                DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks =
+                    DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.Where(x => x.Product.Sku != sku);
+        }
+
+        public void ToggleProductLink(string kioskUid, string sku, bool disable) {
+            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+            if (kiosk != null) {
+                kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku).Disabled = disable;
+                onLinksChanged?.Invoke(this, new KioskProductsChangedEventArgs { KioskUid = kioskUid, Links = kiosk.ProductLinks });
+            }
+        }
+
+        public IEnumerable<KioskProductLink> GetKioskProductLinks(string kioskUid) => null;
     }
 }

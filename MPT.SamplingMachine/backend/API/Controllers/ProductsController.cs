@@ -31,6 +31,24 @@ namespace API.Controllers
         public IAsyncEnumerable<Product> GetAll(string filter = "")
             => _productService.GetByFilterAsync(filter);
 
+
+        [HttpPut("link")]
+        public void LinkProduct(string kioskUid, string sku)
+            => _productService.LinkProduct(kioskUid, sku);
+
+        [HttpDelete("unlink")]
+        public void UnlinkProduct(string kioskUid, string sku)
+            => _productService.UnlinkProduct(kioskUid, sku);
+
+
+        [HttpPost("link/enable")]
+        public void EnableProductLink(string kioskUid, string sku)
+            => _productService.ToggleProductLink(kioskUid, sku, false);
+
+        [HttpPost("link/disable")]
+        public void DisableProductLink(string kioskUid, string sku)
+            => _productService.ToggleProductLink(kioskUid, sku, true);
+
         [HttpPut("picture")]
         public async Task PutPicture([FromBody] ProductPictureUpdateRequest request)
             => await _productService.PutPictureAsync(request);

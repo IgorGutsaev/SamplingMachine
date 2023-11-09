@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
+using MPT.Vending.Domains.Products.Abstractions;
 
 namespace API.Controllers
 {
@@ -8,14 +9,14 @@ namespace API.Controllers
     [ApiController]
     public class KiosksController : ControllerBase
     {
-        public KiosksController(IKioskService kioskService, ILogger<KiosksController> logger)
-        {
+        public KiosksController(IKioskService kioskService, IProductService productService, ILogger<KiosksController> logger) {
             _kioskService = kioskService;
+            _productService = productService;
             _logger = logger;
         }
 
         [HttpGet]
-        public Kiosk Get(string uid)
+        public async Task<Kiosk> GetAsync(string uid)
             => _kioskService.Get(uid);
 
         [HttpGet("enable")]
@@ -38,26 +39,10 @@ namespace API.Controllers
         public void Put([FromBody] Kiosk kiosk)
             => _kioskService.AddOrUpdate(kiosk);
 
-        [HttpPost("link/enable")]
-        public void EnableProductLink(string kioskUid, string sku)
-            => _kioskService.EnableProductLink(kioskUid, sku);
-
-        [HttpPost("link/disable")]
-        public void DisableProductLink(string kioskUid, string sku)
-            => _kioskService.DisableProductLink(kioskUid, sku);
-
-        [HttpDelete("link")]
-        public void DeleteProductLink(string kioskUid, string sku)
-            => _kioskService.DeleteProductLink(kioskUid, sku);
-
-        [HttpPut("link")]
-        public void AddProductLink(string kioskUid, string sku)
-            => _kioskService.AddProductLink(kioskUid, sku);
-
         [HttpPost("credit")]
         public void SetCredit(string kioskUid, int credit, string sku = null)
-            => _kioskService.SetCredit(kioskUid, sku, credit);        
-        
+            => _kioskService.SetCredit(kioskUid, sku, credit);
+
         [HttpPost("limit")]
         public void SetMaxCountPerSession(string kioskUid, string sku, int limit)
             => _kioskService.SetMaxCountPerSession(kioskUid, sku, limit);
@@ -67,6 +52,7 @@ namespace API.Controllers
             => _kioskService.SetMedia(kioskUid, links);
 
         private readonly IKioskService _kioskService;
+        private readonly IProductService _productService;
         private readonly ILogger<KiosksController> _logger;
     }
 }

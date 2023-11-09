@@ -83,8 +83,9 @@ else {
         await JSRuntime.InvokeVoidAsync("ui.hideModalManually", "addKioskModal");
     }
 
-    private void Edit(string uid) {
-        kioskStateContainer.SetValue(kiosks.First(x => x.UID == uid));
+    private async Task Edit(string uid) {
+        Kiosk kiosk = kiosks.First(x => x.UID == uid);       
+        kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/kiosk/{uid}");
     }
 }

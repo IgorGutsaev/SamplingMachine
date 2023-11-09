@@ -31,13 +31,11 @@ namespace MPT.Vending.Domains.Products.Services
             .AddTransient<ProductRepository>()
             .AddTransient<ProductLocalizationRepository>()
             .AddTransient<KioskProductLinkRepository>()
-            .AddTransient<KioskProductLinkViewRepository>()
             .AddTransient<PictureRepository>()
             .AddTransient<IProductService>(sp => {
                 ProductService result = new ProductService(sp.GetRequiredService<ProductRepository>(),
                     sp.GetRequiredService<ProductLocalizationRepository>(),
                     sp.GetRequiredService<KioskProductLinkRepository>(),
-                    sp.GetRequiredService<KioskProductLinkViewRepository>(),
                     sp.GetRequiredService<PictureRepository>());
                 setupAction?.Invoke(result);
                 return result;

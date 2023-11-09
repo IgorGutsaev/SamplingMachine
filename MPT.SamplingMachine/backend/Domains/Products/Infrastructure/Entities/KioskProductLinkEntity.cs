@@ -8,7 +8,6 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Entities
         public int ProductId { get; set; }
         public ProductEntity Product { get; set; }
         public int MaxCountPerSession { get; set; }
-        public int RemainingQuantity { get; set; }
         public int Credit { get; set; }
         public bool Disabled { get; set; }
     }

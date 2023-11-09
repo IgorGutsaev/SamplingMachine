@@ -64,26 +64,6 @@ namespace MPT.SamplingMachine.ApiClient
             return JsonSerializer.Deserialize<IEnumerable<Kiosk>>(result);
         }
 
-        public async Task DisableProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
-        }
-
-        public async Task EnableProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
-        }
-
-        public async Task DeleteProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"));
-        }
-
-        public async Task AddProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/link?kioskUid={kioskUid}&sku={sku}"), null);
-        }
-
         public async Task SetCreditAsync(string kioskUid, int credit) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/credit?kioskUid={kioskUid}&credit={credit}"), null);
@@ -126,6 +106,26 @@ namespace MPT.SamplingMachine.ApiClient
             HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products?sku={sku}"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<Product>(result);
+        }
+
+        public async Task LinkProductAsync(string kioskUid, string sku) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PutAsync(new Uri(new Uri(_url), $"/api/products/link?kioskUid={kioskUid}&sku={sku}"), null);
+        }
+
+        public async Task UnlinkProductAsync(string kioskUid, string sku) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/unlink?kioskUid={kioskUid}&sku={sku}"));
+        }
+
+        public async Task DisableProductLinkAsync(string kioskUid, string sku) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
+        }
+
+        public async Task EnableProductLinkAsync(string kioskUid, string sku) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
         }
 
         public async Task PutProductAsync(Product product) {

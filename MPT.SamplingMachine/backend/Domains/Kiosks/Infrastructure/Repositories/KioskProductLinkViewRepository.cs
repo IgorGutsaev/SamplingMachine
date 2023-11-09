@@ -1,11 +1,11 @@
-﻿using MPT.Vending.Domains.Products.Infrastructure.Entities;
+﻿using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using MPT.Vending.Domains.SharedContext;
 
-namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
+namespace MPT.Vending.Domains.Kiosks.Infrastructure.Repositories
 {
     public class KioskProductLinkViewRepository : Repository<KioskProductLinkViewEntity, int>
     {
-        public KioskProductLinkViewRepository(CatalogDbContext context) : base (context) {
+        public KioskProductLinkViewRepository(KioskDbContext context) : base (context) {
             _context = context;
         }
 
@@ -16,6 +16,6 @@ namespace MPT.Vending.Domains.Products.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        private readonly CatalogDbContext _context;
+        private readonly KioskDbContext _context;
     }
 }
