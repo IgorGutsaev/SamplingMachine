@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MPT.Vending.Domains.Products.Infrastructure.Configurations;
+using MPT.Vending.Domains.Ordering.Infrastructure.Configurations;
 
 namespace MPT.Vending.Domains.Kiosks.Infrastructure.Configurations
 {

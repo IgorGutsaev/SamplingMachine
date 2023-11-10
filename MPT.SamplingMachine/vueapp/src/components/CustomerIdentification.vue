@@ -46,7 +46,7 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import { loginAsync } from '/src/modules/sync.module.js';
-    import Session from '/src/modules/session.module.js'
+    import Transaction from '/src/modules/transaction.module.js'
     import Sampling from './SamplingPage.vue'
     import SimpleKeyboard from './SimpleKeyboard';
 
@@ -94,7 +94,7 @@
                 let loginResult = await loginAsync(this.phoneNumber, this.pin);
                 if (loginResult) {
                     Sampling.toCatalog();
-                    Session.info = { phone: this.phoneNumber };
+                    Transaction.info = { phone: this.phoneNumber };
                 }
                 else {
                     this.countdown = 0;

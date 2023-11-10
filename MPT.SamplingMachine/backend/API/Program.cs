@@ -1,18 +1,14 @@
 using Filuet.Infrastructure.Abstractions.Converters;
-using Filuet.Infrastructure.Communication.Helpers;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Filuet.Infrastructure.DataProvider;
 using MessagingServices;
-using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
-using MPT.Vending.Domains.Products.Abstractions;
-using MPT.Vending.Domains.Products.Services;
+using MPT.Vending.Domains.Ordering.Abstractions;
+using MPT.Vending.Domains.Ordering.Services;
 using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
-using System.Text.Json;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
@@ -39,29 +35,8 @@ builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) => await me
     x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable(),
     connectionString);
 
-builder.Services.AddCatalog(x => x.onProductChanged += async (sender, e) => 
+builder.Services.AddOrdering(x => x.onProductChanged += async (sender, e) => 
     await mediator.OnProductHasChanged(sender, e, _mediatorKioskService.GetKiosksWithSku(e.Sku)), connectionString);
-
-builder.Services.AddTransient<ISessionService>(sp => {
-    DemoSessionService result = new DemoSessionService();
-    result.OnNewSession += async (sender, e) => {
-        IConfiguration config = sp.GetRequiredService<IConfiguration>();
-        int index = 0;
-        while (true) {
-            string portalUrl = config[$"Portal:{index++}"];
-            if (!string.IsNullOrWhiteSpace(portalUrl)) {
-                HttpClient client = new HttpClient();
-                var httpContent = new StringContent(JsonSerializer.Serialize(new SessionHookRequest { Message = HookHelpers.Encrypt(config["HookSecret"], JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
-                try {
-                    HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/session"), httpContent);
-                }
-                catch { }
-            }
-            else break;
-        }
-    };
-    return result;
-});
 
 builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x => {
     x.ConnectionString = "DefaultEndpointsProtocol=https;AccountName=ascdevstorage;AccountKey=X5lm0IwRvY7gzf7EChalkTLTwCWk5croT7MESc44MkCY3y3EKXLfL9IRd1wSdUH5tyGcsWH7vUIrD5vXydcsEg==;EndpointSuffix=core.windows.net";

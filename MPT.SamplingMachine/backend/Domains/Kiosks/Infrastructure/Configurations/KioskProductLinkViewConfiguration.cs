@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 
-namespace MPT.Vending.Domains.Products.Infrastructure.Configurations
+namespace MPT.Vending.Domains.Ordering.Infrastructure.Configurations
 {
     public class KioskProductLinkViewConfiguration : IEntityTypeConfiguration<KioskProductLinkViewEntity>
     {

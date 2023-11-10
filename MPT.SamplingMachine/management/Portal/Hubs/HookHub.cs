@@ -8,7 +8,7 @@ namespace Portal.Hubs
     {
         public HookHub() { }
 
-        public async Task OnNewSession(Session? session)
-            => await Clients.All.SendAsync("OnNewSession", JsonSerializer.Serialize(session));
+        public async Task OnNewTransaction(Transaction? transaction)
+            => await Clients.All.SendAsync("OnNewTransaction", JsonSerializer.Serialize(transaction));
     }
 }

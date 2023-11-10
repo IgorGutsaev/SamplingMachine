@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,10 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
-    <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.24" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.0" />
+    <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
     <PackageReference Include="Filuet.Infrastructure.DataProvider" Version="1.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
@@ -21,8 +21,8 @@
     <ProjectReference Include="..\Domains\Advertisement\Services\MPT.Vending.Domains.Advertisement.Services.csproj" />
     <ProjectReference Include="..\Domains\Kiosks\Abstractions\MPT.Vending.Domains.Kiosks.Abstractions.csproj" />
     <ProjectReference Include="..\Domains\Kiosks\Services\MPT.Vending.Domains.Kiosks.Services.csproj" />
-    <ProjectReference Include="..\Domains\Products\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj" />
-    <ProjectReference Include="..\Domains\Products\Services\MPT.Vending.Domains.Products.Services.csproj" />
+    <ProjectReference Include="..\Domains\Ordering\Abstractions\MPT.Vending.Domains.Ordering.Abstractions.csproj" />
+    <ProjectReference Include="..\Domains\Ordering\Services\MPT.Vending.Domains.Ordering.Services.csproj" />
     <ProjectReference Include="..\Dto\MPT.Vending.API.Dto.csproj" />
   </ItemGroup>
 

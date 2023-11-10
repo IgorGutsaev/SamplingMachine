@@ -1,4 +1,4 @@
-﻿@page "/session/{uid}";
+﻿@page "/transaction/{uid}";
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using Microsoft.AspNetCore.SignalR.Client;
@@ -7,56 +7,48 @@
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
-@inject SessionStateContainer sessionStateContainer
+@inject TransactionStateContainer transactionStateContainer
 @inject SamplingMachineApiClient _client
 @inject NavigationManager _uriHelper
 @inject ProductStateContainer productStateContainer
 
-<PageTitle>Session</PageTitle>
+<PageTitle>Transaction</PageTitle>
 
-<h1>@session.PhoneNumber</h1>
+<h1>@transaction.PhoneNumber</h1>
 
-<p>@session.Date.ToString("HH:mm:ss dd/MMM/yyyy")</p>
+<p>@transaction.Date.ToString("HH:mm:ss dd/MMM/yyyy")</p>
 
-<p><a href="/sessions" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Sessions</a></p>
+<p><a href="/transactions" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Transactions</a></p>
 
 
-@if (!loading)
-{
-    <SessionItemList Session="session" />
+@if (!loading) {
+    <TransactionItemList Transaction="transaction" />
 
-    if (loadingHistory)
-    {
+    if (loadingHistory) {
         <button class="btn btn-success" type="button">
             <span class="spinner-grow text-white spinner-grow-sm" role="status"></span>
-            Loading related sessions...
+            Loading related transactions...
         </button>
     }
-    else
-    {
-        if (history == null)
-        {
+    else {
+        if (history == null) {
             <button class="btn btn-success" type="button" onclick="@LoadHistory">
-                Load related sessions
+                Load related transactions
             </button>
         }
-        else
-        {
-            if (!history.Any(x => x.Date != session.Date))
-            {
-                <p>There are no more sessions to show</p>
+        else {
+            if (!history.Any(x => x.Date != transaction.Date)) {
+                <p>There are no more transactions to show</p>
             }
-            else
-            {
+            else {
                 <p>Other orders</p>
 
                 <div class="accordion" id="accordionHistory">
                     @{
                         int i = 0;
 
-                        foreach (var entry in history)
-                        {
-                            if (entry.Date == session.Date)
+                        foreach (var entry in history) {
+                            if (entry.Date == transaction.Date)
                                 continue;
 
                             i++;
@@ -69,7 +61,7 @@
                                 </h2>
                                 <div id="collapse_@i" class="accordion-collapse collapse" aria-labelledby="heading_@i" data-bs-parent="#accordionHistory">
                                     <div class="accordion-body">
-                                        <SessionItemList Session="entry" />
+                                        <TransactionItemList Transaction="entry" />
                                     </div>
                                 </div>
                             </div>
@@ -80,8 +72,7 @@
         }
     }
 }
-else
-{
+else {
     <p><em>Loading...</em></p>
 }
 
@@ -89,30 +80,26 @@ else
     [Parameter]
     public string uid { get; set; }
 
-    private Session session;
+    private Transaction transaction;
     private bool loading = true;
     private bool loadingHistory = false;
-    private List<Session> history;
+    private List<Transaction> history;
     private List<Product> products = new List<Product>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        session = sessionStateContainer.Value;
+    protected override async Task OnInitializedAsync() {
+        transaction = transactionStateContainer.Value;
 
-        loading = session.Items.Any(x => x.Product.Names == null || x.Product.Picture == null);
-        if (loading)
-        {
+        loading = transaction.Items.Any(x => x.Product.Names == null || x.Product.Picture == null);
+        if (loading) {
             List<Task> tasks = new List<Task>();
 
-            foreach (var i in session.Items)
+            foreach (var i in transaction.Items)
                 tasks.Add(_client.GetProductAsync(i.Product.Sku)
-                .ContinueWith(x =>
-                {
+                .ContinueWith(x => {
                     i.Product = x.Result;
                     if (!products.Any(p => p.Sku == i.Product.Sku))
                         products.Add(x.Result);
-                })
-                );
+                }));
 
             await Task.WhenAll(tasks.ToArray());
 
@@ -120,29 +107,27 @@ else
         }
     }
 
-    private void EditProduct(Product product)
-    {
+    private void EditProduct(Product product) {
         productStateContainer.SetValue(product);
         navigationManager.NavigateTo($"/product/{product.Sku}");
     }
 
-    private async Task LoadHistory()
-    {
+    private async Task LoadHistory() {
         loadingHistory = true;
-        history = new List<Session>();
+        history = new List<Transaction>();
 
-        IAsyncEnumerator<Session> e = _client.GetSessionsAsync(new SessionsRequest {
-            MobileNumber = session.PhoneNumber,
-            From = new DateTime(2023, 9, 1), 
-            To = DateTime.Now.AddDays(1)
-        });
+        IAsyncEnumerator<Transaction> e = _client.GetTransactionsAsync(new TransactionRequest {
+                MobileNumber = transaction.PhoneNumber,
+                From = new DateTime(2023, 9, 1),
+                To = DateTime.Now.AddDays(1)
+            });
 
         try {
             while (await e.MoveNextAsync()) {
                 history.Add(e.Current);
 
                 try {
-                    await JSRuntime.InvokeVoidAsync("console.info", $"Session received: {e.Current.PhoneNumber}");
+                    await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
                 }
                 catch { }
 
@@ -166,15 +151,12 @@ else
         List<Product> missingProducts = new List<Product>();
 
         IAsyncEnumerator<Product> en = _client.GetProductsAsync(skuToSync, default(CancellationToken));
-        try
-        {
-            while (await en.MoveNextAsync())
-            {
+        try {
+            while (await en.MoveNextAsync()) {
                 missingProducts.Add(en.Current);
             }
         }
-        finally
-        {
+        finally {
             if (e != null)
                 await e.DisposeAsync();
         }

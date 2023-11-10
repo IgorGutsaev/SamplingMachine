@@ -31,7 +31,7 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
             kiosk.ProductLinks = links.Select(x => new KioskProductLink {
                 Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
                 Credit = x.Credit,
-                MaxCountPerSession = x.MaxCountPerSession,
+                MaxCountPerTransaction = x.MaxCountPerTransaction,
                 //RemainingQuantity = , // to be done
                 Disabled = x.Disabled
             });

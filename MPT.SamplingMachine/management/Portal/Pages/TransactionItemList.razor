@@ -1,0 +1,45 @@
+﻿@using MPT.Vending.API.Dto;
+@using Portal.StateContainers;
+@inject NavigationManager navigationManager
+@inject ProductStateContainer productStateContainer
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Sku</th>
+            <th>Picture</th>
+            <th>Count</th>
+            <th>Credit used</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Transaction.Items)
+        {
+            <tr>
+                <td>
+                    <button class="btn btn-light" @onclick="() => EditProduct(item.Product)">@item.Product.Sku</button>
+                </td>
+                <td>
+                    <img src="data:image/*;base64,@item.Product.Picture" width="100" />
+                </td>
+                <td>
+                    @item.Count
+                </td>
+                <td>
+                    <span class="badge bg-warning text-dark">@(item.UnitCredit * item.Count)</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public Transaction Transaction { get; set; }
+
+    private void EditProduct(Product product)
+    {
+        productStateContainer.SetValue(product);
+        navigationManager.NavigateTo($"/product/{product.Sku}");
+    }
+}

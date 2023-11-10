@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
-using MPT.Vending.Domains.Products.Abstractions;
+using MPT.Vending.Domains.Ordering.Abstractions;
 
 namespace API.Controllers
 {
@@ -44,8 +44,8 @@ namespace API.Controllers
             => _kioskService.SetCredit(kioskUid, sku, credit);
 
         [HttpPost("limit")]
-        public void SetMaxCountPerSession(string kioskUid, string sku, int limit)
-            => _kioskService.SetMaxCountPerSession(kioskUid, sku, limit);
+        public void SetMaxCountPerTransaction(string kioskUid, string sku, int limit)
+            => _kioskService.SetMaxCountPerTransaction(kioskUid, sku, limit);
 
         [HttpPut("media/{kioskUid}")]
         public void PutMedia([FromBody] IEnumerable<KioskMediaLink> links, string kioskUid)

@@ -14,13 +14,13 @@ namespace Portal.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("api/hook/session")]
-        public async Task<IActionResult> Process([FromBody]SessionHookRequest request)
+        [HttpPost("api/hook/transaction")]
+        public async Task<IActionResult> Process([FromBody]TransactionHookRequest request)
         {
             string decrypted = DecryptMessage(request.Message);
 
             if (_hub.Clients != null)
-                await _hub.OnNewSession(JsonSerializer.Deserialize<Session>(decrypted.Trim().Replace("\0", string.Empty)));
+                await _hub.OnNewTransaction(JsonSerializer.Deserialize<Transaction>(decrypted.Trim().Replace("\0", string.Empty)));
 
             return Ok();
         }

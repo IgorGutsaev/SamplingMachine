@@ -44,7 +44,7 @@
                         <Dispensing />
                     </div>
                     <div class="carousel-item" id="exit-screen">
-                        <EndSession />
+                        <EndTransaction />
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
     import Dispensing from './DispensingGoods.vue'
-    import EndSession from './EndSession.vue'
+    import EndTransaction from './EndTransaction.vue'
     import i18n from '../i18n'
 
     export default defineComponent({
@@ -84,7 +84,7 @@
             Identification,
             ListOfProducts,
             Dispensing,
-            EndSession,
+            EndTransaction,
             KioskSettings
         },
         props: {

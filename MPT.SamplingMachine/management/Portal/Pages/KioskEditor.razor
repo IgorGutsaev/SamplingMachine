@@ -186,7 +186,7 @@ else {
                         </td>
                         <td>
                             <div>
-                                <input type="number" min="1" max="10" value="@link.MaxCountPerSession" @oninput="(e) => { link.MaxCountPerSession = Convert.ToInt32(e.Value); SetMaxCountPerSession(link.Product.Sku, link.MaxCountPerSession); }">
+                                <input type="number" min="1" max="10" value="@link.MaxCountPerTransaction" @oninput="(e) => { link.MaxCountPerTransaction = Convert.ToInt32(e.Value); SetMaxCountPerTransaction(link.Product.Sku, link.MaxCountPerTransaction); }">
                             </div>
                         </td>
                         <td>
@@ -269,10 +269,10 @@ else {
                .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
                .Build();
 
-            hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) => {
-                Session session = JsonSerializer.Deserialize<Session>(sessionData);
+            hubConnectionEditBelt.On<string>("OnNewTransaction", async (trData) => {
+                Transaction transaction = JsonSerializer.Deserialize<Transaction>(trData);
 
-                foreach (var link in session.Items) {
+                foreach (var link in transaction.Items) {
                     KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
                     if (existingLink != null)
                         existingLink.RemainingQuantity -= link.Count;
@@ -348,7 +348,7 @@ else {
     private async Task AddProductLinkAsync(string sku) {
         await _client.LinkProductAsync(kiosk.UID, sku);
         var links = kiosk.ProductLinks?.ToList() ?? new List<KioskProductLink>();
-        links.Insert(0, new KioskProductLink { Credit = 1, MaxCountPerSession = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku), Disabled = true });
+        links.Insert(0, new KioskProductLink { Credit = 1, MaxCountPerTransaction = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku), Disabled = true });
        
         kiosk.ProductLinks = new List<KioskProductLink>(); // this crutch helps render 
         this.StateHasChanged(); // tooltip images correctly
@@ -365,8 +365,8 @@ else {
     private async Task SetCredit(string sku, int credit)
         => await _client.SetCreditAsync(kiosk.UID, sku, credit);
 
-    private async Task SetMaxCountPerSession(string sku, int maxCountPerSession)
-        => await _client.SetMaxCountPerSession(kiosk.UID, sku, maxCountPerSession);
+    private async Task SetMaxCountPerTransaction(string sku, int maxCountPerTransaction)
+        => await _client.SetMaxCountPerTransaction(kiosk.UID, sku, maxCountPerTransaction);
 
     private async Task OnLanguageChanged(Language lang, bool value) {
         IEnumerable<LangSelector> activeLanguages = LanguageList.Where(x => x.Index.HasValue);

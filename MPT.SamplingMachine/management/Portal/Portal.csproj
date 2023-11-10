@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Backend\ApiClient\MPT.SamplingMachine.ApiClient.csproj" />
-    <ProjectReference Include="..\..\Backend\Domains\Products\Abstractions\MPT.Vending.Domains.Products.Abstractions.csproj" />
-    <ProjectReference Include="..\..\backend\Domains\Products\Services\MPT.Vending.Domains.Products.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,8 +16,8 @@
 
   <ItemGroup>
     <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.8" />
-    <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.24" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.12" />
+    <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.13" />
   </ItemGroup>
 
 </Project>

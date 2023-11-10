@@ -56,8 +56,8 @@ export async function loginServiceAsync(pin) {
     });
 };
 
-export async function commitSessionAsync(phone, products) {
-    return await fetch('kiosk/session', {
+export async function commitTransactionAsync(phone, products) {
+    return await fetch('kiosk/transaction', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'

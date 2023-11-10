@@ -9,8 +9,8 @@
     import { defineComponent } from 'vue';
     import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
-    import { commitSessionAsync } from '/src/modules/sync.module.js';
-    import Session from '/src/modules/session.module.js'
+    import { commitTransactionAsync } from '/src/modules/sync.module.js';
+    import Transaction from '/src/modules/transaction.module.js'
     import Sampling from './SamplingPage.vue'
 
     export default defineComponent({
@@ -41,7 +41,7 @@
                 });
             }
 
-           await commitSessionAsync(Session.info.phone, products);
+           await commitTransactionAsync(Transaction.info.phone, products);
         }
     });
 </script>

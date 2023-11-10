@@ -37,8 +37,8 @@ namespace webapi.Services
         public async Task<HttpResponseMessage> LoginAsync(LoginRequest login)
             => await _client.LoginAsync(login);
 
-        public async Task CommitSessionAsync(Session session)
-            => await _client.CommitSessionsAsync(session);
+        public async Task CommitTransactionAsync(Transaction session)
+            => await _client.CommitTransactionsAsync(session);
 
         public void ClearCache()
             => _kioskCache.Clear();

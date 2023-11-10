@@ -1,4 +1,4 @@
-﻿@page "/sessions";
+﻿@page "/transactions";
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
 @using Microsoft.AspNetCore.SignalR.Client;
@@ -9,13 +9,13 @@
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client
 @inject NavigationManager _uriHelper
-@inject SessionStateContainer sessionStateContainer
+@inject TransactionStateContainer transactionStateContainer
 
-<PageTitle>Sessions</PageTitle>
+<PageTitle>Transactions</PageTitle>
 
-<h1>Sessions</h1>
+<h1>Transactions</h1>
 
-<p>List of sessions</p>
+<p>List of transactions</p>
 
 
 <div class="container-fluid">
@@ -30,7 +30,7 @@
                     <button class="btn btn-secondary btn-large" onclick="@Cancel">Stop</button>
                 }
                 else {
-                    <button class="btn btn-primary btn-large" @onclick="() => { SearchSessions(); }">Search</button>
+                    <button class="btn btn-primary btn-large" @onclick="() => { SearchTransactions(); }">Search</button>
                 }
             </div>
         </div>
@@ -48,14 +48,14 @@
     </thead>
     <tbody>
 
-        @if (sessions != null) {
-            foreach (var session in sessions) {
-                string popoverId = PopoverContentId(session);
+        @if (transactions != null) {
+            foreach (var transaction in transactions) {
+                string popoverId = PopoverContentId(transaction);
                 <tr>
                     <td>
-                        <button id="@SessionId(session)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToSessionDetails(session)" data-bs-trigger="hover" title="Session @session.PhoneNumber" data-bs-content-id="@popoverId">@session.PhoneNumber</button>
+                        <button id="@TransactionId(transaction)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToTransactionDetails(transaction)" data-bs-trigger="hover" title="Transaction @transaction.PhoneNumber" data-bs-content-id="@popoverId">@transaction.PhoneNumber</button>
                         <div id="@popoverId" class="d-none">
-                            @foreach (var item in session.Items) {
+                            @foreach (var item in transaction.Items) {
                                 <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
                                 <strong>&nbsp;@item.Product.Sku</strong>
                                 <span>&nbsp;x&nbsp;@item.Count</span>
@@ -64,10 +64,10 @@
                         </div>
                     </td>
                     <td>
-                        @session.Date.ToString("HH:mm:ss dd/MMM/yyyy")
+                        @transaction.Date.ToString("HH:mm:ss dd/MMM/yyyy")
                     </td>
                     <td>
-                        <span class="badge bg-warning text-dark">@session.Items.Sum(x => x.UnitCredit * x.Count)</span>
+                        <span class="badge bg-warning text-dark">@transaction.Items.Sum(x => x.UnitCredit * x.Count)</span>
                     </td>
                 </tr>
             }
@@ -89,7 +89,7 @@
 </script>
 
 @code {
-    private List<Session> sessions;
+    private List<Transaction> transactions;
     private HubConnection hubConnectionEditBelt;
 
     CancellationTokenSource loadingTokenSource;
@@ -100,16 +100,15 @@
 
     protected override async Task OnInitializedAsync() {
 
-
         hubConnectionEditBelt = new HubConnectionBuilder()
            .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
            .Build();
 
-        hubConnectionEditBelt.On<string>("OnNewSession", async (sessionData) => {
-            Session session = JsonSerializer.Deserialize<Session>(sessionData);
-            List<Session> listOfSessions = sessions.ToList();
-            listOfSessions.Insert(0, session);
-            sessions = listOfSessions;
+        hubConnectionEditBelt.On<string>("OnNewTransaction", async (data) => {
+            Transaction transaction = JsonSerializer.Deserialize<Transaction>(data);
+            List<Transaction> listOfTransactions = transactions.ToList();
+            listOfTransactions.Insert(0, transaction);
+            transactions = listOfTransactions;
 
             await InvokeAsync(() => {
                 StateHasChanged();
@@ -119,21 +118,21 @@
         });
 
         await hubConnectionEditBelt.StartAsync();
-        await SearchSessions();
+        await SearchTransactions();
         await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
     }
 
-    private async Task GoToSessionDetails(Session session) {
+    private async Task GoToTransactionDetails(Transaction transaction) {
         await JSRuntime.InvokeVoidAsync("ui.hidePopover");
-        sessionStateContainer.SetValue(session);
-        navigationManager.NavigateTo($"/session/{session.PhoneNumber}");
+        transactionStateContainer.SetValue(transaction);
+        navigationManager.NavigateTo($"/transaction/{transaction.PhoneNumber}");
     }
 
-    private string PopoverContentId(Session session)
-        => $"popover-content-{SessionId(session)}";
+    private string PopoverContentId(Transaction transaction)
+        => $"popover-content-{TransactionId(transaction)}";
 
-    private string SessionId(Session session)
-        => $"{session.PhoneNumber}-{session.Date:ddMMyyHHmmss}";
+    private string TransactionId(Transaction transaction)
+        => $"{transaction.PhoneNumber}-{transaction.Date:ddMMyyHHmmss}";
 
     protected override async void OnAfterRender(bool firstRender) {
         if (firstRender) {
@@ -141,18 +140,18 @@
         }
     }
 
-    private async Task SearchSessions() {
-        sessions = new List<Session>();
+    private async Task SearchTransactions() {
+        transactions = new List<Transaction>();
         loadingTokenSource = new CancellationTokenSource();
 
-        IAsyncEnumerator<Session> e = _client.GetSessionsAsync(new SessionsRequest { From = from, To = to, MobileNumber = phoneNumber }, loadingTokenSource.Token);
+        IAsyncEnumerator<Transaction> e = _client.GetTransactionsAsync(new TransactionRequest { From = from, To = to, MobileNumber = phoneNumber }, loadingTokenSource.Token);
          try {
              while (await e.MoveNextAsync()) {
-                 sessions.Add(e.Current);
+                 transactions.Add(e.Current);
                  stillReceivingProducts = true;
 
                  try {
-                     await JSRuntime.InvokeVoidAsync("console.info", $"Session received: {e.Current.PhoneNumber}");
+                     await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
                  }
                  catch { }
 

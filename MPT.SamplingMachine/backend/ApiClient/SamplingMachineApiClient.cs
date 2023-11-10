@@ -2,7 +2,6 @@
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
@@ -74,9 +73,9 @@ namespace MPT.SamplingMachine.ApiClient
             await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/credit?kioskUid={kioskUid}&sku={sku}&credit={credit}"), null);
         }
 
-        public async Task SetMaxCountPerSession(string kioskUid, string sku, int maxCountPerSession) {
+        public async Task SetMaxCountPerTransaction(string kioskUid, string sku, int maxCountPerTransaction) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/limit?kioskUid={kioskUid}&sku={sku}&limit={maxCountPerSession}"), null);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/limit?kioskUid={kioskUid}&sku={sku}&limit={maxCountPerTransaction}"), null);
         }
 
         /// <summary>
@@ -103,41 +102,41 @@ namespace MPT.SamplingMachine.ApiClient
         #region products
         public async Task<Product> GetProductAsync(string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/products?sku={sku}"));
+            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_url), $"/api/ordering?sku={sku}"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<Product>(result);
         }
 
         public async Task LinkProductAsync(string kioskUid, string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PutAsync(new Uri(new Uri(_url), $"/api/products/link?kioskUid={kioskUid}&sku={sku}"), null);
+            await _client.PutAsync(new Uri(new Uri(_url), $"/api/ordering/link?kioskUid={kioskUid}&sku={sku}"), null);
         }
 
         public async Task UnlinkProductAsync(string kioskUid, string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/unlink?kioskUid={kioskUid}&sku={sku}"));
+            await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/ordering/unlink?kioskUid={kioskUid}&sku={sku}"));
         }
 
         public async Task DisableProductLinkAsync(string kioskUid, string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/ordering/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
         }
 
         public async Task EnableProductLinkAsync(string kioskUid, string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
+            await _client.PostAsync(new Uri(new Uri(_url), $"/api/ordering/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
         }
 
         public async Task PutProductAsync(Product product) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), "/api/products"), httpContent);
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), "/api/ordering"), httpContent);
         }
 
         public async IAsyncEnumerator<Product> GetProductsAsync(IEnumerable<string> sku, CancellationToken token) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(new ProductRequest { Sku = sku }), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/products/"), httpContent);
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/ordering/"), httpContent);
 
             response.EnsureSuccessStatusCode();
 
@@ -161,7 +160,7 @@ namespace MPT.SamplingMachine.ApiClient
         public async IAsyncEnumerator<Product> GetProductsAsync(string filter, CancellationToken token) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             using HttpResponseMessage response = await _client.GetAsync(
-                new Uri(new Uri(_url), $"/api/products/all?filter={filter ?? string.Empty}"),
+                new Uri(new Uri(_url), $"/api/ordering/all?filter={filter ?? string.Empty}"),
                 HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
@@ -185,43 +184,41 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task<IEnumerable<Product>> DisableProductAsync(string kioskUid, string sku) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/products/disable"));
+            HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_url), $"/api/ordering/disable"));
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
         }
 
         public async Task PutPicture(string sku, string picture) {
             var httpContent = new StringContent(JsonSerializer.Serialize(new ProductPictureUpdateRequest { Sku = sku, Picture = picture }), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/products/picture"), httpContent);
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/ordering/picture"), httpContent);
             await response.Content.ReadAsStringAsync();
         }
-        #endregion
 
-        #region sessions
-        public async Task CommitSessionsAsync(Session session) {
+        public async Task CommitTransactionsAsync(Transaction transaction) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(session, _options), Encoding.UTF8, "application/json");
-            await _client.PutAsync(new Uri(new Uri(_url), "/api/products/session"), httpContent);
+            var httpContent = new StringContent(JsonSerializer.Serialize(transaction, _options), Encoding.UTF8, "application/json");
+            await _client.PutAsync(new Uri(new Uri(_url), "/api/ordering/transaction"), httpContent);
         }
 
-        public async IAsyncEnumerator<Session> GetSessionsAsync(SessionsRequest filter, CancellationToken? token = null) {
+        public async IAsyncEnumerator<Transaction> GetTransactionsAsync(TransactionRequest filter, CancellationToken? token = null) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             var httpContent = new StringContent(JsonSerializer.Serialize(filter), Encoding.UTF8, "application/json");
-            using HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), "/api/products/sessions"), httpContent).ConfigureAwait(false);
+            using HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), "/api/ordering/transactions"), httpContent).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             using Stream responseStream =
                 token.HasValue ? await response.Content.ReadAsStreamAsync(token.Value).ConfigureAwait(false) :
                 await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            var sessions = JsonSerializer.DeserializeAsyncEnumerable<Session>(
+            var transactions = JsonSerializer.DeserializeAsyncEnumerable<Transaction>(
                 responseStream,
                 new JsonSerializerOptions {
                     PropertyNameCaseInsensitive = true,
                     DefaultBufferSize = 128
                 });
 
-            await foreach (var s in sessions) {
+            await foreach (var s in transactions) {
                 if (token != null && token.Value.IsCancellationRequested) {
                     responseStream.Close();
                     break;

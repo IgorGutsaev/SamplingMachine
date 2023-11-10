@@ -12,7 +12,7 @@ export default {
             type: Object,
             required: false
         },
-        // reflects max samples count per session
+        // reflects max samples count per transaction
         credit: {
             type: Number,
             required: true

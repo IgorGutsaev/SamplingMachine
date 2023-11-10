@@ -28,9 +28,9 @@ public class KioskController : ControllerBase
     public async Task<HttpResponseMessage> LoginAsync([FromBody] LoginRequest request)
         => await _kioskService.LoginAsync(request);
 
-    [HttpPut("session")]
-    public async Task PutSessionAsync([FromBody] Session request)
-        => await _kioskService.CommitSessionAsync(request);
+    [HttpPut("transaction")]
+    public async Task PutTransactionAsync([FromBody] Transaction request)
+        => await _kioskService.CommitTransactionAsync(request);
 
     [HttpPost("loginService")]
     public IActionResult LoginService([FromBody] ServiceLoginRequest loginRequest) {

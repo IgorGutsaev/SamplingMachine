@@ -22,7 +22,7 @@
                 ProductLinks = source.ProductLinks.Select(x => new KioskProductLink {
                     Credit = x.Credit,
                     Disabled = x.Disabled,
-                    MaxCountPerSession = x.MaxCountPerSession,
+                    MaxCountPerTransaction = x.MaxCountPerTransaction,
                     RemainingQuantity = x.RemainingQuantity,
                     Product = new Product {
                         Names = x.Product.Names,

@@ -12,7 +12,7 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
         Kiosk Add(string uid);
         void AddOrUpdate(Kiosk kiosk);
         void SetCredit(string kioskUid, string sku, int credit);
-        void SetMaxCountPerSession(string kioskUid, string sku, int limit);
+        void SetMaxCountPerTransaction(string kioskUid, string sku, int limit);
         void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links);
         IEnumerable<Kiosk> GetKiosksWithSku(string sku);
     }
