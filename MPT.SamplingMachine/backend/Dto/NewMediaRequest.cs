@@ -4,5 +4,6 @@
     {
         public string Hash { get; set; }
         public string FileName { get; set; }
+        public int Size { get; set; }
     }
 }

@@ -58,6 +58,7 @@ else {
             <tr>
                 <th>Name</th>
                 <th>Type</th>
+                <th>Size, Mb</th>
                 <th></th>
             </tr>
         </thead>
@@ -65,21 +66,38 @@ else {
             @if (_media != null)
                 foreach (var m in _media) {
                     <tr>
-                        <td>
+                        <td class="align-middle">
                             @m.Name
                         </td>
-                        <td>
-                            @m.Type.GetCode()
+                        <td class="align-middle">
+                            @if (m.Type == AdMediaType.mp4) {
+                                <img src="/img/mp4.png" style="max-height: 1.2em" />
+                            }
+                            else if (m.Type == AdMediaType.gif) {
+                                <img src="/img/gif.png" style="max-height: 1.2em" />
+                            }
+                        </td>
+                        <td class="align-middle">
+                            @(Math.Round(m.Size / 1000000.0, 2))
                         </td>
                         <td>
                             @if (m.CanDelete) {
-                                <button type="button" class="btn btn-dark" @onclick="e => Delete(m.Hash)">Delete</button>
+                                <button type="button" class="btn btn-danger" @onclick="e => Delete(m.Hash)">Delete</button>
+                            }
+                            else {
+                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Can't delete. The resource is associated with some kiosks">
+                                    <button type="button" class="btn btn-danger" disabled>Delete</button>
+                                </span>
                             }
                         </td>
                     </tr>
                 }
         </tbody>
     </table>
+
+    @if (uploading) {
+        <span class="spinner-border spinner-border-sm ms-3" role="status" aria-hidden="true"></span>
+    }
 }
 
 <script>
@@ -95,6 +113,7 @@ else {
     const int MAX_GIF_SIZE_MB = 3;
 
     private bool loading = true;
+    private bool uploading = false;
     private bool saving = false;
     private IEnumerable<AdMedia> _media;
 
@@ -121,7 +140,22 @@ else {
             return;
         }
 
-        await _client.UploadMediaFileAsync(e.File.Name, buffer);
+        uploading = true;
+        this.StateHasChanged();
+
+        string hash = await _client.UploadMediaFileAsync(e.File.Name, buffer);
+        await _client.PutMediaAsync(new NewMediaRequest { FileName = e.File.Name, Hash = hash });
+
+        var newList = _media.ToList();
+        newList.Add(new AdMedia {
+                Type = type,
+                Hash = hash,
+                CanDelete = true,
+                Name = Path.GetFileNameWithoutExtension(e.File.Name),
+                Size = (int)e.File.Size
+            });
+        _media = newList;
+        uploading = false;
     }
 
     private async Task Delete(string hash) {

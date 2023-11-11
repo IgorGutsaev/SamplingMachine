@@ -282,6 +282,11 @@ namespace MPT.SamplingMachine.ApiClient
             return JsonSerializer.Deserialize<IEnumerable<KioskMediaLink>>(result);
         }
 
+        public async Task PutMediaAsync(NewMediaRequest request) {
+            var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/media"), httpContent);
+        }
+
         public async Task<string> UploadMediaFileAsync(string fileName, byte[] data) {
             using (var content = new MultipartFormDataContent()) {
                 content.Add(new StreamContent(new MemoryStream(data)) {

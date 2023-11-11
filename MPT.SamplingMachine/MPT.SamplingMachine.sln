@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Adverti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Advertisement.Services", "backend\Domains\Advertisement\Services\MPT.Vending.Domains.Advertisement.Services.csproj", "{9479A1CB-3243-4AE8-9F2E-FE1A546DF59F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vanding.Domains.Advertisement.Infrastructure", "backend\Domains\Advertisement\Infrastructure\MPT.Vanding.Domains.Advertisement.Infrastructure.csproj", "{67F0C46F-C409-45F2-979B-55732E0F24A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Advertisement.Infrastructure", "backend\Domains\Advertisement\Infrastructure\MPT.Vending.Domains.Advertisement.Infrastructure.csproj", "{67F0C46F-C409-45F2-979B-55732E0F24A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Kiosks.Infrastructure", "backend\Domains\Kiosks\Infrastructure\MPT.Vending.Domains.Kiosks.Infrastructure.csproj", "{D9AD71FD-1DE8-47BC-B9DC-E10AC9F20E34}"
 EndProject

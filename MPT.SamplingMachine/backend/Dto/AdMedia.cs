@@ -20,5 +20,8 @@ namespace MPT.Vending.API.Dto
 
         [JsonPropertyName("canDelete")]
         public bool CanDelete { get; set; }
+
+        [JsonPropertyName("size")]
+        public int Size { get; set; }
     }
 }

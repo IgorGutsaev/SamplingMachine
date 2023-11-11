@@ -47,7 +47,9 @@ namespace API.Controllers
             using var md5 = MD5.Create();
             string uid = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
 
-            return await _blobRepository.UploadAsync(stream.ToArray(), $"media/{extension}/{uid}");
+            await _blobRepository.UploadAsync(stream.ToArray(), $"media/{extension}/{uid}");
+
+            return uid;
         }
 
         [HttpGet("find/{format}/{hash}")]

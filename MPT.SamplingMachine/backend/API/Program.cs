@@ -9,18 +9,19 @@ using MPT.Vending.Domains.Ordering.Abstractions;
 using MPT.Vending.Domains.Ordering.Services;
 using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
+using MPT.Vending.Domains.Advertisement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
 IProductService _mediatorProductService = null;
 
 builder.Services.AddControllers()
-     .AddJsonOptions(opts => {
-         opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
-         opts.JsonSerializerOptions.Converters.Add(new CountryJsonConverter());
-         opts.JsonSerializerOptions.Converters.Add(new LanguageJsonConverter());
-         opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
-     });
+    .AddJsonOptions(opts => {
+        opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
+        opts.JsonSerializerOptions.Converters.Add(new CountryJsonConverter());
+        opts.JsonSerializerOptions.Converters.Add(new LanguageJsonConverter());
+        opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
+    });
 
 Portal2KioskMessagesSender mediator = new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=");
 
@@ -42,7 +43,7 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
     x.ConnectionString = "DefaultEndpointsProtocol=https;AccountName=ascdevstorage;AccountKey=X5lm0IwRvY7gzf7EChalkTLTwCWk5croT7MESc44MkCY3y3EKXLfL9IRd1wSdUH5tyGcsWH7vUIrD5vXydcsEg==;EndpointSuffix=core.windows.net";
     x.ContainerName = "ogmento";
 }))
-.AddTransient<IMediaService, DemoMediaService>();
+.AddAdvertisement(connectionString);
 
 builder.Services.AddTransient<IReplenishmentService>(sp => {
     DemoReplenishmentService result = new DemoReplenishmentService();
