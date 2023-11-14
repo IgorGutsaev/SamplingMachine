@@ -21,7 +21,7 @@
             <div id="globalCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active" id="home-screen">
-                        <Advertisement @homeButtonEnabled="changeHomeButton" />
+                        <AdvertisementManager @homeButtonEnabled="changeHomeButton" />
                     </div>
                     <div class="carousel-item" id="languages-screen">
                         <img src="https://www.petful.com/wp-content/uploads/2013/12/Abyssinian-1-750x398.jpg" class="d-block w-100">
@@ -59,7 +59,7 @@
     import CatalogModule from '/src/modules/catalog.module.js'
     import { getLanguagesAsync, clearCache } from '/src/modules/sync.module.js';
     import { getSecTimeoutFromTimespan } from '/src/modules/helpers.module.js';
-    import Advertisement from './Advertisement.vue'
+    import AdvertisementManager from './AdvertisementManager.vue'
     import Terms from './TermsOfService.vue'
     import ListOfProducts from './ListOfProducts.vue'
     import Identification from './CustomerIdentification.vue'
@@ -78,14 +78,12 @@
             };
         },
         components: {
-            Advertisement,
-            CatalogModule,
+            AdvertisementManager,
             Terms,
             Identification,
             ListOfProducts,
             Dispensing,
             EndTransaction,
-            KioskSettings
         },
         props: {
         },
@@ -118,7 +116,7 @@
             $("#exit-screen").addClass("active");
             console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
 
-            let promise = new Promise((resolve, reject) => {
+            new Promise(() => {
                 setTimeout(() => {
                     location.reload();
                 }, 2000)

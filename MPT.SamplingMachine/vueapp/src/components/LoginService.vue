@@ -22,7 +22,6 @@
 
 <script lang="js">
     import { defineComponent } from 'vue';
-    import $ from 'jquery'
     import { loginServiceAsync } from '/src/modules/sync.module.js';
     import SimpleKeyboard from './SimpleKeyboard';
 

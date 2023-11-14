@@ -21,7 +21,6 @@
 
 <script lang="js">
     import { defineComponent } from 'vue';
-    import $ from 'jquery'
     import Sampling from './SamplingPage.vue'
     //    import { RouterLink } from 'vue-router'
 

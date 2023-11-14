@@ -16,7 +16,10 @@
             input: {
                 type: String
             },
-            maxLength: 10
+            maxLength: {
+                type: Number,
+                def: 10
+            }
         },
         data: () => ({
             keyboard: null

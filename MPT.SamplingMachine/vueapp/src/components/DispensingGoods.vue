@@ -7,7 +7,6 @@
 
 <script lang="js">
     import { defineComponent } from 'vue';
-    import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
     import { commitTransactionAsync } from '/src/modules/sync.module.js';
     import Transaction from '/src/modules/transaction.module.js'
@@ -20,7 +19,6 @@
             };
         },
         components: {
-            KioskSettings
         },
         created() {
             this.fetchData();
@@ -36,7 +34,7 @@
         },
         async extract(products) {
             if (KioskSettings.isEmulation) {
-                let promise = new Promise((resolve, reject) => {
+                new Promise(() => {
                     setTimeout(() => Sampling.toExit(), 5000)
                 });
             }

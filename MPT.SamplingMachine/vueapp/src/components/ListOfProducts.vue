@@ -13,7 +13,7 @@
 
                     <div class="container-fluid" v-bind:style="{'margin-top': marginTop}">
                         <!-- container -->
-                        <div class="row justify-content-md-center mt-4" v-for="chunk in pageChunks(page)">
+                        <div class="row justify-content-md-center mt-4" v-bind:key="chunk" v-for="chunk in pageChunks(page)">
                             <div class="col col-lg-2" v-if="calcChunkSize(page) == 1" />
                             <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-8' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
                                 <div class="card" id="card">
@@ -91,8 +91,6 @@
             }
         },
         components: {
-            CatalogModule,
-            KioskSettings
         },
         created() {
             this.fetchData();
@@ -114,7 +112,9 @@
 
                 this.buildChunks();
             });
-            this.emitter.on('syncProduct', async product => {
+            this.emitter.on('syncProduct', async (product) => {
+                let p = CatalogModule.products.find(x => x.sku == product.sku);
+                p.credit = product.credit;
                 this.products = CatalogModule.products.filter(x => x.credit <= this.credit);
                 this.buildChunks();
             });

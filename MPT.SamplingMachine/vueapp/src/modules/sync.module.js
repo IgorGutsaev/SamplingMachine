@@ -21,7 +21,7 @@ export async function getLanguagesAsync(currentLangs, newLangCodes) {
             .then(r => r.json());
     }
     else return currentLangs;
-};
+}
 
 export async function loginAsync(phone, pin) {
     return await fetch('kiosk/login', {
@@ -40,7 +40,7 @@ export async function loginAsync(phone, pin) {
             }
         })
     );
-};
+}
 
 export async function loginServiceAsync(pin) {
     return await fetch('kiosk/loginService', {
@@ -54,7 +54,7 @@ export async function loginServiceAsync(pin) {
             return { url: r.replenishmentUrl };
         else return false;
     });
-};
+}
 
 export async function commitTransactionAsync(phone, products) {
     return await fetch('kiosk/transaction', {
@@ -73,10 +73,10 @@ export async function commitTransactionAsync(phone, products) {
             })
         })
     });
-};
+}
 
 export async function clearCache() {
     return await fetch('kiosk/cache/clear', {
         method: 'GET'
     });
-};
+}

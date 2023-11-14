@@ -10,7 +10,6 @@
 
 <script lang="js">
     import { defineComponent } from 'vue';
-    import $ from 'jquery'
     import KioskSettings from '/src/modules/settings.module.js'
     import Sampling from './SamplingPage.vue'
 
@@ -25,7 +24,6 @@
         },
         filename: null,
         components: {
-            KioskSettings
         },
         emits: ["homeButtonEnabled"],
         mounted() {
@@ -123,10 +121,13 @@
                     }
                 }, 1000);
 
-
+                let infinite = 1;
                 let startChangeMediaTimer = setTimeout(function tick() {
                     startChangeMediaTimer = setTimeout(tick, 10000);
                     self.resolveActiveMedia(KioskSettings.media);
+                    if (!infinite) {
+                        clearInterval(startChangeMediaTimer);
+                    }
                 }, 10000);
             },
             toLanguages() {

@@ -33,13 +33,13 @@
     export default {
         name: 'UI',
         components: {
-            Sampling,
-            KioskSettings,
-            CatalogModule
+            Sampling
         },
         data() {
-            idleTimer: null;
-            exitPopupOpened: false;
+            return {
+                idleTimer: null,
+                exitPopupOpened: false
+            }
         },
         created() {
              const connection = new HubConnectionBuilder()
@@ -58,7 +58,7 @@
                     console.log(err);
                     setTimeout(start, 5000);
                 }
-            };
+            }
             
             connection.onclose(async () => {
                 await start();

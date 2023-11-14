@@ -44,7 +44,6 @@
 
 <script lang="js">
     import { defineComponent } from 'vue';
-    import $ from 'jquery'
     import { loginAsync } from '/src/modules/sync.module.js';
     import Transaction from '/src/modules/transaction.module.js'
     import Sampling from './SamplingPage.vue'
