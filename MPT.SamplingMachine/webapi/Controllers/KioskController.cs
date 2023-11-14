@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MPT.Vending.API.Dto;
+using System.Diagnostics;
 using webapi.Services;
 
 namespace webapi.Controllers;

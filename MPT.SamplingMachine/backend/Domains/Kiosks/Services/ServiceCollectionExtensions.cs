@@ -10,24 +10,22 @@ namespace MPT.Vending.Domains.Kiosks.Services
 {
     public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="setupAction"></param>
-        /// <param name="getProducts"></param>
-        /// <param name="connectionString">if cs is empty then show demo data</param>
-        /// <returns></returns>
         public static IServiceCollection AddKiosk(this IServiceCollection serviceCollection,
-            Action<IKioskService> setupAction,
+            Action<IKioskService> kioskSetup,
+            Action<IReplenishmentService> replenishmentSetup,
             Func<IEnumerable<string>, IEnumerable<Product>> getProducts,
             string connectionString)
             => string.IsNullOrWhiteSpace(connectionString) ?
             serviceCollection.AddTransient<IKioskService>(sp => {
                 DemoKioskService result = new DemoKioskService();
-                setupAction?.Invoke(result);
+                kioskSetup?.Invoke(result);
                 return result;
-            }) : serviceCollection.AddDbContext<KioskDbContext>((sp, options) => {
+            }).AddTransient<IReplenishmentService>(sp => {
+                DemoReplenishmentService result = new DemoReplenishmentService();
+                replenishmentSetup?.Invoke(result);
+                return result;
+            })
+            : serviceCollection.AddDbContext<KioskDbContext>((sp, options) => {
                 options.UseSqlServer(connectionString);
 #if DEBUG
                 options.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
@@ -36,11 +34,18 @@ namespace MPT.Vending.Domains.Kiosks.Services
             .AddTransient<KioskRepository>()
             .AddTransient<KioskSettingsRepository>()
             .AddTransient<KioskProductLinkViewRepository>()
+            .AddTransient<PlanogramRepository>()
+            .AddTransient<PlanogramViewRepository>()
+            .AddTransient<IReplenishmentService>(sp => {
+                ReplenishmentService result = new ReplenishmentService(sp.GetRequiredService<PlanogramRepository>(), sp.GetRequiredService<PlanogramViewRepository>());
+                replenishmentSetup?.Invoke(result);
+                return result;
+            })
             .AddTransient<IKioskService>(sp => { KioskService result = new KioskService(sp.GetRequiredService<KioskRepository>(), 
                 sp.GetRequiredService<KioskSettingsRepository>(),
                 sp.GetRequiredService<KioskProductLinkViewRepository>(),
                 getProducts);
-                setupAction?.Invoke(result);
+                kioskSetup?.Invoke(result);
                 return result;
             });
     }

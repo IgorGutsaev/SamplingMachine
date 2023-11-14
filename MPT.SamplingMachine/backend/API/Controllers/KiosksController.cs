@@ -2,6 +2,7 @@
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Ordering.Abstractions;
+using System.Diagnostics;
 
 namespace API.Controllers
 {

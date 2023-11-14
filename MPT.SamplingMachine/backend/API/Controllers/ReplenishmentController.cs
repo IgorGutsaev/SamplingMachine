@@ -22,6 +22,10 @@ namespace API.Controllers
         public PoG GetPlanogram(string uid)
             => _replenishmentService.GetPlanogram(uid);
 
+        [HttpPut("planogram")]
+        public void PutPlanogram([FromBody] PoG planogram, string uid)
+            => _replenishmentService.PutPlanogram(uid, planogram);
+
         private readonly IReplenishmentService _replenishmentService;
         private readonly ILogger<ReplenishmentController> _logger;
     }

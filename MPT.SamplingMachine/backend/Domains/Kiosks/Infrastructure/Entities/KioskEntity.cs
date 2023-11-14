@@ -7,5 +7,6 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Entities
         public string Uid { get; set; }
         public bool IsOn { get; set; } = false;
         public IEnumerable<KioskSettingsEntity> Settings { get; set; }
+        public IEnumerable<KioskProductLinkViewEntity> Links { get; set; }
     }
 }

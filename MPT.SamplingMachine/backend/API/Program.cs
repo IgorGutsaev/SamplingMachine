@@ -2,7 +2,6 @@ using Filuet.Infrastructure.Abstractions.Converters;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Filuet.Infrastructure.DataProvider;
 using MessagingServices;
-using MPT.Vending.Domains.Advertisement.Abstractions;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Ordering.Abstractions;
@@ -33,6 +32,7 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
 }
 
 builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e),
+    x => x.onPlanogramChanged += async (sender, e) => { /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */},
     x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable(),
     connectionString);
 
@@ -44,12 +44,6 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
     x.ContainerName = "ogmento";
 }))
 .AddAdvertisement(connectionString);
-
-builder.Services.AddTransient<IReplenishmentService>(sp => {
-    DemoReplenishmentService result = new DemoReplenishmentService();
-    //result.onPlanogramChanged += async (sender, e) => await sp.GetRequiredService<Portal2KioskMessagesSender>().OnPlanogramHasChanged(sender, e));
-    return result;
-});
 
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddEndpointsApiExplorer();

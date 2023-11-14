@@ -43,7 +43,7 @@ namespace MPT.Vending.Domains.Ordering.Services
         }
 
         public async IAsyncEnumerable<Product> GetAsync(IEnumerable<string> sku) {
-            IEnumerable<ProductEntity> entities = _productRepository.Get(x => sku.Contains(x.Sku));
+            IEnumerable<ProductEntity> entities = _productRepository.Get(x => sku.Contains(x.Sku)).ToList();
 
             await foreach (var t in GetProductsAsync(entities))
                 yield return t;

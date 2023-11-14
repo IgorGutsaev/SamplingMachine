@@ -9,5 +9,9 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public event EventHandler<PoG> onPlanogramChanged;
         public PoG GetPlanogram(string kioskUid)
             => DemoData._planogram;
+
+        public void PutPlanogram(string kioskUid, PoG planogram) {
+            DemoData._planogram = planogram;
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
     {
         event EventHandler<PoG> onPlanogramChanged;
         PoG GetPlanogram(string kioskUid);
+        void PutPlanogram(string kioskUid, PoG planogram);
     }
 }

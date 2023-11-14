@@ -47,6 +47,7 @@ namespace MPT.Vending.Domains.Ordering.Infrastructure.Repositories
                 }
                 catch (ArgumentException) { return string.Empty; }
                 data = Convert.ToBase64String(blob.Data);
+                cacher.Set(uid, data);
             }
 
             return data;

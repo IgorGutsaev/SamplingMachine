@@ -9,14 +9,11 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
     {
         private Kiosk kiosk = new Kiosk();
 
-        public KioskBuilder WithData(KioskEntity entity) {
+        public KioskBuilder WithData(KioskEntity entity, IEnumerable<Product>? products = null) {
             kiosk.UID = entity.Uid;
             kiosk.IsOn = entity.IsOn;
-            return this;
-        }
 
-        public KioskBuilder WithSettings(IEnumerable<KioskSettingsEntity> settings) {
-            foreach (var s in settings) {
+            foreach (var s in entity.Settings) {
                 if (s.Identifier == "Credit")
                     kiosk.Credit = Convert.ToInt32(s.Value);
                 else if (s.Identifier == "IdleTimeout")
@@ -24,10 +21,17 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
                 else if (s.Identifier == "Languages")
                     kiosk.Languages = JsonSerializer.Deserialize<IEnumerable<Language>>(s.Value);
             }
+
+            kiosk.ProductLinks = entity.Links.Select(x => new KioskProductLink {
+                Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
+                Credit = x.Credit,
+                MaxCountPerTransaction = x.MaxCountPerTransaction,
+                Disabled = x.Disabled
+            });
             return this;
         }
 
-        public KioskBuilder WithLinks(IEnumerable<KioskProductLinkViewEntity> links, IEnumerable<Product>? products = null) {
+        public KioskBuilder WithStock(IEnumerable<KioskProductLinkViewEntity> links, IEnumerable<Product>? products = null) {
             kiosk.ProductLinks = links.Select(x => new KioskProductLink {
                 Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
                 Credit = x.Credit,

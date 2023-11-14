@@ -8,6 +8,8 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Configurations
         public static ModelBuilder WithKiosk(this ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfiguration(new KioskConfiguration())
                 .ApplyConfiguration(new KioskSettingsConfiguration())
+                .ApplyConfiguration(new PlanogramConfiguration())
+                .ApplyConfiguration(new PlanogramViewConfiguration())
                 .ApplyConfiguration(new KioskProductLinkViewConfiguration());
             return modelBuilder;
         }

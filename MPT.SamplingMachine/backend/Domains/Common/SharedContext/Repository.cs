@@ -8,7 +8,7 @@ namespace MPT.Vending.Domains.SharedContext
             _context = context;
         }
 
-        public abstract IEnumerable<T> Get(Func<T, bool> predicate);
+        public abstract IEnumerable<T> Get(Func<T, bool>? predicate);
 
         public virtual T Put(T entity) {
             if (typeof(T1) == typeof(int)) {

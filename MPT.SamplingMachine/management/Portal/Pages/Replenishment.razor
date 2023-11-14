@@ -64,7 +64,7 @@ else {
                                     <div class="progress-bar bg-@GetStockLevel(planogram.GetRoute(address))" style="width: @((100 * planogram.GetRoute(address).Quantity)/planogram.GetRoute(address).MaxQuantity)%" role="progressbar" aria-valuenow="@planogram.GetRoute(address).Quantity" aria-valuemin="0" aria-valuemax="@planogram.GetRoute(address).MaxQuantity">@planogram.GetRoute(address).Quantity / @planogram.GetRoute(address).MaxQuantity</div>
                                 </div>
                                 <div class="input-group" style="padding: 7px 0 7px 0 !important">
-                                    <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                                    <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { if (0 < planogram.GetRoute(address).Quantity) { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }}"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
                                     <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">
                                         @if (limited) {
                                             <i class="oi oi-arrow-thick-top" aria-hidden="true" />
@@ -73,7 +73,7 @@ else {
                                             <div>Fill to maximum</div>
                                         }
                                     </button>
-                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-outline-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity++; OnPlanogramChanged(); }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                                    <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-outline-primary" type="button" @onclick="() => { if (planogram.GetRoute(address).MaxQuantity > planogram.GetRoute(address).Quantity) { planogram.GetRoute(address).Quantity++; OnPlanogramChanged(); }}"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@ else {
                 if (token == actualCommandUid) {
                     //await JSRuntime.InvokeVoidAsync("alert", JsonSerializer.Serialize(planogram));
                     Debug.Print(JsonSerializer.Serialize(planogram));
-                    //await _client.PutPlanogramAsync(uid, planogram);
+                    await _client.PutPlanogramAsync(uid, planogram);
                     saving = false;
                     await InvokeAsync(StateHasChanged);
                 }
@@ -151,9 +151,9 @@ else {
     private string GetStockLevel(PoGRoute route) {
         if (route.Quantity == route.MaxQuantity)
             return "success";
-        else if (route.Quantity > route.MaxQuantity / 2)
+        else if (route.Quantity > route.MaxQuantity / 2m)
             return "primary";
-        else if (route.Quantity <= route.MaxQuantity / 2 && route.Quantity >= route.MaxQuantity / 4)
+        else if (route.Quantity <= route.MaxQuantity / 2m && route.Quantity >= route.MaxQuantity / 4m)
             return "warning";
         else return "danger";
     }

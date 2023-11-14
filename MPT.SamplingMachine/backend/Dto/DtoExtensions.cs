@@ -30,11 +30,11 @@
                     }
                 }),
                 IsOn = source.IsOn,
-                Media = source.Media.Where(x => x.Active)
+                Media = source.Media?.Where(x => x.Active)
             };
 
         public static Kiosk PrepareForCommunication(this Kiosk source) {
-            source.Media = source.Media.Where(x => x.Active);
+            source.Media = source.Media?.Where(x => x.Active) ?? new List<KioskMediaLink>();
             return source;
         }
     }

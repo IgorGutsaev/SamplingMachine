@@ -1,6 +1,7 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

@@ -5,6 +5,7 @@ using MPT.Vending.Domains.Kiosks.Infrastructure.Builders;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Repositories;
 using MPT.Vending.Domains.SharedContext;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace MPT.Vending.Domains.Kiosks.Services
@@ -31,14 +32,11 @@ namespace MPT.Vending.Domains.Kiosks.Services
             if (kiosk == null)
                 return null;
 
-            IEnumerable<KioskSettingsEntity> settings = _kioskSettingsRepository.Get(x => x.KioskId == kiosk.Id).ToList();
-            IEnumerable<KioskProductLinkViewEntity> links = _kioskProductLinkViewRepository.Get(x => x.KioskUid == uid).ToList();
-            IEnumerable<Product> products = _getProducts(links.Select(x => x.Sku));
+            IEnumerable<Product> products = _getProducts(kiosk.Links.Select(x => x.Sku));
 
             Kiosk result = new KioskBuilder()
-                .WithData(kiosk)
-                .WithSettings(settings)
-                .WithLinks(links, products)
+                .WithData(kiosk, products)
+                //.WithStock(links, )
                 .Build();
 
             return result;
@@ -58,15 +56,12 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public IEnumerable<Kiosk> GetAll() {
             IEnumerable<KioskEntity> kiosks = _kioskRepository.Get(x => true).ToList();
-            IEnumerable<KioskSettingsEntity> settings = _kioskSettingsRepository.Get(x => kiosks.Select(k => k.Id).Contains(x.KioskId)).ToList();
-            IEnumerable<KioskProductLinkViewEntity> links = _kioskProductLinkViewRepository.Get(x => kiosks.Select(k => k.Uid).Contains(x.KioskUid)).ToList();
-            IEnumerable<Product> products = _getProducts(links.Select(x => x.Sku));
+            IEnumerable<Product> products = _getProducts(kiosks.SelectMany(x => x.Links).Select(x => x.Sku).Distinct()).ToList();
 
             foreach (var k in kiosks) {
                 yield return new KioskBuilder()
-                    .WithData(k)
-                    .WithSettings(settings.Where(x => x.KioskId == k.Id))
-                    .WithLinks(links.Where(x => x.KioskUid == k.Uid), products)
+                    .WithData(k, products)
+                    //.WithStock(links.Where(x => x.KioskUid == k.Uid), products)
                     .Build();
             }
         }
@@ -121,24 +116,35 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public void SetCredit(string kioskUid, string sku, int credit) {
             bool changed = false;
-            Kiosk kiosk = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid);
+
+            kioskUid = kioskUid.ToUpper();
+
+            KioskEntity kiosk = _kioskRepository.Get(x => x.Uid == kioskUid).First();
 
             if (string.IsNullOrWhiteSpace(sku)) {
-                if (kiosk.Credit != credit) {
-                    kiosk.Credit = credit;
+                KioskSettingsEntity? creditEntity = kiosk.Settings.FirstOrDefault(x => x.Identifier == "Credit");
+                if (creditEntity == null) {
+                    _kioskSettingsRepository.Put(KioskSettingsEntity.Create(kiosk.Id, "Credit", credit));
+                    changed = true;
+                }
+                else if (creditEntity.Value != credit.ToString()) {
+                    creditEntity.Value = credit.ToString();
+                    creditEntity.Kiosk = null;
+                    _kioskSettingsRepository.Put(creditEntity);
                     changed = true;
                 }
             }
             else {
-                KioskProductLink link = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
+                KioskProductLinkViewEntity? link = kiosk.Links.FirstOrDefault(x => x.Sku == sku);
                 if (link != null && link.Credit != credit) {
+                    /// TODO: change value
                     link.Credit = credit;
                     changed = true;
                 }
             }
 
             if (changed)
-                onKioskChanged?.Invoke(this, kiosk);
+                onKioskChanged?.Invoke(this, Get(kioskUid));
         }
 
         public void SetMaxCountPerTransaction(string kioskUid, string sku, int limit) {
@@ -154,7 +160,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         }
 
         public IEnumerable<Kiosk> GetKiosksWithSku(string sku)
-            => Get(x => _kioskProductLinkViewRepository.Get(x => x.Sku == sku).Select(x => x.KioskUid).ToList().Distinct().Contains(x.UID));
+            => Get(x => _kioskProductLinkViewRepository.Get(x => x.Sku == sku).Select(x => x.Kiosk.Uid).ToList().Distinct().Contains(x.UID));
 
         private readonly KioskRepository _kioskRepository;
         private readonly KioskSettingsRepository _kioskSettingsRepository;

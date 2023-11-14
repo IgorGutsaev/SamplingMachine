@@ -9,7 +9,8 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Configurations
             builder.ToTable("Kiosk");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Uid);
-            builder.HasMany(x => x.Settings).WithOne(x => x.Kiosk);
+            builder.HasMany(x => x.Settings);//.WithOne(x => x.Kiosk);
+            builder.HasMany(x => x.Links);
         }
     }
 }
