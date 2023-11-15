@@ -1,4 +1,6 @@
-﻿using Filuet.Infrastructure.Abstractions.Enums;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.Abstractions.Enums;
+using Microsoft.Extensions.Caching.Distributed;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Builders;
@@ -17,12 +19,17 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public KioskService(KioskRepository kioskRepository,
             KioskSettingsRepository kioskSettingsRepository,
             KioskProductLinkViewRepository kioskProductLinkViewRepository,
-            Func<IEnumerable<string>, IEnumerable<Product>> getProducts)
-        {
+            PlanogramRepository planogramRepository,
+            PlanogramViewRepository planogramViewRepository,
+            Func<IEnumerable<string>, IEnumerable<Product>> getProducts,
+            Func<IEnumerable<string>, Dictionary<string, IEnumerable<KioskMediaLink>>> getMedia) {
             _kioskRepository = kioskRepository;
             _kioskSettingsRepository = kioskSettingsRepository;
             _kioskProductLinkViewRepository = kioskProductLinkViewRepository;
+            _planogramRepository = planogramRepository;
+            _planogramViewRepository = planogramViewRepository;
             _getProducts = getProducts;
+            _getMedia = getMedia;
         }
 
         public Kiosk Get(string uid) {
@@ -33,10 +40,13 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 return null;
 
             IEnumerable<Product> products = _getProducts(kiosk.Links.Select(x => x.Sku));
+            Dictionary<string, IEnumerable<KioskMediaLink>> media = _getMedia(new string[] { uid });
+            PlanogramViewEntity? planogram = _planogramViewRepository.Get(x => x.KioskUid == uid).FirstOrDefault();
 
             Kiosk result = new KioskBuilder()
                 .WithData(kiosk, products)
-                //.WithStock(links, )
+                .WithMedia(media.TryGetValue(uid, out IEnumerable<KioskMediaLink>? value) ? value : null)
+                .WithPlanogram(planogram == null ? null : PoG.Read(planogram.Planogram))
                 .Build();
 
             return result;
@@ -57,11 +67,14 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public IEnumerable<Kiosk> GetAll() {
             IEnumerable<KioskEntity> kiosks = _kioskRepository.Get(x => true).ToList();
             IEnumerable<Product> products = _getProducts(kiosks.SelectMany(x => x.Links).Select(x => x.Sku).Distinct()).ToList();
+            Dictionary<string, IEnumerable<KioskMediaLink>> media = _getMedia(kiosks.Select(x => x.Uid));
+            IEnumerable<PlanogramViewEntity> planograms = _planogramViewRepository.Get(x => true);
 
             foreach (var k in kiosks) {
                 yield return new KioskBuilder()
                     .WithData(k, products)
-                    //.WithStock(links.Where(x => x.KioskUid == k.Uid), products)
+                    .WithMedia(media.TryGetValue(k.Uid, out IEnumerable<KioskMediaLink>? value) ? value : null)
+                    .WithPlanogram(PoG.Read(planograms.FirstOrDefault(x => x.KioskUid == k.Uid)?.Planogram))
                     .Build();
             }
         }
@@ -116,9 +129,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public void SetCredit(string kioskUid, string sku, int credit) {
             bool changed = false;
-
             kioskUid = kioskUid.ToUpper();
-
             KioskEntity kiosk = _kioskRepository.Get(x => x.Uid == kioskUid).First();
 
             if (string.IsNullOrWhiteSpace(sku)) {
@@ -148,9 +159,19 @@ namespace MPT.Vending.Domains.Kiosks.Services
         }
 
         public void SetMaxCountPerTransaction(string kioskUid, string sku, int limit) {
-            KioskProductLink link = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
-            if (link != null)
+            bool changed = false;
+            kioskUid = kioskUid.ToUpper();
+            KioskEntity kiosk = _kioskRepository.Get(x => x.Uid == kioskUid).First();
+            KioskProductLinkViewEntity link = kiosk.Links.FirstOrDefault(x => x.Sku == sku);
+
+            if (link != null && link.MaxCountPerTransaction != limit) {
+                /// TODO: change value
                 link.MaxCountPerTransaction = limit;
+                changed = true;
+            }
+
+            if (changed)
+                onKioskChanged?.Invoke(this, Get(kioskUid));
         }
 
         public void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links) {
@@ -162,9 +183,38 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public IEnumerable<Kiosk> GetKiosksWithSku(string sku)
             => Get(x => _kioskProductLinkViewRepository.Get(x => x.Sku == sku).Select(x => x.Kiosk.Uid).ToList().Distinct().Contains(x.UID));
 
+        public IEnumerable<string> Extract(string kioskUid, IEnumerable<TransactionProductLink> cart) {
+            PlanogramViewEntity? planogram = _planogramViewRepository.Get(x => x.KioskUid == kioskUid).FirstOrDefault();
+            if (planogram == null)
+                return new List<string>();
+
+            PoG poG = PoG.Read(planogram.Planogram);
+            List<string> result = new List<string>(); // list of addresses to dispense
+
+            foreach (var item in cart) {
+                for (int i = 0; i < item.Count; i++) {
+                    List<PoGRoute>? routes = poG[item.Product.Sku].Routes?.OrderByDescending(x => x.Quantity).ToList();
+                    if (routes != null && routes.Any()) {
+                        PoGRoute route = routes.FirstOrDefault();
+                        result.Add(route.Address);
+                        route.Quantity--;
+                    }
+                }
+            }
+
+            PlanogramEntity? planogramEntity = _planogramRepository.Get(x=>x.KioskId == planogram.KioskId).FirstOrDefault();
+            planogramEntity.Planogram = poG.ToString(false);
+            _planogramRepository.Put(planogramEntity);
+
+            return result;
+        }
+
         private readonly KioskRepository _kioskRepository;
         private readonly KioskSettingsRepository _kioskSettingsRepository;
         private readonly KioskProductLinkViewRepository _kioskProductLinkViewRepository;
+        private readonly PlanogramRepository _planogramRepository;
+        private readonly PlanogramViewRepository _planogramViewRepository;
         private readonly Func<IEnumerable<string>, IEnumerable<Product>> _getProducts;
+        private readonly Func<IEnumerable<string>, Dictionary<string, IEnumerable<KioskMediaLink>>> _getMedia;
     }
 }

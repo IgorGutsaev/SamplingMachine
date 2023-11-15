@@ -1,6 +1,7 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
 using Filuet.Infrastructure.Abstractions.Converters;
 using MPT.Vending.API.Dto;
+using System.Data;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
@@ -97,6 +98,14 @@ namespace MPT.SamplingMachine.ApiClient
         public async Task KioskDisableAsync(string uid) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/disable?uid={uid}"));
+        }
+
+        public async Task<IEnumerable<string>> ExtractTransactionAsync(IEnumerable<TransactionProductLink> cart, string kioskUid) {
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            var httpContent = new StringContent(JsonSerializer.Serialize(cart, _options), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/extract/{kioskUid}"), httpContent);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<string>>(result);
         }
         #endregion
 

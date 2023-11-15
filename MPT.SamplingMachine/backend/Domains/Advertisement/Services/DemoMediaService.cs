@@ -14,6 +14,9 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
         public IEnumerable<KioskMediaLink> GetByKiosk(string kioskUid)
             => DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid)?.Media;
 
+        public Dictionary<string, IEnumerable<KioskMediaLink>> GetByKiosks(IEnumerable<string> kiosks)
+            => throw new NotImplementedException();
+
         public void Put(NewMediaRequest request) {
             if (DemoData._media.Any(x => x.Hash == request.Hash))
                 return;
@@ -27,5 +30,7 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
 
         public void Delete(string hash)
             => DemoData._media.RemoveAll(x => x.Hash == hash);
+
+
     }
 }

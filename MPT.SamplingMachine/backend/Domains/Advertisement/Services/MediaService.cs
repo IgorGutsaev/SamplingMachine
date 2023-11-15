@@ -43,6 +43,20 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
                 Start = x.Start
             });
 
+        public Dictionary<string, IEnumerable<KioskMediaLink>> GetByKiosks(IEnumerable<string> kiosks)
+            => _kioskMediaLinkViewRepository.Get(x => kiosks.Contains(x.KioskUid)).GroupBy(x => x.KioskUid)
+               .ToDictionary(x => x.Key, x => x.Select(e => new KioskMediaLink {
+                   Active = e.Active,
+                   Media = new AdMedia {
+                       Hash = e.Media.Hash,
+                       Name = e.Media.Name,
+                       Type = e.Media.Type,
+                       CanDelete = false,
+                       Size = e.Media.Size
+                   },
+                   Start = e.Start
+               }));
+
         public void Put(NewMediaRequest request) {
             AdMediaEntity? media = _adMediaRepository.Get(x => x.Hash == request.Hash.ToLower()).FirstOrDefault();
             if (media != null)

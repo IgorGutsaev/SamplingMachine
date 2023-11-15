@@ -13,15 +13,15 @@
 
                     <div class="container-fluid" v-bind:style="{'margin-top': marginTop}">
                         <!-- container -->
-                        <div class="row justify-content-md-center mt-4" v-bind:key="chunk" v-for="chunk in pageChunks(page)">
+                        <div class="row justify-content-md-center mt-4" v-bind:key="chunk.id" v-for="chunk in pageChunks(page)">
                             <div class="col col-lg-2" v-if="calcChunkSize(page) == 1" />
                             <div v-for="product in chunk" :key="product.sku" :class="calcChunkSize(page) == 1 ? 'col-8' : (calcChunkSize(page) == 2 ? 'col-6' : 'col-4')">
                                 <div class="card" id="card">
                                     <img class="card-img-top rounded-top pic" :id="product.sku" v-bind:src="'data:image/*;base64,' + product.picture">
-                                    <div v-if="product.count && product.maxQty <= product.count" class="outOfStock display-6">
+                                    <div v-if="product.count && product.maxQty <= product.count && this.credit > 1" class="outOfStock display-6">
                                         <label v-html="$t('titles.outOfStock')" />
                                     </div>
-                                    <div v-if="products.length > 1 && product.maxQty > product.count && (product.credit > (this.credit - this.creditUsed))" class="lackOfCredit display-6">
+                                    <div v-if="products.length > 1 && product.maxQty > product.count && (product.credit > (this.credit - this.creditUsed)) && this.credit > 1" class="lackOfCredit display-6">
                                         <label v-html="$t('titles.lackOfCredit')" />
                                     </div>
 
@@ -192,7 +192,13 @@
 
                 console.info(ShoppingCart.items.length == 0 ? "Cart is empty" : "Cart changed: " + JSON.stringify(ShoppingCart.items));
             },
-            addToCart(product) {
+            async issueProducts() {
+                this.$emit('homeButtonEnabled', false);
+                Sampling.toDispensing();
+
+                await Dispensing.extract(ShoppingCart.items);
+            },
+            async addToCart(product) {
                 product.count++;
 
                 if (ShoppingCart.items.filter(x => x.sku == product.sku).length == 0)
@@ -202,6 +208,9 @@
                 this.creditUsed += product.credit;
 
                 console.info("Cart changed: " + JSON.stringify(ShoppingCart.items));
+
+                // if (this.creditUsed >= this.credit)
+                //     await this.issueProducts();
             },
             productAvailable(product) {
                 // show Add button if 1) stock is not empty 2) no limitation violation 3) credit is sufficient
@@ -215,12 +224,6 @@
 
                 return isAvailable;
             },
-            async issueProducts() {
-                this.$emit('homeButtonEnabled', false);
-                Sampling.toDispensing();
-
-                await Dispensing.extract(ShoppingCart.items);
-            },
             calcChunkSize(chunk) {
                 return this.products.length > 9 ? 3 : (chunk.length == 2 || chunk.length == 4 ? 2 : (chunk.length == 1 ? 1 : 3));
             },
@@ -232,6 +235,7 @@
 
                 for (let i = 0; i < page.length; i += chunkSize) {
                     result[index] = page.slice(i, i + chunkSize);
+                    result[index].id = index;
                     index++;
                 }
 

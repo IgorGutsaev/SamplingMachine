@@ -10,9 +10,8 @@ namespace API.Controllers
     [ApiController]
     public class KiosksController : ControllerBase
     {
-        public KiosksController(IKioskService kioskService, IProductService productService, ILogger<KiosksController> logger) {
+        public KiosksController(IKioskService kioskService, ILogger<KiosksController> logger) {
             _kioskService = kioskService;
-            _productService = productService;
             _logger = logger;
         }
 
@@ -52,8 +51,11 @@ namespace API.Controllers
         public void PutMedia([FromBody] IEnumerable<KioskMediaLink> links, string kioskUid)
             => _kioskService.SetMedia(kioskUid, links);
 
+        [HttpPut("extract/{kioskUid}")]
+        public IEnumerable<string> ExtractCart([FromBody] IEnumerable<TransactionProductLink> cart, string kioskUid)
+            => _kioskService.Extract(kioskUid, cart);
+
         private readonly IKioskService _kioskService;
-        private readonly IProductService _productService;
         private readonly ILogger<KiosksController> _logger;
     }
 }

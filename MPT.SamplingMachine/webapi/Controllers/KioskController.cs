@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using CondomatProtocol;
+using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
-using System.Diagnostics;
 using webapi.Services;
 
 namespace webapi.Controllers;
@@ -10,9 +9,10 @@ namespace webapi.Controllers;
 [Route("[controller]")]
 public class KioskController : ControllerBase
 {
-    public KioskController(KioskService kioskService, IConfiguration configuration, ILogger<KioskController> logger)
+    public KioskController(KioskService kioskService, CondomatCommunicationService condomatService, IConfiguration configuration, ILogger<KioskController> logger)
     {
         _kioskService = kioskService;
+        _condomatService = condomatService;
         _configuration = configuration;
         _logger = logger;
     }
@@ -33,6 +33,12 @@ public class KioskController : ControllerBase
     public async Task PutTransactionAsync([FromBody] Transaction request)
         => await _kioskService.CommitTransactionAsync(request);
 
+    [HttpPut("extract")]
+    public async Task ExtractTransactionAsync([FromBody] IEnumerable<TransactionProductLink> products) {
+        IEnumerable<string> addresses = await _kioskService.ExtractTransactionAsync(products);
+        await _condomatService.SendExtractAsync(addresses.Select(x => Convert.ToInt32(x)));
+    }
+
     [HttpPost("loginService")]
     public IActionResult LoginService([FromBody] ServiceLoginRequest loginRequest) {
         if (loginRequest.Pin == "1234")
@@ -42,6 +48,7 @@ public class KioskController : ControllerBase
     }
 
     private readonly KioskService _kioskService;
+    private readonly CondomatCommunicationService _condomatService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<KioskController> _logger;
 }

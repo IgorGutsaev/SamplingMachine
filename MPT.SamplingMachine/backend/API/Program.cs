@@ -9,10 +9,12 @@ using MPT.Vending.Domains.Ordering.Services;
 using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
 using MPT.Vending.Domains.Advertisement.Services;
+using MPT.Vending.Domains.Advertisement.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
 IProductService _mediatorProductService = null;
+IMediaService _mediatorMediaService = null;
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts => {
@@ -34,6 +36,7 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
 builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e),
     x => x.onPlanogramChanged += async (sender, e) => { /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */},
     x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable(),
+    x => _mediatorMediaService.GetByKiosks(x),
     connectionString);
 
 builder.Services.AddOrdering(x => x.onProductChanged += async (sender, e) => 
@@ -53,6 +56,7 @@ var app = builder.Build();
 
 _mediatorKioskService = app.Services.GetService<IKioskService>();
 _mediatorProductService = app.Services.GetService<IProductService>();
+_mediatorMediaService = app.Services.GetService<IMediaService>();
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();

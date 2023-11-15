@@ -1,7 +1,9 @@
+using CondomatProtocol;
 using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using MPT.SamplingMachine.ApiClient;
+using System.IO.Ports;
 using webapi.Communication;
 using webapi.Services;
 
@@ -25,6 +27,18 @@ builder.Services.AddSingleton(sp => {
 builder.Services.AddSingleton(sp => {
     string kioskUid = sp.GetService<IConfiguration>()["KioskUid"];
     return new Portal2KioskMessagesReceiver("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=", kioskUid, sp.GetRequiredService<IHubContext<NotificationHub>>());
+});
+
+builder.Services.AddSingleton(sp => {
+    int portId = Convert.ToInt32(sp.GetService<IConfiguration>()["SerialPort"]);
+    
+    CondomatCommunicationService vmcService = new CondomatCommunicationService(portId);
+
+    vmcService.onEvent += (sender, e) => {
+        Console.WriteLine($"{DateTime.Now:T}: {(e.IsCommand ? ">" : "<")} {e.ResponseToString}" + (!string.IsNullOrWhiteSpace(e.Comment) ? $" ({e.Comment})" : string.Empty));
+    };
+
+    return vmcService;
 });
 
 builder.Services.AddCors(options => {

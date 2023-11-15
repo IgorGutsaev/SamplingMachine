@@ -100,6 +100,11 @@
             // call again the method if the route changes
             '$route': 'fetchData'
         },
+        toAgreement() {
+            $("#globalCarousel .carousel-item.active").removeClass("active");
+            $("#agreement-screen").addClass("active");
+            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+        },
         toIdentification() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#identification-screen").addClass("active");
@@ -129,7 +134,7 @@
         },
         toLanguages() {
             if (KioskSettings.languages.length <= 1) {
-                this.toIdentification();
+                this.toAgreement();
             }
             else {
                 $("#globalCarousel .carousel-item.active").removeClass("active");

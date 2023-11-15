@@ -53,6 +53,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Orderin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Ordering.Test", "backend\Domains\Ordering\Test\MPT.Vending.Domains.Ordering.Test.csproj", "{DAA6E282-9C11-4199-B1D0-6577C361F107}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondomatProtocol", "hardware\CondomatProtocol\CondomatProtocol.csproj", "{F75379D8-209D-444A-8FF9-00A21CCCC97E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hardware", "hardware", "{3B7FD69C-855B-4CBB-9329-698380190096}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +137,10 @@ Global
 		{DAA6E282-9C11-4199-B1D0-6577C361F107}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAA6E282-9C11-4199-B1D0-6577C361F107}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAA6E282-9C11-4199-B1D0-6577C361F107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75379D8-209D-444A-8FF9-00A21CCCC97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75379D8-209D-444A-8FF9-00A21CCCC97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75379D8-209D-444A-8FF9-00A21CCCC97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75379D8-209D-444A-8FF9-00A21CCCC97E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +166,7 @@ Global
 		{23F63861-F695-4FDF-9E07-FA2A22F0A2C8} = {B21564AA-7F63-4A3D-8EED-0D4D6AB20D20}
 		{B97C2CF8-835F-4C05-B0A8-7559F6264509} = {B21564AA-7F63-4A3D-8EED-0D4D6AB20D20}
 		{DAA6E282-9C11-4199-B1D0-6577C361F107} = {B21564AA-7F63-4A3D-8EED-0D4D6AB20D20}
+		{F75379D8-209D-444A-8FF9-00A21CCCC97E} = {3B7FD69C-855B-4CBB-9329-698380190096}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DB410981-1BD4-4F39-8197-C8154C9276D7}

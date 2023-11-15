@@ -40,6 +40,9 @@ namespace webapi.Services
         public async Task CommitTransactionAsync(Transaction session)
             => await _client.CommitTransactionsAsync(session);
 
+        public async Task<IEnumerable<string>> ExtractTransactionAsync(IEnumerable<TransactionProductLink> cart)
+            => await _client.ExtractTransactionAsync(cart, _kioskUid);
+
         public void ClearCache()
             => _kioskCache.Clear();
 

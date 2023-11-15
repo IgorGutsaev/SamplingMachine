@@ -1,4 +1,5 @@
-﻿using Filuet.Infrastructure.Abstractions.Enums;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.Abstractions.Enums;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using System.Text.Json;
@@ -31,14 +32,33 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
             return this;
         }
 
-        public KioskBuilder WithStock(IEnumerable<KioskProductLinkViewEntity> links, IEnumerable<Product>? products = null) {
-            kiosk.ProductLinks = links.Select(x => new KioskProductLink {
-                Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
-                Credit = x.Credit,
-                MaxCountPerTransaction = x.MaxCountPerTransaction,
-                //RemainingQuantity = , // to be done
-                Disabled = x.Disabled
-            });
+        public KioskBuilder WithMedia(IEnumerable<KioskMediaLink>? links) {
+            List<KioskMediaLink> media = new List<KioskMediaLink>();
+
+            if (links != null) {
+                foreach (var l in links)
+                    media.Add(l);
+            }
+
+            kiosk.Media = media;
+
+            return this;
+        }
+
+        public KioskBuilder WithPlanogram(PoG? planogram) {
+            List<KioskProductLink> result = new List<KioskProductLink>();
+
+            foreach (var p in kiosk.ProductLinks)
+                result.Add(new KioskProductLink { Product = p.Product,
+                    Credit= p.Credit,
+                    Disabled= p.Disabled,
+                    MaxCountPerTransaction= p.MaxCountPerTransaction,
+                    RemainingQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?
+                    .Routes.Sum(x=>x.Quantity) ?? 0
+                });
+
+            kiosk.ProductLinks = result;
+
             return this;
         }
 

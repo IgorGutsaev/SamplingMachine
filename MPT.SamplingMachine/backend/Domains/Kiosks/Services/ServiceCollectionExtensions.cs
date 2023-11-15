@@ -14,6 +14,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             Action<IKioskService> kioskSetup,
             Action<IReplenishmentService> replenishmentSetup,
             Func<IEnumerable<string>, IEnumerable<Product>> getProducts,
+            Func<IEnumerable<string>, Dictionary<string, IEnumerable<KioskMediaLink>>> getMedia,
             string connectionString)
             => string.IsNullOrWhiteSpace(connectionString) ?
             serviceCollection.AddTransient<IKioskService>(sp => {
@@ -44,7 +45,9 @@ namespace MPT.Vending.Domains.Kiosks.Services
             .AddTransient<IKioskService>(sp => { KioskService result = new KioskService(sp.GetRequiredService<KioskRepository>(), 
                 sp.GetRequiredService<KioskSettingsRepository>(),
                 sp.GetRequiredService<KioskProductLinkViewRepository>(),
-                getProducts);
+                sp.GetRequiredService<PlanogramRepository>(),
+                sp.GetRequiredService<PlanogramViewRepository>(),
+                getProducts, getMedia);
                 kioskSetup?.Invoke(result);
                 return result;
             });
