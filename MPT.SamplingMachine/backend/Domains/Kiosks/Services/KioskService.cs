@@ -148,8 +148,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             else {
                 KioskProductLinkViewEntity? link = kiosk.Links.FirstOrDefault(x => x.Sku == sku);
                 if (link != null && link.Credit != credit) {
-                    /// TODO: change value
-                    link.Credit = credit;
+                    _kioskProductLinkViewRepository.SetCredit(credit, link.Kiosk.Id, link.Sku);
                     changed = true;
                 }
             }
@@ -165,8 +164,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             KioskProductLinkViewEntity link = kiosk.Links.FirstOrDefault(x => x.Sku == sku);
 
             if (link != null && link.MaxCountPerTransaction != limit) {
-                /// TODO: change value
-                link.MaxCountPerTransaction = limit;
+                _kioskProductLinkViewRepository.SetMaxCountPerTransaction(limit, link.Kiosk.Id, link.Sku);
                 changed = true;
             }
 

@@ -149,7 +149,6 @@ namespace MPT.Vending.Domains.Ordering.Services
             }
         }
 
-
         private readonly PictureRepository _pictureRepository;
         private readonly ProductRepository _productRepository;
         private readonly ProductLocalizationRepository _productLocalizationRepository;
