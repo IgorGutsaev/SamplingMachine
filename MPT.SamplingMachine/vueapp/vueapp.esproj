@@ -12,6 +12,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptConfiguration Remove="tsconfig.json" />
+    <Folder Include="src\assets\promo\videos\" />
   </ItemGroup>
 </Project>
