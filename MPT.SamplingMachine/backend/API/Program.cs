@@ -35,7 +35,7 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
 
 builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e),
     x => x.onPlanogramChanged += async (sender, e) => { /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */},
-    x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable(),
+    x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable().ToList(),
     x => _mediatorMediaService.GetByKiosks(x),
     connectionString);
 

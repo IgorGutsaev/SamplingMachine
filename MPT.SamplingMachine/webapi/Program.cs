@@ -3,11 +3,16 @@ using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using MPT.SamplingMachine.ApiClient;
-using System.IO.Ports;
+using System.Net;
 using webapi.Communication;
 using webapi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel((context, serverOptions) => {
+    serverOptions.Listen(IPAddress.Loopback, 7244, listenOptions => {
+        listenOptions.UseHttps();
+    });
+});
 
 // Add services to the container.
 
@@ -57,10 +62,10 @@ var processor = app.Services.GetRequiredService<Portal2KioskMessagesReceiver>();
 await processor.Run();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
+//if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
@@ -68,6 +73,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/notificationhub");
-
 
 app.Run();

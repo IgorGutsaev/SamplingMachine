@@ -121,6 +121,30 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 existedKiosk = Add(kiosk.UID);
                 isNewKiosk = true;
             }
+            else {
+                KioskEntity kioskEntity = _kioskRepository.Get(x => x.Uid == kiosk.UID).First();
+                IEnumerable<KioskSettingsEntity> settings = _kioskSettingsRepository.Get(x => x.KioskId == kioskEntity.Id).ToList();
+                List<KioskSettingsEntity> toAdd = new List<KioskSettingsEntity>();
+   
+                KioskSettingsEntity? idleTimeout = settings.FirstOrDefault(x => x.Identifier == "IdleTimeout");
+                if (idleTimeout == null)
+                    toAdd.Add(KioskSettingsEntity.Create(kioskEntity.Id, "IdleTimeout", kiosk.IdleTimeout.ToString()));
+                else if (idleTimeout.Value != kiosk.IdleTimeout.ToString()) {
+                    idleTimeout.Value = kiosk.IdleTimeout.ToString();
+                    _kioskSettingsRepository.Put(idleTimeout);
+                }
+
+                KioskSettingsEntity? languages = settings.FirstOrDefault(x => x.Identifier == "Languages");
+                if (languages == null)
+                    toAdd.Add(KioskSettingsEntity.Create(kioskEntity.Id, "Languages", JsonSerializer.Serialize(kiosk.Languages)));
+                else if (languages.Value != JsonSerializer.Serialize(kiosk.Languages)) {
+                    languages.Value = JsonSerializer.Serialize(kiosk.Languages);
+                    _kioskSettingsRepository.Put(languages);
+                }
+
+                if (toAdd.Any())
+                    _kioskSettingsRepository.Put(toAdd);
+            }
 
             existedKiosk.Merge(kiosk);
             if (!isNewKiosk)
