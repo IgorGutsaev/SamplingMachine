@@ -22,7 +22,7 @@ namespace CondomatProtocol
                     onEvent?.Invoke(this, new DataEventArgs { Response = data });
                     busy = false;
                 };
-               // _port.Open();
+                _port.Open();
             }
         }
 
@@ -56,7 +56,24 @@ namespace CondomatProtocol
             }
 
             foreach (int motorId in motorIds) {
-                byte[] command = new byte[3] { 0xAA, 0x55, (byte)motorId };
+                byte address = 0;
+
+                switch (motorId) {
+                    case 1: address = 0x01; break;
+                    case 2: address = 0x02; break;
+                    case 3: address = 0x03; break;
+                    case 4: address = 0x04; break;
+                    case 5: address = 0x05; break;
+                    case 6: address = 0x06; break;
+                    case 7: address = 0x07; break;
+                    case 8: address = 0x08; break;
+                    case 9: address = 0x09; break;
+                    case 10: address = 0x10; break;
+                    case 11: address = 0x11; break;
+                    case 12: address = 0x12; break;
+                }
+
+                byte[] command = new byte[3] { 0xAA, 0x55, address };
                 onEvent?.Invoke(this, new DataEventArgs { Response = command, Comment = $"Dispense from {motorId}", IsCommand = true });
                 busy = true;
                 _port.Write(command, 0, 3);

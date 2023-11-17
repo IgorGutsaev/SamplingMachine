@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MPT.SamplingMachine.ApiClient;
-using System.IO;
 
 namespace webapi.Controllers;
 
