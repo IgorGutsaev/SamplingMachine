@@ -8,11 +8,14 @@ using webapi.Communication;
 using webapi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#if !DEBUG
 builder.WebHost.ConfigureKestrel((context, serverOptions) => {
     serverOptions.Listen(IPAddress.Loopback, 7244, listenOptions => {
         listenOptions.UseHttps();
     });
 });
+#endif
 
 // Add services to the container.
 

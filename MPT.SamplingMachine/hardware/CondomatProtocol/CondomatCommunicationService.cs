@@ -22,7 +22,9 @@ namespace CondomatProtocol
                     onEvent?.Invoke(this, new DataEventArgs { Response = data });
                     busy = false;
                 };
-                _port.Open();
+
+                if (portNumber > 0)
+                    _port.Open();
             }
         }
 

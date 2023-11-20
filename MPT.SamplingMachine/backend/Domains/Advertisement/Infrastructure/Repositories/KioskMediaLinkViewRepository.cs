@@ -11,7 +11,7 @@ namespace MPT.Vending.Domains.Advertisement.Infrastructure.Repositories
         }
 
         public override IEnumerable<KioskMediaLinkViewEntity> Get(Func<KioskMediaLinkViewEntity, bool> predicate)
-            => _context.KioskMediaLinkView.Include(x => x.Media).Where(predicate);
+            => _context.KioskMediaLinkView.Include(x => x.Media).AsNoTracking().Where(predicate);
 
         public override void Put(IEnumerable<KioskMediaLinkViewEntity> entities) {
             throw new NotImplementedException();

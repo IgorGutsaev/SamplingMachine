@@ -41,7 +41,7 @@ else {
         </thead>
         <tbody>
             @if (_resources != null)
-                foreach (var r in _resources) {
+                foreach (var r in _resources.Where(x => x.Media != null)) {
                     <tr>
                         <td>
                             @if (IsCurrent(r)) {
