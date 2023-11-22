@@ -206,26 +206,32 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 IEnumerable<KioskMediaLink> existed = media[kioskUid];
 
                 IEnumerable<KioskMediaLink> toDelete = existed.Where(x => !links.Any(l => l.Media.Hash == x.Media.Hash));
-                if (toDelete.Any())
+                if (toDelete.Any()) {
+                    changed = true;
                     foreach (var link in toDelete)
                         _kioskRepository.DeleteMedia(kiosk.Id, link.Media.Hash);
+                }
 
-                IEnumerable<KioskMediaLink> toUpdate = existed.Where(x => links.Any(l => l.Media.Hash == x.Media.Hash && x.Active != l.Active && x.Start != l.Start));
-                if (toUpdate.Any())
+                IEnumerable<KioskMediaLink> toUpdate = existed.Where(x => links.Any(l => l.Media.Hash == x.Media.Hash && (x.Active != l.Active || x.Start != l.Start)));
+                if (toUpdate.Any()) {
+                    changed = true;
                     foreach (var link in toUpdate)
                         _kioskRepository.UpdateMedia(kiosk.Id, links.First(x => x.Media.Hash == link.Media.Hash));
+                }
 
                 IEnumerable<KioskMediaLink> toAdd = links.Where(x => !existed.Any(l => l.Media.Hash == x.Media.Hash));
-                if (toAdd.Any())
+                if (toAdd.Any()) {
+                    changed = true;
                     foreach (var link in toAdd)
                         _kioskRepository.AddMedia(kiosk.Id, link);
-
-                changed = toDelete.Any() || toUpdate.Any() || toAdd.Any();
+                }
             }
             else {
                 // Add media if there're none
                 foreach (var link in links)
                     _kioskRepository.AddMedia(kiosk.Id, link);
+
+                changed = true;
             }
             
             if (changed)

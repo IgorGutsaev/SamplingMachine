@@ -31,7 +31,7 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
         }
 
         public IEnumerable<KioskMediaLink> GetByKiosk(string kioskUid)
-            => _kioskMediaLinkViewRepository.Get(x => x.KioskUid == kioskUid).Select(x => new KioskMediaLink {
+            => _kioskMediaLinkViewRepository.Get(x => x.KioskUid == kioskUid).ToList().Select(x => new KioskMediaLink {
                 Active = x.Active,
                 Media = new AdMedia {
                     Hash = x.Media.Hash,
@@ -44,7 +44,7 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
             });
 
         public Dictionary<string, IEnumerable<KioskMediaLink>> GetByKiosks(IEnumerable<string> kiosks)
-            => _kioskMediaLinkViewRepository.Get(x => kiosks.Contains(x.KioskUid)).GroupBy(x => x.KioskUid)
+            => _kioskMediaLinkViewRepository.Get(x => kiosks.Contains(x.KioskUid)).GroupBy(x => x.KioskUid).ToList()
                .ToDictionary(x => x.Key, x => x.Select(e => new KioskMediaLink {
                    Active = e.Active,
                    Media = new AdMedia {

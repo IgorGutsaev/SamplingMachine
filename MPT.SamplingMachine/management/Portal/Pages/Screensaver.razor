@@ -16,8 +16,7 @@
 
 <h1>Screensaver</h1>
 
-@if (loading)
-{
+@if (loading) {
     <p><em>Loading...</em></p>
 }
 else {
@@ -50,7 +49,7 @@ else {
                         </td>
                         <td>
                             @*    @r.Start.ToString("HH:mm:ss") *@
-                         @*    @r.Start.ToString("HH:mm:ss") *@
+                            @*    @r.Start.ToString("HH:mm:ss") *@
                             <div class="cs-form">
                                 <input id="time_@r.Media.Hash" type="time" class="form-control" value="@r.Start.ToString("HH:mm:ss")" @onchange="e => StartTimeChanged(e, r.Media.Hash)" />
                             </div>
@@ -125,16 +124,17 @@ else {
     }
 
     private async Task StartTimeChanged(ChangeEventArgs e, string hash) {
-        DateTime newStartTime = DateTime.Parse(e.Value.ToString());
-        newStartTime = DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
-        _resources.FirstOrDefault(x => x.Media.Hash == hash).Start = newStartTime;
+        if (DateTime.TryParse(e.Value.ToString(), out DateTime newStartTime)) {
+            newStartTime = DateTime.MinValue.AddHours(newStartTime.Hour).AddMinutes(newStartTime.Minute).AddSeconds(newStartTime.Second);
+            _resources.FirstOrDefault(x => x.Media.Hash == hash).Start = newStartTime;
 
-        await Task.Delay(1000).ContinueWith(async t => {
-            await Task.Run(async () => {
-                _resources = _resources.OrderBy(x => x.Start).ToList(); // do not remove toList, otherwise blazor tracks ordering changes
-                await OnResourcesChangedAsync();
+            await Task.Delay(1000).ContinueWith(async t => {
+                await Task.Run(async () => {
+                    _resources = _resources.OrderBy(x => x.Start).ToList(); // do not remove toList, otherwise blazor tracks ordering changes
+                    await OnResourcesChangedAsync();
+                });
             });
-        });
+        }
     }
 
     private async Task OnResourcesChangedAsync() {
