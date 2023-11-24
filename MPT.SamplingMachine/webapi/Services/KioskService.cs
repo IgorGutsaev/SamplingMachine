@@ -40,11 +40,11 @@ namespace webapi.Services
         public async Task CommitTransactionAsync(Transaction session)
             => await _client.CommitTransactionsAsync(session);
 
-        public async Task<IEnumerable<string>> ExtractTransactionAsync(IEnumerable<TransactionProductLink> cart)
-            => await _client.ExtractTransactionAsync(cart, _kioskUid);
-
         public void ClearCache()
             => _kioskCache.Clear();
+
+        public async void DispenseAsync(object address)
+            => await _client.DispenseAsync(address, _kioskUid);
 
         private readonly SamplingMachineApiClient _client;
         private readonly IMemoryCachingService _memCache;

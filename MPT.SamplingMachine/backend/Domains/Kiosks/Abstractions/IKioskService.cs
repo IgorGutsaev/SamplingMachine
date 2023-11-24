@@ -15,6 +15,6 @@ namespace MPT.Vending.Domains.Kiosks.Abstractions
         void SetMaxCountPerTransaction(string kioskUid, string sku, int limit);
         void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links);
         IEnumerable<Kiosk> GetKiosksWithSku(string sku);
-        IEnumerable<string> Extract(string kioskUid, IEnumerable<TransactionProductLink> cart);
+        void Dispense(string kioskUid, string address);
     }
 }

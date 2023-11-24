@@ -1,4 +1,4 @@
-﻿namespace CondomatProtocol
+﻿namespace FutureTechniksCondomatProtocol
 {
     public class DataEventArgs : EventArgs
     {

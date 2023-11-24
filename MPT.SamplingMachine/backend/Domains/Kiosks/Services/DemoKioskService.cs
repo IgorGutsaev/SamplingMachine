@@ -107,7 +107,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public IEnumerable<Kiosk> GetKiosksWithSku(string sku)
             => DemoData._kiosks.Where(x => x.ProductLinks.Any(l => l.Product.Sku == sku));
 
-        public IEnumerable<string> Extract(string kioskUid, IEnumerable<TransactionProductLink> cart)
+        public void Dispense(string kioskUid, string address)
             => throw new NotImplementedException();
     }
 }

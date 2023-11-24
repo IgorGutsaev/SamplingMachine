@@ -40,7 +40,6 @@
             }
 
             await commitTransactionAsync(Transaction.info.phone, products);
-            await extractProductsAsync(products);
         }
     });
 </script>

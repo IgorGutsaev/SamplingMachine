@@ -1,4 +1,4 @@
-using CondomatProtocol;
+using FutureTechniksCondomatProtocol;
 using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Microsoft.AspNetCore.SignalR;
@@ -38,13 +38,17 @@ builder.Services.AddSingleton(sp => {
 });
 
 builder.Services.AddSingleton(sp => {
-    int portId = Convert.ToInt32(sp.GetService<IConfiguration>()["SerialPort"]);
+    int portId = Convert.ToInt32(sp.GetService<IConfiguration>()["Hardware:DispensingUnit:SerialPort"]);
     
-    CondomatCommunicationService vmcService = new CondomatCommunicationService(portId);
+    VmcCommunicationService vmcService = new VmcCommunicationService(portId);
 
     vmcService.onEvent += (sender, e) => {
         Console.WriteLine($"{DateTime.Now:T}: {(e.IsCommand ? ">" : "<")} {e.ResponseToString}" + (!string.IsNullOrWhiteSpace(e.Comment) ? $" ({e.Comment})" : string.Empty));
     };
+
+    KioskService kioskService = sp.GetRequiredService<KioskService>();
+
+    vmcService.onDispensing += (sender, e) => kioskService.DispenseAsync(e.MotorId);
 
     return vmcService;
 });

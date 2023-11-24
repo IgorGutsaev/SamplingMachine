@@ -76,21 +76,6 @@ export async function commitTransactionAsync(phone, products) {
     });
 }
 
-export async function extractProductsAsync(products) {
-    return await fetch('kiosk/extract', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(products.map(p => {
-            return {
-                product: { sku: p.sku },
-                count: p.count,
-                unitCredit: p.unitCredit
-            }})
-        )
-    });
-}
 export async function clearCache() {
     return await fetch('kiosk/cache/clear', {
         method: 'GET'

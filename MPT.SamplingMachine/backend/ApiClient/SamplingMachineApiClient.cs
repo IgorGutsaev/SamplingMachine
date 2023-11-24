@@ -100,12 +100,10 @@ namespace MPT.SamplingMachine.ApiClient
             await _client.GetAsync(new Uri(new Uri(_url), $"/api/kiosks/disable?uid={uid}"));
         }
 
-        public async Task<IEnumerable<string>> ExtractTransactionAsync(IEnumerable<TransactionProductLink> cart, string kioskUid) {
+        public async Task DispenseAsync(object address, string kioskUid) {
             // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(cart, _options), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_url), $"/api/kiosks/extract/{kioskUid}"), httpContent);
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<string>>(result);
+            var httpContent = new StringContent(JsonSerializer.Serialize(new { address = address.ToString(), kioskUid }, _options), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_url), $"/api/kiosks/dispense"), httpContent);
         }
         #endregion
 

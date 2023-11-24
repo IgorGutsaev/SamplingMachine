@@ -49,9 +49,9 @@ namespace API.Controllers
         public void PutMedia([FromBody] IEnumerable<KioskMediaLink> links, string kioskUid)
             => _kioskService.SetMedia(kioskUid, links);
 
-        [HttpPut("extract/{kioskUid}")]
-        public IEnumerable<string> ExtractCart([FromBody] IEnumerable<TransactionProductLink> cart, string kioskUid)
-            => _kioskService.Extract(kioskUid, cart);
+        [HttpPost("dispense")]
+        public void Dispense([FromBody] DispensingEvent e)
+            => _kioskService.Dispense(e.KioskUid, e.Address);
 
         private readonly IKioskService _kioskService;
         private readonly ILogger<KiosksController> _logger;

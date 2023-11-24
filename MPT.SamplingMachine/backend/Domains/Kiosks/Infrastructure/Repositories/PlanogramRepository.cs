@@ -12,6 +12,11 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Repositories
         public override IEnumerable<PlanogramEntity> Get(Func<PlanogramEntity, bool> predicate)
             => _context.Planograms.Where(predicate);
 
+        public void Put(PlanogramEntity planogram) {
+            _context.Planograms.Update(planogram);
+            _context.SaveChanges();
+        }
+
         public override void Put(IEnumerable<PlanogramEntity> entities) {
             throw new NotImplementedException();
         }

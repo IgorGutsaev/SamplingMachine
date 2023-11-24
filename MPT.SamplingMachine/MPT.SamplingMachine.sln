@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Orderin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Ordering.Test", "backend\Domains\Ordering\Test\MPT.Vending.Domains.Ordering.Test.csproj", "{DAA6E282-9C11-4199-B1D0-6577C361F107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondomatProtocol", "hardware\CondomatProtocol\CondomatProtocol.csproj", "{F75379D8-209D-444A-8FF9-00A21CCCC97E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FutureTechniksCondomatProtocol", "hardware\CondomatProtocol\FutureTechniksCondomatProtocol.csproj", "{F75379D8-209D-444A-8FF9-00A21CCCC97E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hardware", "hardware", "{3B7FD69C-855B-4CBB-9329-698380190096}"
 EndProject

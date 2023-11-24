@@ -1,13 +1,10 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
 using Filuet.Infrastructure.Abstractions.Enums;
-using Microsoft.Extensions.Caching.Distributed;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Builders;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Repositories;
-using MPT.Vending.Domains.SharedContext;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace MPT.Vending.Domains.Kiosks.Services
@@ -241,30 +238,21 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public IEnumerable<Kiosk> GetKiosksWithSku(string sku)
             => Get(x => _kioskProductLinkViewRepository.Get(x => x.Sku == sku).Select(x => x.Kiosk.Uid).ToList().Distinct().Contains(x.UID));
 
-        public IEnumerable<string> Extract(string kioskUid, IEnumerable<TransactionProductLink> cart) {
-            PlanogramViewEntity? planogram = _planogramViewRepository.Get(x => x.KioskUid == kioskUid).FirstOrDefault();
-            if (planogram == null)
-                return new List<string>();
+        public void Dispense(string kioskUid, string address) {
+            KioskEntity? kiosk = _kioskRepository.Get(x => x.Uid == kioskUid).FirstOrDefault();
+            if (kiosk == null)
+                return;
 
-            PoG poG = PoG.Read(planogram.Planogram);
-            List<string> result = new List<string>(); // list of addresses to dispense
+            PlanogramEntity? planogramEntity = _planogramRepository.Get(x => x.KioskId == kiosk.Id).FirstOrDefault();
+            if (planogramEntity == null)
+                return;
 
-            foreach (var item in cart) {
-                for (int i = 0; i < item.Count; i++) {
-                    List<PoGRoute>? routes = poG[item.Product.Sku].Routes?.OrderByDescending(x => x.Quantity).ToList();
-                    if (routes != null && routes.Any()) {
-                        PoGRoute route = routes.FirstOrDefault();
-                        result.Add(route.Address);
-                        route.Quantity--;
-                    }
-                }
-            }
-
-            PlanogramEntity? planogramEntity = _planogramRepository.Get(x=>x.KioskId == planogram.KioskId).FirstOrDefault();
+            PoG poG = PoG.Read(planogramEntity.Planogram);
+            PoGRoute route = poG.GetRoute(address);
+            if (route != null)
+                route.Quantity--;
             planogramEntity.Planogram = poG.ToString(false);
             _planogramRepository.Put(planogramEntity);
-
-            return result;
         }
 
         private readonly KioskRepository _kioskRepository;
