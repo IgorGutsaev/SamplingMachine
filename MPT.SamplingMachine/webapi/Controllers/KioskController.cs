@@ -33,7 +33,6 @@ public class KioskController : ControllerBase
     public async Task PutTransactionAsync([FromBody] Transaction request)
         => await _kioskService.CommitTransactionAsync(request);
 
-
     [HttpPost("loginService")]
     public IActionResult LoginService([FromBody] ServiceLoginRequest loginRequest) {
         if (loginRequest.Pin == "1234")

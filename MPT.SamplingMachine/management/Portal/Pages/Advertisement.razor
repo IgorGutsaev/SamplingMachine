@@ -67,7 +67,8 @@ else {
                 foreach (var m in _media) {
                     <tr>
                         <td class="align-middle">
-                            @m.Name
+                            <button type="button" class="btn btn-link" @onclick="() => ShowAdMedia(m)">@m.Name</button>
+                            @*  data-bs-toggle="modal" data-bs-target="#viewResourceModal">@m.Name</button> *@
                         </td>
                         <td class="align-middle">
                             @if (m.Type == AdMediaType.mp4) {
@@ -98,12 +99,49 @@ else {
     @if (uploading) {
         <span class="spinner-border spinner-border-sm ms-3" role="status" aria-hidden="true"></span>
     }
+
+
+    <!-- Modal: view resource -->
+    <div class="modal fade" id="viewResourceModal" tabindex="-1" aria-labelledby="viewResourceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewResourceModalLabel">@_selectedResource?.Name</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (string.IsNullOrEmpty(_selectedResourceData)) {
+                        <span class="spinner-border spinner-border-sm ms-3" role="status" aria-hidden="true"></span>
+                    }
+                    else {
+                        @if (_selectedResource.Type == AdMediaType.mp4)
+                        {
+                            <video width="100%" height="100%" controls>
+                                <source type="video/mp4" src="data:video/mp4;base64,@_selectedResourceData">
+                            </video>
+                        }
+                        else if (_selectedResource.Type == AdMediaType.gif) {
+                            <img src='data:image/gif;base64,@_selectedResourceData' />
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 <script>
     window.showMaxSizeAlert = (type, size) => {
         var myAlert = document.getElementById('toastNotice');
-        var bsAlert = new bootstrap.Toast(myAlert);//inizialize it
+        var bsAlert = new bootstrap.Toast(myAlert);
+        bsAlert.show();
+    };
+
+    window.showAdMedia = () => {
+        var bsAlert = new bootstrap.Modal(document.getElementById('viewResourceModal'))
         bsAlert.show();
     };
 </script>
@@ -116,6 +154,9 @@ else {
     private bool uploading = false;
     private bool saving = false;
     private IEnumerable<AdMedia> _media;
+
+    private AdMedia _selectedResource;
+    private string _selectedResourceData;
 
     protected override async Task OnInitializedAsync() {
         _media = await _client.GetMediaAsync();
@@ -148,12 +189,12 @@ else {
 
         var newList = _media.ToList();
         newList.Add(new AdMedia {
-                Type = type,
-                Hash = hash,
-                CanDelete = true,
-                Name = Path.GetFileNameWithoutExtension(e.File.Name),
-                Size = (int)e.File.Size
-            });
+            Type = type,
+            Hash = hash,
+            CanDelete = true,
+            Name = Path.GetFileNameWithoutExtension(e.File.Name),
+            Size = (int)e.File.Size
+        });
         _media = newList;
         uploading = false;
     }
@@ -163,5 +204,13 @@ else {
         var _newMedia = _media.ToList();
         _newMedia.Remove(_media.FirstOrDefault(x => x.Hash == hash));
         _media = _newMedia;
+    }
+
+    private async Task ShowAdMedia(AdMedia resource) {
+        _selectedResource = resource;
+        _selectedResourceData = string.Empty;
+        await JSRuntime.InvokeVoidAsync("showAdMedia");
+        byte[] data = await _client.DownloadMediaAsync(_selectedResource.Hash, _selectedResource.Type.GetCode());
+        _selectedResourceData = Convert.ToBase64String(data);
     }
 }

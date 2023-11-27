@@ -2,7 +2,6 @@
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Infrastructure.Entities;
 using MPT.Vending.Domains.Advertisement.Infrastructure.Repositories;
-using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Advertisement.Abstractions
 {
@@ -28,6 +27,21 @@ namespace MPT.Vending.Domains.Advertisement.Abstractions
                     Size = m.Size
                 };
             }
+        }
+
+        public AdMedia Get(string hash) {
+            AdMediaEntity? media = _adMediaRepository.Get(x => x.Hash == hash).FirstOrDefault();
+            if (media == null)
+                return null;
+
+            IEnumerable<KioskMediaLinkEntity> links = _kioskMediaLinkRepository.Get(x => x.MediaId == media.Id).ToList();
+            return new AdMedia {
+                Hash = media.Hash,
+                Name = media.Name,
+                Type = media.Type,
+                CanDelete = !links.Any(),
+                Size = media.Size
+            };
         }
 
         public IEnumerable<KioskMediaLink> GetByKiosk(string kioskUid)

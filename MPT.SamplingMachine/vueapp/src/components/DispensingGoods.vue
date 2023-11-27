@@ -8,7 +8,7 @@
 <script lang="js">
     import { defineComponent } from 'vue';
     import KioskSettings from '/src/modules/settings.module.js'
-    import { commitTransactionAsync, extractProductsAsync } from '/src/modules/sync.module.js';
+    import { commitTransactionAsync } from '/src/modules/sync.module.js';
     import Transaction from '/src/modules/transaction.module.js'
     import Sampling from './SamplingPage.vue'
 
