@@ -33,6 +33,12 @@ public class KioskController : ControllerBase
     public async Task PutTransactionAsync([FromBody] Transaction request)
         => await _kioskService.CommitTransactionAsync(request);
 
+    [HttpPut("dispense")]
+    public async Task DispenseAsync([FromBody] IEnumerable<TransactionProductLink> products) {
+        IEnumerable<string> addresses = await _kioskService.GetDispensingList(products);
+        await _vendingMachineService.SendExtractAsync(addresses.Select(x => Convert.ToInt32(x)));
+    }
+
     [HttpPost("loginService")]
     public IActionResult LoginService([FromBody] ServiceLoginRequest loginRequest) {
         if (loginRequest.Pin == "1234")

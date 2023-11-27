@@ -1,4 +1,5 @@
-﻿using Filuet.Infrastructure.DataProvider;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using MPT.SamplingMachine.ApiClient;
 using MPT.Vending.API.Dto;
@@ -45,6 +46,23 @@ namespace webapi.Services
 
         public async void DispenseAsync(object address)
             => await _client.DispenseAsync(address, _kioskUid);
+
+        public async Task<IEnumerable<string>> GetDispensingList(IEnumerable<TransactionProductLink> products) {
+            List<string> result = new List<string>();
+            PoG planogram = await _client.GetPlanogramAsync(_kioskUid);
+            foreach (var product in products) {
+                for (int i = 0; i < product.Count; i++) {
+                    PoGProduct poGProduct = planogram[product.Product.Sku];
+                    PoGRoute? route = poGProduct.Routes.OrderByDescending(x => x.Quantity).FirstOrDefault();
+                    if (route != null) {
+                        result.Add(route.Address);
+                        route.Quantity--;
+                    }
+                }
+            }
+
+            return result;
+        }
 
         private readonly SamplingMachineApiClient _client;
         private readonly IMemoryCachingService _memCache;
