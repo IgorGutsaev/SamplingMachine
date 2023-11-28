@@ -2,6 +2,7 @@
 using Filuet.Infrastructure.Abstractions.Enums;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
+using MPT.Vending.Domains.Kiosks.Abstractions.Events;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Builders;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Repositories;
@@ -12,6 +13,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
     public class KioskService : IKioskService
     {
         public event EventHandler<Kiosk> onKioskChanged;
+        public event EventHandler<PlanogramChangeEventArgs> onPlanogramChanged;
 
         public KioskService(KioskRepository kioskRepository,
             KioskSettingsRepository kioskSettingsRepository,
@@ -253,6 +255,8 @@ namespace MPT.Vending.Domains.Kiosks.Services
                 route.Quantity--;
             planogramEntity.Planogram = poG.ToString(false);
             _planogramRepository.Put(planogramEntity);
+
+            onPlanogramChanged?.Invoke(this, new PlanogramChangeEventArgs { KioskUid = kioskUid, Planogram = poG });
         }
 
         private readonly KioskRepository _kioskRepository;

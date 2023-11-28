@@ -2,11 +2,13 @@
 @using Filuet.Hardware.Dispensers.Abstractions.Models;
 @using MPT.SamplingMachine.ApiClient;
 @using MPT.Vending.API.Dto;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Portal.StateContainers;
 @using System.Text.Json;
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject NavigationManager _uriHelper
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client;
 @inject KioskStateContainer kioskStateContainer
@@ -112,11 +114,30 @@ else {
 
     private Guid actualCommandUid = new Guid();
 
+    private HubConnection hubConnectionEditBelt;
+
     protected override async Task OnInitializedAsync() {
         if (!limited) {
             kiosk = kioskStateContainer.Value ?? await _client.GetKioskAsync(uid);
             planogram = await _client.GetPlanogramAsync(uid);
         }
+
+        Task.Run(async () => {
+            hubConnectionEditBelt = new HubConnectionBuilder()
+               .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+               .Build();
+
+            hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (x) => {
+                PlanogramHook planogramChange = JsonSerializer.Deserialize<PlanogramHook>(x);
+
+                if (planogramChange.KioskUid == uid)
+                    planogram = planogramChange.Planogram;
+
+                await InvokeAsync(() => StateHasChanged());
+            });
+
+            await hubConnectionEditBelt.StartAsync();
+        });
     }
 
     private async void OnPlanogramChanged() {

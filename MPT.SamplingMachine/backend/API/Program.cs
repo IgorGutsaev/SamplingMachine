@@ -10,6 +10,10 @@ using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
 using MPT.Vending.Domains.Advertisement.Services;
 using MPT.Vending.Domains.Advertisement.Abstractions;
+using System.Text.Json;
+using MPT.Vending.API.Dto;
+using Filuet.Infrastructure.Communication.Helpers;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
@@ -33,13 +37,34 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
     connectionString = "Data Source=tcp:ascmwsql.database.windows.net,1433;Initial Catalog=ogmento;Persist Security Info=True;User ID=filuetadmin;Password=Filuet@123!;MultipleActiveResultSets=False;Connect Timeout=45;Encrypt=True;TrustServerCertificate=False;Column Encryption Setting=Enabled";
 }
 
-builder.Services.AddKiosk(x => x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e),
-    x => x.onPlanogramChanged += async (sender, e) => { /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */},
+builder.Services.AddKiosk(x => {
+        x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e); // notify ui of changes
+        
+        x.onPlanogramChanged += async (sender, e) => { // notify portal about planogram changes
+            int index = 0;
+            while (true) {
+                string? portalUrl = builder.Configuration[$"Portal:{index++}"];
+                if (!string.IsNullOrWhiteSpace(portalUrl)) {
+                    HttpClient client = new HttpClient();
+                    var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
+                        Message = HookHelpers.Encrypt(builder.Configuration["HookSecret"],
+                        JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
+                    }), Encoding.UTF8, "application/json");
+
+                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
+                }
+                else break;
+            }
+        };
+    },
+    x => x.onPlanogramChanged += async (sender, e) => {
+        /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */
+    },
     x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable().ToList(),
     x => _mediatorMediaService.GetByKiosks(x),
     connectionString);
 
-builder.Services.AddOrdering(x => x.onProductChanged += async (sender, e) => 
+builder.Services.AddOrdering(x => x.onProductChanged += async (sender, e) =>
     await mediator.OnProductHasChanged(sender, e, _mediatorKioskService.GetKiosksWithSku(e.Sku)), connectionString);
 
 builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x => {

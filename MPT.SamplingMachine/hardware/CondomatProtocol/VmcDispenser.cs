@@ -1,12 +1,12 @@
 ﻿using System.IO.Ports;
 using System.Runtime.CompilerServices;
 
-namespace FutureTechniksCondomatProtocol
+namespace FutureTechniksProtocols
 {
    /// <summary>
    /// VMC service (Vending machine controller)
    /// </summary>
-    public class VmcCommunicationService
+    public class VmcDispenser : IDispenser
     {
         public event EventHandler<DataEventArgs> onEvent;
         public event EventHandler<HandshakeAckEventArgs> onHandshake;
@@ -14,7 +14,7 @@ namespace FutureTechniksCondomatProtocol
         public event EventHandler<DispensingAckEventArgs> onDispensing;
         public event EventHandler<DoorStateAckEventArgs> onDoorState;
 
-        public VmcCommunicationService(int portNumber) {
+        public VmcDispenser(int portNumber) {
             if (_port == null) {
                 DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(3, 1);
                 defaultInterpolatedStringHandler.AppendLiteral("COM");
@@ -32,7 +32,7 @@ namespace FutureTechniksCondomatProtocol
             }
         }
 
-        public async Task Initialize() {
+        public async Task InitializeAsync() {
             byte[] command = new byte[3] { 0xAA, 0x55, 0xFF };
             onEvent?.Invoke(this, new DataEventArgs { Response = command, Comment = "Initialization", IsCommand = true });
             _port.Write(command, 0, 3);
@@ -50,7 +50,7 @@ namespace FutureTechniksCondomatProtocol
                 return;
             }
 
-            byte[] command = new byte[3] { 0xAA, 0x55, (byte)motorId };
+            byte[] command = new byte[3] { 0xAA, 0x55, _motorIdToByte(motorId) };
             onEvent?.Invoke(this, new DataEventArgs { Response = command, Comment = $"Dispense from {motorId}", IsCommand = true });
             _port.Write(command, 0, 3);
         }

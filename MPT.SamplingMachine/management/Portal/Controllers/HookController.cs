@@ -1,4 +1,5 @@
-﻿using Filuet.Infrastructure.Communication.Helpers;
+﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Filuet.Infrastructure.Communication.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using Portal.Hubs;
@@ -15,12 +16,22 @@ namespace Portal.Controllers
         }
 
         [HttpPost("api/hook/transaction")]
-        public async Task<IActionResult> Process([FromBody]TransactionHookRequest request)
+        public async Task<IActionResult> ProcessTransaction([FromBody]TransactionHookRequest request)
         {
             string decrypted = DecryptMessage(request.Message);
 
             if (_hub.Clients != null)
                 await _hub.OnNewTransaction(JsonSerializer.Deserialize<Transaction>(decrypted.Trim().Replace("\0", string.Empty)));
+
+            return Ok();
+        }
+
+        [HttpPost("api/hook/planogram")]
+        public async Task<IActionResult> ProcessPlanogram([FromBody] TransactionHookRequest request) {
+            string decrypted = DecryptMessage(request.Message);
+
+            if (_hub.Clients != null)
+                await _hub.OnPlanogramChanged(JsonSerializer.Deserialize<PlanogramHook>(decrypted.Trim().Replace("\0", string.Empty)));
 
             return Ok();
         }

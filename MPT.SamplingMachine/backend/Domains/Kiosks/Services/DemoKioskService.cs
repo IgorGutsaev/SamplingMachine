@@ -1,12 +1,14 @@
 ﻿using Filuet.Infrastructure.Abstractions.Enums;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
+using MPT.Vending.Domains.Kiosks.Abstractions.Events;
 using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
     public class DemoKioskService : IKioskService {
         public event EventHandler<Kiosk> onKioskChanged;
+        public event EventHandler<PlanogramChangeEventArgs> onPlanogramChanged;
 
         public Kiosk Get(string uid) {
             if (DemoData._kiosks.Any(x => x.UID == uid))

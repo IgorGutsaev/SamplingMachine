@@ -99,7 +99,6 @@
     DateTime to = DateTime.Now.Date.AddDays(1);
 
     protected override async Task OnInitializedAsync() {
-
         hubConnectionEditBelt = new HubConnectionBuilder()
            .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
            .Build();

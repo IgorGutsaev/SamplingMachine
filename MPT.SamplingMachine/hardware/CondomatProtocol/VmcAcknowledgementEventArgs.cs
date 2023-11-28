@@ -1,4 +1,4 @@
-﻿namespace FutureTechniksCondomatProtocol
+﻿namespace FutureTechniksProtocols
 {
     public abstract class VmcAcknowledgementEventArgs : EventArgs
     {

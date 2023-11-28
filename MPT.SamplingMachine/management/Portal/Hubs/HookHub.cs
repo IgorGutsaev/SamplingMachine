@@ -10,5 +10,8 @@ namespace Portal.Hubs
 
         public async Task OnNewTransaction(Transaction? transaction)
             => await Clients.All.SendAsync("OnNewTransaction", JsonSerializer.Serialize(transaction));
+
+        public async Task OnPlanogramChanged(PlanogramHook? planogramChange)
+            => await Clients.All.SendAsync("OnPlanogramChanged", JsonSerializer.Serialize(planogramChange));
     }
 }

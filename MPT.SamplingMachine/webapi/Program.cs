@@ -1,4 +1,4 @@
-using FutureTechniksCondomatProtocol;
+using FutureTechniksProtocols;
 using Filuet.Infrastructure.DataProvider;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Microsoft.AspNetCore.SignalR;
@@ -39,18 +39,18 @@ builder.Services.AddSingleton(sp => {
 
 builder.Services.AddSingleton(sp => {
     int portId = Convert.ToInt32(sp.GetService<IConfiguration>()["Hardware:DispensingUnit:SerialPort"]);
-    
-    VmcCommunicationService vmcService = new VmcCommunicationService(portId);
 
-    vmcService.onEvent += (sender, e) => {
+    IDispenser dispenser = portId > 0 ? new VmcDispenser(portId) : new VmcEmulator();
+
+    dispenser.onEvent += (sender, e) => {
         Console.WriteLine($"{DateTime.Now:T}: {(e.IsCommand ? ">" : "<")} {e.ResponseToString}" + (!string.IsNullOrWhiteSpace(e.Comment) ? $" ({e.Comment})" : string.Empty));
     };
 
     KioskService kioskService = sp.GetRequiredService<KioskService>();
 
-    vmcService.onDispensing += (sender, e) => kioskService.DispenseAsync(e.MotorId);
+    dispenser.onDispensing += (sender, e) => kioskService.DispenseAsync(e.MotorId);
 
-    return vmcService;
+    return dispenser;
 });
 
 builder.Services.AddCors(options => {

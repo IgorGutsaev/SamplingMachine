@@ -1,4 +1,4 @@
-﻿using FutureTechniksCondomatProtocol;
+﻿using FutureTechniksProtocols;
 using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using webapi.Services;
@@ -9,7 +9,7 @@ namespace webapi.Controllers;
 [Route("[controller]")]
 public class KioskController : ControllerBase
 {
-    public KioskController(KioskService kioskService, VmcCommunicationService vendingMachineService, IConfiguration configuration, ILogger<KioskController> logger)
+    public KioskController(KioskService kioskService, IDispenser vendingMachineService, IConfiguration configuration, ILogger<KioskController> logger)
     {
         _kioskService = kioskService;
         _vendingMachineService = vendingMachineService;
@@ -28,7 +28,7 @@ public class KioskController : ControllerBase
     [HttpPost("login")]
     public async Task<HttpResponseMessage> LoginAsync([FromBody] LoginRequest request)
         => await _kioskService.LoginAsync(request);
-
+    
     [HttpPut("transaction")]
     public async Task PutTransactionAsync([FromBody] Transaction request)
         => await _kioskService.CommitTransactionAsync(request);
@@ -48,7 +48,7 @@ public class KioskController : ControllerBase
     }
 
     private readonly KioskService _kioskService;
-    private readonly VmcCommunicationService _vendingMachineService;
+    private readonly IDispenser _vendingMachineService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<KioskController> _logger;
 }

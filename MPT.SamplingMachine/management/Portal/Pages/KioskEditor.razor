@@ -269,17 +269,29 @@ else {
                .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
                .Build();
 
-            hubConnectionEditBelt.On<string>("OnNewTransaction", async (trData) => {
-                Transaction transaction = JsonSerializer.Deserialize<Transaction>(trData);
+            // hubConnectionEditBelt.On<string>("OnNewTransaction", async (trData) => {
+            //     Transaction transaction = JsonSerializer.Deserialize<Transaction>(trData);
 
-                foreach (var link in transaction.Items) {
-                    KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
-                    if (existingLink != null)
-                        existingLink.RemainingQuantity -= link.Count;
+            //     foreach (var link in transaction.Items) {
+            //         KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
+            //         if (existingLink != null)
+            //             existingLink.RemainingQuantity -= link.Count;
+            //     }
+
+            //     await InvokeAsync(() => StateHasChanged());
+            //     await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
+            // });
+
+            hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (planogram) => {
+                PlanogramHook planogramChange = JsonSerializer.Deserialize<PlanogramHook>(planogram);
+
+                if (planogramChange.KioskUid == uid) {
+                    foreach (var l in kiosk.ProductLinks) {
+                        l.RemainingQuantity = planogramChange.Planogram[l.Product.Sku].Routes.Sum(x => x.Quantity);
+                    }
                 }
 
                 await InvokeAsync(() => StateHasChanged());
-                await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
             });
 
             await hubConnectionEditBelt.StartAsync();
@@ -349,10 +361,10 @@ else {
         await _client.LinkProductAsync(kiosk.UID, sku);
         var links = kiosk.ProductLinks?.ToList() ?? new List<KioskProductLink>();
         links.Insert(0, new KioskProductLink { Credit = 1, MaxCountPerTransaction = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku), Disabled = true });
-       
-        kiosk.ProductLinks = new List<KioskProductLink>(); // this crutch helps render 
+
+        kiosk.ProductLinks = new List<KioskProductLink>(); // this crutch helps render
         this.StateHasChanged(); // tooltip images correctly
-        
+
         kiosk.ProductLinks = links;
         productsToLink = productsToLink.Where(x => x.Sku != sku);
 

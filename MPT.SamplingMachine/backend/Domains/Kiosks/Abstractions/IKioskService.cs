@@ -1,10 +1,13 @@
 ﻿using MPT.Vending.API.Dto;
+using MPT.Vending.Domains.Kiosks.Abstractions.Events;
 
 namespace MPT.Vending.Domains.Kiosks.Abstractions
 {
     public interface IKioskService
     {
         event EventHandler<Kiosk> onKioskChanged;
+        event EventHandler<PlanogramChangeEventArgs> onPlanogramChanged;
+
         Kiosk Get(string uid);
         void EnableDisable(string uid, bool enable);
         IEnumerable<Kiosk> GetAll();
