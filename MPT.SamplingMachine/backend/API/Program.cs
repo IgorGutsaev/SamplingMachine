@@ -1,7 +1,10 @@
+using API.Services;
 using Filuet.Infrastructure.Abstractions.Converters;
+using Filuet.Infrastructure.Communication.Helpers;
 using Filuet.Infrastructure.DataProvider.Interfaces;
 using Filuet.Infrastructure.DataProvider;
 using MessagingServices;
+using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Services;
 using MPT.Vending.Domains.Ordering.Abstractions;
@@ -10,16 +13,15 @@ using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
 using MPT.Vending.Domains.Advertisement.Services;
 using MPT.Vending.Domains.Advertisement.Abstractions;
-using System.Text.Json;
-using MPT.Vending.API.Dto;
-using Filuet.Infrastructure.Communication.Helpers;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
 IProductService _mediatorProductService = null;
 IMediaService _mediatorMediaService = null;
 
+// bind common json converters
 builder.Services.AddControllers()
     .AddJsonOptions(opts => {
         opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
@@ -28,17 +30,20 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
     });
 
-Portal2KioskMessagesSender mediator = new Portal2KioskMessagesSender("Endpoint=sb://ogmento.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=26jG7d1B6ekEe+V7yd2OpVwEH+YauCLz1+ASbKg3R54=");
+var p2kMediator = new Portal2KioskMessagesSender(AzureKeyVaultReader.GetSecret("ogmento-servicebus"));
 
-string mode = builder.Configuration["Mode"];
+// if Mode is 'Demo' then the api won't establish the DB connection and will use inmemory data storage
+// use 'Demo' only for testing and demonstration purposes
+string mode = builder.Configuration["Mode"]; 
 
 string connectionString = string.Empty;
+
 if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
-    connectionString = "Data Source=tcp:ascmwsql.database.windows.net,1433;Initial Catalog=ogmento;Persist Security Info=True;User ID=filuetadmin;Password=Filuet@123!;MultipleActiveResultSets=False;Connect Timeout=45;Encrypt=True;TrustServerCertificate=False;Column Encryption Setting=Enabled";
+    connectionString = AzureKeyVaultReader.GetSecret("dbcs-ogmento-dev"); // get the db connection string if not in the demo mode
 }
 
 builder.Services.AddKiosk(x => {
-        x.onKioskChanged += async (sender, e) => await mediator.OnKioskHasChanged(sender, e); // notify ui of changes
+        x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
         
         x.onPlanogramChanged += async (sender, e) => { // notify portal about planogram changes
             int index = 0;
@@ -47,7 +52,7 @@ builder.Services.AddKiosk(x => {
                 if (!string.IsNullOrWhiteSpace(portalUrl)) {
                     HttpClient client = new HttpClient();
                     var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
-                        Message = HookHelpers.Encrypt(builder.Configuration["HookSecret"],
+                        Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
                         JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
                     }), Encoding.UTF8, "application/json");
 
@@ -65,10 +70,10 @@ builder.Services.AddKiosk(x => {
     connectionString);
 
 builder.Services.AddOrdering(x => x.onProductChanged += async (sender, e) =>
-    await mediator.OnProductHasChanged(sender, e, _mediatorKioskService.GetKiosksWithSku(e.Sku)), connectionString);
+    await p2kMediator.OnProductHasChanged(sender, e, _mediatorKioskService.GetKiosksWithSku(e.Sku)), connectionString);
 
 builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x => {
-    x.ConnectionString = "DefaultEndpointsProtocol=https;AccountName=ascdevstorage;AccountKey=X5lm0IwRvY7gzf7EChalkTLTwCWk5croT7MESc44MkCY3y3EKXLfL9IRd1wSdUH5tyGcsWH7vUIrD5vXydcsEg==;EndpointSuffix=core.windows.net";
+    x.ConnectionString = AzureKeyVaultReader.GetSecret("azurestoragecs-dev");
     x.ContainerName = "ogmento";
 }))
 .AddAdvertisement(connectionString);
@@ -76,6 +81,7 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -90,8 +96,11 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
+app.MapRazorPages();
 
 app.Run();
