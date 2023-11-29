@@ -13,8 +13,11 @@ using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Services;
 using MPT.Vending.Domains.Advertisement.Services;
 using MPT.Vending.Domains.Advertisement.Abstractions;
+using MPT.Vending.Domains.Identity.Services;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
@@ -30,6 +33,21 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
     });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(x => {
+        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AzureKeyVaultReader.GetSecret("ogmento-jwt-key"))),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var p2kMediator = new Portal2KioskMessagesSender(AzureKeyVaultReader.GetSecret("ogmento-servicebus"));
 
 // if Mode is 'Demo' then the api won't establish the DB connection and will use inmemory data storage
@@ -42,6 +60,7 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
     connectionString = AzureKeyVaultReader.GetSecret("dbcs-ogmento-dev"); // get the db connection string if not in the demo mode
 }
 
+builder.Services.AddLocalIdentity(connectionString);
 builder.Services.AddKiosk(x => {
         x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
         
@@ -98,6 +117,7 @@ app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthorization();
 app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();

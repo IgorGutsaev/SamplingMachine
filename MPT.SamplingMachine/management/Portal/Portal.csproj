@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.9" />
     <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

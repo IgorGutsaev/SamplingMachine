@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 
 namespace API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class KiosksController : ControllerBase
