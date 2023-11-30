@@ -18,6 +18,8 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient.AlwaysEncrypted.AzureKeyVaultProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
@@ -58,6 +60,15 @@ string connectionString = string.Empty;
 
 if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
     connectionString = AzureKeyVaultReader.GetSecret("dbcs-ogmento-dev"); // get the db connection string if not in the demo mode
+
+    SqlConnectionStringBuilder connStringBuilder = new SqlConnectionStringBuilder(connectionString);
+    connStringBuilder.ColumnEncryptionSetting = SqlConnectionColumnEncryptionSetting.Enabled; // Enable Always Encrypted for the connection
+    connectionString = connStringBuilder.ConnectionString; // This is the only change specific to Always Encrypted
+
+    SqlColumnEncryptionAzureKeyVaultProvider azureKeyVaultProvider = new SqlColumnEncryptionAzureKeyVaultProvider(AzureKeyVaultReader._credential);
+    Dictionary<string, SqlColumnEncryptionKeyStoreProvider> providers = new Dictionary<string, SqlColumnEncryptionKeyStoreProvider>();
+    providers.Add(SqlColumnEncryptionAzureKeyVaultProvider.ProviderName, azureKeyVaultProvider);
+    SqlConnection.RegisterColumnEncryptionKeyStoreProviders(providers);
 }
 
 builder.Services.AddLocalIdentity(connectionString);
