@@ -5,7 +5,6 @@ using MPT.Vending.Domains.Kiosks.Abstractions;
 
 namespace API.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class KiosksController : ControllerBase

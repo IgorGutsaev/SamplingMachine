@@ -13,8 +13,8 @@ namespace MPT.Vending.Domains.Identity.Infrastructure.Repositories
         public override IEnumerable<UserEntity> Get(Func<UserEntity, bool> predicate)
             => _context.Users.Where(predicate);
 
-        public void Put(UserEntity planogram) {
-            _context.Users.Update(planogram);
+        public void Put(UserEntity user) {
+            _context.Users.Update(user);
             _context.SaveChanges();
         }
 

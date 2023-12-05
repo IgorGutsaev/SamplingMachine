@@ -1,4 +1,5 @@
 ﻿using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MPT.Vending.API.Dto;
@@ -18,6 +19,7 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
         [HttpPost("signin")]
         public IActionResult SignIn([FromBody] SignInRequest request) {
             User user = _identityService.Get(x => x.Email == request.Email.ToLower() && x.Password == request.Password.Trim()).FirstOrDefault()!;
@@ -25,13 +27,32 @@ namespace API.Controllers
             if (user == null)
                 return Unauthorized();
 
-            return Ok(GenerateToken(new TokenGenerationRequest {
+            var tokenGenRequest = new TokenGenerationRequest {
                 Email = user.Email,
                 UserId = user.UID.ToString(),
-                CustomClaims = new Dictionary<string, object> {
-                    { "admin", user.Admin }
-                }
-            }));
+                CustomClaims = new Dictionary<string, object>()
+            };
+
+            if (user.Admin)
+                tokenGenRequest.CustomClaims.Add("admin", user.Admin);
+
+            return Ok(GenerateToken(tokenGenRequest));
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signup")]
+        public IActionResult SignUp([FromBody] SignInRequest request) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool exist = _identityService.Get(x => x.Email == request.Email.ToLower()).Any();
+
+            if (exist)
+                return Conflict();
+
+            _identityService.Create(request.Email, request.Password);
+
+            return SignIn(request);
         }
 
         public string GenerateToken(TokenGenerationRequest request) {

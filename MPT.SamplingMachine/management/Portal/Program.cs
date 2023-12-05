@@ -21,8 +21,7 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
     });
 
-builder.Services.AddSingleton(sp => 
-new SamplingMachineApiClient(sp.GetService<IConfiguration>()["ApiUrl"]));// "https://localhost:7189/"
+builder.Services.AddSingleton(sp => new SamplingMachineApiClient(builder.Configuration["ApiUrl"]));
 
 var app = builder.Build();
 

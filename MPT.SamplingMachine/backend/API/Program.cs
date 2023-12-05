@@ -20,6 +20,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.SqlClient.AlwaysEncrypted.AzureKeyVaultProvider;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using API.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
@@ -27,17 +32,18 @@ IProductService _mediatorProductService = null;
 IMediaService _mediatorMediaService = null;
 
 // bind common json converters
-builder.Services.AddControllers()
-    .AddJsonOptions(opts => {
-        opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
-        opts.JsonSerializerOptions.Converters.Add(new CountryJsonConverter());
-        opts.JsonSerializerOptions.Converters.Add(new LanguageJsonConverter());
-        opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
-    });
+builder.Services.AddControllers(options =>
+    options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())))
+.AddJsonOptions(opts => {
+    opts.JsonSerializerOptions.Converters.Add(new CurrencyJsonConverter());
+    opts.JsonSerializerOptions.Converters.Add(new CountryJsonConverter());
+    opts.JsonSerializerOptions.Converters.Add(new LanguageJsonConverter());
+    opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(x => {
-        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
+        x.TokenValidationParameters = new TokenValidationParameters {
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AzureKeyVaultReader.GetSecret("ogmento-jwt-key"))),
@@ -54,7 +60,7 @@ var p2kMediator = new Portal2KioskMessagesSender(AzureKeyVaultReader.GetSecret("
 
 // if Mode is 'Demo' then the api won't establish the DB connection and will use inmemory data storage
 // use 'Demo' only for testing and demonstration purposes
-string mode = builder.Configuration["Mode"]; 
+string mode = builder.Configuration["Mode"];
 
 string connectionString = string.Empty;
 
@@ -73,25 +79,25 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
 
 builder.Services.AddLocalIdentity(connectionString);
 builder.Services.AddKiosk(x => {
-        x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
-        
-        x.onPlanogramChanged += async (sender, e) => { // notify portal about planogram changes
-            int index = 0;
-            while (true) {
-                string? portalUrl = builder.Configuration[$"Portal:{index++}"];
-                if (!string.IsNullOrWhiteSpace(portalUrl)) {
-                    HttpClient client = new HttpClient();
-                    var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
-                        Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
-                        JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
-                    }), Encoding.UTF8, "application/json");
+    x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
 
-                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
-                }
-                else break;
+    x.onPlanogramChanged += async (sender, e) => { // notify portal about planogram changes
+        int index = 0;
+        while (true) {
+            string? portalUrl = builder.Configuration[$"Portal:{index++}"];
+            if (!string.IsNullOrWhiteSpace(portalUrl)) {
+                HttpClient client = new HttpClient();
+                var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
+                    Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
+                    JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
+                }), Encoding.UTF8, "application/json");
+
+                await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
             }
-        };
-    },
+            else break;
+        }
+    };
+},
     x => x.onPlanogramChanged += async (sender, e) => {
         /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */
     },
@@ -111,6 +117,7 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

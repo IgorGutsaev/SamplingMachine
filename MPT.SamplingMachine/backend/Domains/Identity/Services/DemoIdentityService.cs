@@ -8,5 +8,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public IEnumerable<User> Get(Func<User, bool> predicate) {
             return null;
         }
+
+        public void Create(string email, string password) { }
     }
 }

@@ -25,7 +25,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
-builder.Services.AddSingleton(sp => new SamplingMachineApiClient(sp.GetService<IConfiguration>()["ApiUrl"]));
+builder.Services.AddSingleton(sp =>
+    new SamplingMachineApiClient(x => {
+        x.Url = builder.Configuration["ApiUrl"];
+        x.Email = "smytten1@filuet.com";
+        x.Password = "87UsQaYnXB";
+    }
+));
+
 builder.Services.AddSingleton(sp => {
     string kioskUid = sp.GetService<IConfiguration>()["KioskUid"];
     return new KioskService(sp.GetRequiredService<SamplingMachineApiClient>(), sp.GetRequiredService<IMemoryCachingService>(), kioskUid);
