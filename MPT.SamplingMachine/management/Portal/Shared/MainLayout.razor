@@ -1,12 +1,14 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using Portal.StateContainers;
+@inherits LayoutComponentBase
+@inject AppState State;
 <PageTitle>Portal</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+    @if (State.User != null) {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
     <main>
         <div id="topRow" class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>

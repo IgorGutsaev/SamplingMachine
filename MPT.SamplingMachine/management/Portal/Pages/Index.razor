@@ -1,5 +1,21 @@
 ﻿@page "/"
+@using Portal.StateContainers;
+@using System.Web;
+
+@inject AppState _state
+@inject NavigationManager _uriHelper
 
 <PageTitle>Index</PageTitle>
 
 <h1>Welcome to OgmentO!</h1>
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender) {
+        if (_state.User == null) {
+            _uriHelper.NavigateTo($"signin");
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+}

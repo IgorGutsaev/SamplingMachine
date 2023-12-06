@@ -1,0 +1,84 @@
+﻿@page "/signin/{redirectUrl?}"
+@using Filuet.Infrastructure.Abstractions.Helpers;
+@using MPT.SamplingMachine.ApiClient;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.JSInterop;
+@using Portal.StateContainers;
+@using System.Web;
+@inject IJSRuntime JSRuntime
+@inject NavigationManager _uriHelper
+@inject SamplingMachineApiClient _client
+@inject AppState State;
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-absolute top-0 end-0 p-3">
+        <div id="toastError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto"><i class="bi bi-exclamation-triangle-fill text-warning"></i> OgmentO</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Unable to authorize. Please try again
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Email</span>
+    <input type="text" class="form-control" aria-label="Email" aria-describedby="basic-addon1" @bind="Email" />
+</div>
+
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Password</span>
+    <input type="text" class="form-control" aria-label="Password" aria-describedby="basic-addon1" @bind="Password">
+</div>
+
+@if (Email.IsEmail() && !string.IsNullOrWhiteSpace(Password)) {
+    <button type="button" class="btn btn-primary" @onclick="OnLogin">
+        @if (Loading) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        Login
+    </button>
+}
+else {
+    <button type="button" class="btn btn-primary" disabled>Login</button>
+}
+
+<script>
+    window.showLoginAlert = () => {
+        var myAlert = document.getElementById('toastError');
+        var bsAlert = new bootstrap.Toast(myAlert);//inizialize it
+        bsAlert.show();
+    };
+</script>
+
+@code {
+    private string Email;
+    private string Password;
+    private string Error;
+    private bool Loading;
+
+    [Parameter]
+    public string redirectUrl { get; set; }
+
+    private async Task OnLogin(MouseEventArgs e) {
+        try
+        {
+            Loading = true;
+            await State.LoginAsync(Email, Password);
+            Loading = false;
+
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+                _uriHelper.NavigateTo("/");
+            else _uriHelper.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+        }
+        catch (Exception ex) {
+            Error = ex.Message;
+            Password = string.Empty;
+            await JSRuntime.InvokeVoidAsync("showLoginAlert");
+        }
+    }
+}

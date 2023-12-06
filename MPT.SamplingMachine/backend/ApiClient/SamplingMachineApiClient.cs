@@ -23,6 +23,13 @@ namespace MPT.SamplingMachine.ApiClient
         public SamplingMachineApiClient(string url) {
             _settings = new SamplingMachineApiClientSettings { Url = url };
 
+            _client = new HttpClient();
+            _options = new JsonSerializerOptions();
+            _options.Converters.Add(new CurrencyJsonConverter());
+            _options.Converters.Add(new CountryJsonConverter());
+            _options.Converters.Add(new LanguageJsonConverter());
+            _options.Converters.Add(new N2JsonConverter());
+
             _memCache = new MemoryCache(new MemoryCacheOptions {
                 SizeLimit = 1024 * 1000 * 1 // 1Mb
             });
@@ -53,7 +60,12 @@ namespace MPT.SamplingMachine.ApiClient
             });
         }
 
-        private async Task<string> Token() {
+        public void SetCredentials(string email, string password) {
+            _settings.Email = email;
+            _settings.Password = password;
+        }
+
+        public async Task<string> GetTokenAsync() {
             string token = _memCache.Get<string>("jwt")!;
 
             if (string.IsNullOrWhiteSpace(token)) {
@@ -72,6 +84,14 @@ namespace MPT.SamplingMachine.ApiClient
             return token;
         }
 
+        public async Task<User> GetUserAsync() {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), "user"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+
+            HttpResponseMessage response = await _client.SendAsync(requestMessage);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<User>(result);
+        }
 
         public void Dispose() {
             _client.Dispose();
@@ -85,7 +105,7 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task<Kiosk> GetKioskAsync(string uid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/kiosks?uid={uid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
 
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
@@ -94,7 +114,7 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task<Kiosk> AddKioskAsync(string kioskUid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/kiosks?uid={kioskUid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<Kiosk>(result);
@@ -102,14 +122,14 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task AddOrUpdateKioskAsync(Kiosk kiosk) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/kiosks"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(kiosk, _options), Encoding.UTF8, "application/json");
             await _client.SendAsync(requestMessage);
         }
 
         public async Task<IEnumerable<Kiosk>> GetKiosksAsync() {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), "/api/kiosks/all"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<Kiosk>>(result);
@@ -117,19 +137,19 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task SetCreditAsync(string kioskUid, int credit) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/kiosks/credit?kioskUid={kioskUid}&credit={credit}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task SetCreditAsync(string kioskUid, string sku, int credit) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/kiosks/credit?kioskUid={kioskUid}&sku={sku}&credit={credit}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task SetMaxCountPerTransaction(string kioskUid, string sku, int maxCountPerTransaction) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/kiosks/limit?kioskUid={kioskUid}&sku={sku}&limit={maxCountPerTransaction}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
@@ -140,7 +160,7 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task KioskEnableAsync(string uid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/kiosks/enable?uid={uid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
@@ -151,13 +171,13 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task KioskDisableAsync(string uid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/kiosks/disable?uid={uid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task DispenseAsync(object address, string kioskUid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/kiosks/dispense"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(new { address = address.ToString(), kioskUid }, _options), Encoding.UTF8, "application/json");
             await _client.SendAsync(requestMessage);
         }
@@ -166,7 +186,7 @@ namespace MPT.SamplingMachine.ApiClient
         #region products
         public async Task<Product> GetProductAsync(string sku) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/ordering?sku={sku}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<Product>(result);
@@ -174,38 +194,38 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task LinkProductAsync(string kioskUid, string sku) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), $"/api/ordering/link?kioskUid={kioskUid}&sku={sku}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task UnlinkProductAsync(string kioskUid, string sku) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri(new Uri(_settings.Url), $"/api/ordering/unlink?kioskUid={kioskUid}&sku={sku}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task DisableProductLinkAsync(string kioskUid, string sku) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/ordering/link/disable?kioskUid={kioskUid}&sku={sku}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task EnableProductLinkAsync(string kioskUid, string sku) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/ordering/link/enable?kioskUid={kioskUid}&sku={sku}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async Task PutProductAsync(Product product) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering"));
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(product, _options), Encoding.UTF8, "application/json");
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
 
         public async IAsyncEnumerator<Product> GetProductsAsync(IEnumerable<string> sku, CancellationToken token) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/ordering"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(new ProductRequest { Sku = sku }), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
@@ -230,7 +250,7 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async IAsyncEnumerator<Product> GetProductsAsync(string filter, CancellationToken token) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/ordering/all?filter={filter ?? string.Empty}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
 
             using HttpResponseMessage response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
@@ -255,7 +275,7 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task PutPicture(string sku, string picture) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering/picture"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(new ProductPictureUpdateRequest { Sku = sku, Picture = picture }), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
             await response.Content.ReadAsStringAsync();
@@ -263,14 +283,14 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task CommitTransactionsAsync(Transaction transaction) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering/transaction"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(transaction, _options), Encoding.UTF8, "application/json");
             await _client.SendAsync(requestMessage);
         }
 
         public async IAsyncEnumerator<Transaction> GetTransactionsAsync(TransactionRequest filter, CancellationToken? token = null) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/ordering/transactions"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(filter), Encoding.UTF8, "application/json");
             using HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
@@ -299,7 +319,7 @@ namespace MPT.SamplingMachine.ApiClient
         #region login
         public async Task<HttpResponseMessage> LoginAsync(LoginRequest request) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/customers/login"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
 
             return await _client.SendAsync(requestMessage);
@@ -314,7 +334,7 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task<PoG> GetPlanogramAsync(string uid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
 
             using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
@@ -329,7 +349,7 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task PutPlanogramAsync(string uid, PoG planogram) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
         }
@@ -338,7 +358,7 @@ namespace MPT.SamplingMachine.ApiClient
         #region media
         public async Task<IEnumerable<AdMedia>> GetMediaAsync() {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), "/api/media"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<AdMedia>>(result);
@@ -351,7 +371,7 @@ namespace MPT.SamplingMachine.ApiClient
         /// <returns></returns>
         public async Task<IEnumerable<KioskMediaLink>> GetKioskMediaAsync(string kioskUid) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/media/kiosk?uid={kioskUid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<KioskMediaLink>>(result);
@@ -359,7 +379,7 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task PutMediaAsync(NewMediaRequest request) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/media"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
             await _client.SendAsync(requestMessage);
         }
@@ -375,7 +395,7 @@ namespace MPT.SamplingMachine.ApiClient
                 }, "File", fileName);
 
                 using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/media/upload"));
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
                 requestMessage.Content = content;
                 using HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
@@ -385,14 +405,14 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task PutKioskMediaAsync(string kioskUid, IEnumerable<KioskMediaLink> resources) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), $"/api/kiosks/media/{kioskUid}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(resources), Encoding.UTF8, "application/json");
             await _client.SendAsync(requestMessage);
         }
 
         public async Task<byte[]> DownloadMediaAsync(string hash, string format) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/media/find/{format}/{hash}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             Stream result = await response.Content.ReadAsStreamAsync();
             byte[] buffer = new byte[result.Length];
@@ -402,7 +422,7 @@ namespace MPT.SamplingMachine.ApiClient
 
         public async Task DeleteMediaAsync(string hash) {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri(new Uri(_settings.Url), $"/api/media/{hash}"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
             await _client.SendAsync(requestMessage);
         }
         #endregion

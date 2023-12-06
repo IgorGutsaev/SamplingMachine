@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Identity.Abstractions;
@@ -55,6 +56,19 @@ namespace API.Controllers
             return SignIn(request);
         }
 
+        [HttpGet("user")]
+        public IActionResult GetUser() {
+            JwtSecurityToken token = FetchToken();
+            if (token == null)
+                return Unauthorized();
+
+            string userId = token.Claims.FirstOrDefault(x => x.Type == "userid")?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            return Ok(_identityService.Get(x=>x.UID == Guid.Parse(userId)).FirstOrDefault());
+        }
+
         public string GenerateToken(TokenGenerationRequest request) {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(AzureKeyVaultReader.GetSecret("ogmento-jwt-key"));
@@ -91,6 +105,28 @@ namespace API.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwt = tokenHandler.WriteToken(token);
             return jwt;
+        }
+
+        private JwtSecurityToken FetchToken() {
+            JwtSecurityToken token = null;
+
+            if (Request.Headers.Keys.Contains("Authorization")) {
+                StringValues values;
+
+                if (Request.Headers.TryGetValue("Authorization", out values)) {
+                    var jwt = values.ToString();
+
+                    if (jwt.Contains("Bearer")) {
+                        jwt = jwt.Replace("Bearer", "").Trim();
+                    }
+
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = handler.ReadJwtToken(jwt);
+                }
+            }
+
+            return token;
         }
 
         private readonly IIdentityService _identityService;
