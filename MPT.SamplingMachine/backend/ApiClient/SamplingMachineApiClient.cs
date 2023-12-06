@@ -22,6 +22,10 @@ namespace MPT.SamplingMachine.ApiClient
 
         public SamplingMachineApiClient(string url) {
             _settings = new SamplingMachineApiClientSettings { Url = url };
+
+            _memCache = new MemoryCache(new MemoryCacheOptions {
+                SizeLimit = 1024 * 1000 * 1 // 1Mb
+            });
         }
 
         public SamplingMachineApiClient(Action<SamplingMachineApiClientSettings> setupAction) {
@@ -53,9 +57,10 @@ namespace MPT.SamplingMachine.ApiClient
             string token = _memCache.Get<string>("jwt")!;
 
             if (string.IsNullOrWhiteSpace(token)) {
-
+                if (_settings == null)
+                    throw new Exception("Login ang password are mandatory");
                 var httpContent = new StringContent(JsonSerializer.Serialize(new { _settings.Email, _settings.Password }, _options), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), $"/signin"), httpContent);
+                HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), "signin"), httpContent);
                 if (response.StatusCode != HttpStatusCode.OK)
                     throw new Exception("Authorization failed");
 
@@ -180,25 +185,29 @@ namespace MPT.SamplingMachine.ApiClient
         }
 
         public async Task DisableProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_settings.Url), $"/api/ordering/link/disable?kioskUid={kioskUid}&sku={sku}"), null);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/ordering/link/disable?kioskUid={kioskUid}&sku={sku}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            await _client.SendAsync(requestMessage);
         }
 
         public async Task EnableProductLinkAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            await _client.PostAsync(new Uri(new Uri(_settings.Url), $"/api/ordering/link/enable?kioskUid={kioskUid}&sku={sku}"), null);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), $"/api/ordering/link/enable?kioskUid={kioskUid}&sku={sku}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            await _client.SendAsync(requestMessage);
         }
 
         public async Task PutProductAsync(Product product) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_settings.Url), "/api/ordering"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering"));
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(product, _options), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            await _client.SendAsync(requestMessage);
         }
 
         public async IAsyncEnumerator<Product> GetProductsAsync(IEnumerable<string> sku, CancellationToken token) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(new ProductRequest { Sku = sku }), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), $"/api/ordering/"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/ordering"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(new ProductRequest { Sku = sku }), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -220,10 +229,10 @@ namespace MPT.SamplingMachine.ApiClient
         }
 
         public async IAsyncEnumerator<Product> GetProductsAsync(string filter, CancellationToken token) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            using HttpResponseMessage response = await _client.GetAsync(
-                new Uri(new Uri(_settings.Url), $"/api/ordering/all?filter={filter ?? string.Empty}"),
-                HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/ordering/all?filter={filter ?? string.Empty}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -244,29 +253,26 @@ namespace MPT.SamplingMachine.ApiClient
             }
         }
 
-        public async Task<IEnumerable<Product>> DisableProductAsync(string kioskUid, string sku) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.DeleteAsync(new Uri(new Uri(_settings.Url), $"/api/ordering/disable"));
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<Product>>(result);
-        }
-
         public async Task PutPicture(string sku, string picture) {
-            var httpContent = new StringContent(JsonSerializer.Serialize(new ProductPictureUpdateRequest { Sku = sku, Picture = picture }), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_settings.Url), $"/api/ordering/picture"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering/picture"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(new ProductPictureUpdateRequest { Sku = sku, Picture = picture }), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.SendAsync(requestMessage);
             await response.Content.ReadAsStringAsync();
         }
 
         public async Task CommitTransactionsAsync(Transaction transaction) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(transaction, _options), Encoding.UTF8, "application/json");
-            await _client.PutAsync(new Uri(new Uri(_settings.Url), "/api/ordering/transaction"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/ordering/transaction"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(transaction, _options), Encoding.UTF8, "application/json");
+            await _client.SendAsync(requestMessage);
         }
 
         public async IAsyncEnumerator<Transaction> GetTransactionsAsync(TransactionRequest filter, CancellationToken? token = null) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(filter), Encoding.UTF8, "application/json");
-            using HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), "/api/ordering/transactions"), httpContent).ConfigureAwait(false);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/ordering/transactions"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(filter), Encoding.UTF8, "application/json");
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -307,8 +313,10 @@ namespace MPT.SamplingMachine.ApiClient
         /// <param name="uid"></param>
         /// <returns></returns>
         public async Task<PoG> GetPlanogramAsync(string uid) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<PoG>(result);
         }
@@ -320,16 +328,18 @@ namespace MPT.SamplingMachine.ApiClient
         /// <param name="planogram"></param>
         /// <returns></returns>
         public async Task PutPlanogramAsync(string uid, PoG planogram) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            var httpContent = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), $"/api/replenishment/planogram?uid={uid}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.SendAsync(requestMessage);
         }
         #endregion
 
         #region media
         public async Task<IEnumerable<AdMedia>> GetMediaAsync() {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_settings.Url), $"/api/media"));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), "/api/media"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<AdMedia>>(result);
         }
@@ -340,15 +350,18 @@ namespace MPT.SamplingMachine.ApiClient
         /// <param name="kioskUid">Kiosk Uid</param>
         /// <returns></returns>
         public async Task<IEnumerable<KioskMediaLink>> GetKioskMediaAsync(string kioskUid) {
-            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_settings.Url), $"/api/media/kiosk?uid={kioskUid}"));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/media/kiosk?uid={kioskUid}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             string result = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<IEnumerable<KioskMediaLink>>(result);
         }
 
         public async Task PutMediaAsync(NewMediaRequest request) {
-            var httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_settings.Url), $"/api/media"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), "/api/media"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            await _client.SendAsync(requestMessage);
         }
 
         public async Task<string> UploadMediaFileAsync(string fileName, byte[] data) {
@@ -361,27 +374,37 @@ namespace MPT.SamplingMachine.ApiClient
                     }
                 }, "File", fileName);
 
-                var response = await _client.PostAsync(new Uri(new Uri(_settings.Url), $"/api/media/upload"), content);
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_settings.Url), "/api/media/upload"));
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+                requestMessage.Content = content;
+                using HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
                 return await response.Content.ReadAsStringAsync();
             }
         }
 
         public async Task PutKioskMediaAsync(string kioskUid, IEnumerable<KioskMediaLink> resources) {
-            var httpContent = new StringContent(JsonSerializer.Serialize(resources), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PutAsync(new Uri(new Uri(_settings.Url), $"/api/kiosks/media/{kioskUid}"), httpContent);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(new Uri(_settings.Url), $"/api/kiosks/media/{kioskUid}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(resources), Encoding.UTF8, "application/json");
+            await _client.SendAsync(requestMessage);
         }
 
         public async Task<byte[]> DownloadMediaAsync(string hash, string format) {
-            HttpResponseMessage response = await _client.GetAsync(new Uri(new Uri(_settings.Url), $"/api/media/find/{format}/{hash}"));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/media/find/{format}/{hash}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
             Stream result = await response.Content.ReadAsStreamAsync();
             byte[] buffer = new byte[result.Length];
             await result.ReadAsync(buffer, 0, (int)result.Length);
             return buffer;
         }
 
-        public async Task DeleteMediaAsync(string hash)
-             => await _client.DeleteAsync(new Uri(new Uri(_settings.Url), $"/api/media/{hash}"));
+        public async Task DeleteMediaAsync(string hash) {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri(new Uri(_settings.Url), $"/api/media/{hash}"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await Token());
+            await _client.SendAsync(requestMessage);
+        }
         #endregion
     }
 }

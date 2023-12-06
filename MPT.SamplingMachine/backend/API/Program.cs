@@ -1,4 +1,3 @@
-using API.Services;
 using Filuet.Infrastructure.Abstractions.Converters;
 using Filuet.Infrastructure.Communication.Helpers;
 using Filuet.Infrastructure.DataProvider.Interfaces;
@@ -25,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using API.Swagger;
+using MPT.Vending.Domains.SharedContext;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;

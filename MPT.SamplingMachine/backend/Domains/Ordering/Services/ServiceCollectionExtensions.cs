@@ -9,6 +9,7 @@ using MPT.Vending.Domains.Ordering.Infrastructure.Repositories;
 using System.Text.Json;
 using System.Text;
 using Filuet.Infrastructure.Communication.Helpers;
+using MPT.Vending.Domains.SharedContext;
 
 namespace MPT.Vending.Domains.Ordering.Services
 {
@@ -62,7 +63,7 @@ namespace MPT.Vending.Domains.Ordering.Services
                         string portalUrl = config[$"Portal:{index++}"];
                         if (!string.IsNullOrWhiteSpace(portalUrl)) {
                             HttpClient client = new HttpClient();
-                            var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest { Message = HookHelpers.Encrypt(config["HookSecret"], JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
+                            var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest { Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"), JsonSerializer.Serialize(e)) }), Encoding.UTF8, "application/json");
                             try {
                                 HttpResponseMessage response = await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/transaction"), httpContent);
                             }

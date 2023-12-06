@@ -1,9 +1,9 @@
-﻿using API.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Identity.Abstractions;
+using MPT.Vending.Domains.SharedContext;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

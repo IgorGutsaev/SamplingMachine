@@ -2,7 +2,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 
-namespace API.Services
+namespace MPT.Vending.Domains.SharedContext
 {
     public class AzureKeyVaultReader
     {
