@@ -64,6 +64,14 @@ else {
     [Parameter]
     public string redirectUrl { get; set; }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (await State.FetchUserAsync()) {
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+                _uriHelper.NavigateTo("/");
+            else _uriHelper.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+        }
+    }
+
     private async Task OnLogin(MouseEventArgs e) {
         try
         {

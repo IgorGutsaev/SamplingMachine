@@ -15,10 +15,24 @@ namespace Portal.StateContainers
             _uriHelper = uriHelper;
         }
 
+        public async Task<bool> FetchUserAsync() {
+            User user = await _localStorage.GetItemAsync<User>("user");
+            if (user != null)
+                User = user;
+
+            return user != null;
+        }
+
         public async Task LoginAsync(string email, string password) {
             _client.SetCredentials(email, password);
-            User = await _client.GetUserAsync();
-            await _localStorage.SetItemAsync("user", User);
+
+            User user = await _localStorage.GetItemAsync<User>("user");
+            if (user != null)
+                User = user;
+            else {
+                User = await _client.GetUserAsync();
+                await _localStorage.SetItemAsync("user", User);
+            }
         }
 
 
