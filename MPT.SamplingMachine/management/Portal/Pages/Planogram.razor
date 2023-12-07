@@ -7,8 +7,9 @@
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject KioskStateContainer kioskStateContainer
 
 <PageTitle>Planogram</PageTitle>
@@ -98,6 +99,11 @@ else {
     private Guid actualCommandUid = new Guid();
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         kiosk = kioskStateContainer.Value;
         planogram = await _client.GetPlanogramAsync(uid);
     }

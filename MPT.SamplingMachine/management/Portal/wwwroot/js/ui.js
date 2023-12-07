@@ -29,5 +29,8 @@
         while (elements.length > 0) {
             elements[0].parentNode.removeChild(elements[0]);
         }
+    },
+    redirect(url) {
+        window.location.href = 'url';
     }
 }

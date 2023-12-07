@@ -2,8 +2,8 @@
 @using Portal.StateContainers;
 @using System.Web;
 
-@inject AppState _state
-@inject NavigationManager _uriHelper
+@inject AppState State
+@inject NavigationManager navigationManager
 
 <PageTitle>Index</PageTitle>
 
@@ -12,8 +12,8 @@
 @code {
 
     protected override void OnAfterRender(bool firstRender) {
-        if (_state.User == null) {
-            _uriHelper.NavigateTo($"signin");
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
         }
 
         base.OnAfterRender(firstRender);

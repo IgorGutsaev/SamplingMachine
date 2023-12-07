@@ -4,8 +4,9 @@
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject KioskStateContainer kioskStateContainer
 
 <PageTitle>Kiosks</PageTitle>
@@ -44,7 +45,7 @@ else {
         </div>
     </div>
 
-    if (kiosks.Any()) {
+    if (kiosks != null && kiosks.Any()) {
         <table class="table">
             <thead>
                 <tr>
@@ -70,6 +71,11 @@ else {
     protected string _newUid;
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         loading = true;
         kiosks = await _client.GetKiosksAsync();
         loading = false;

@@ -5,8 +5,9 @@
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject ProductStateContainer productStateContainer
 
 <PageTitle>Products</PageTitle>
@@ -104,6 +105,11 @@ else {
     string filter;
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         await SearchProducts();
     }
 

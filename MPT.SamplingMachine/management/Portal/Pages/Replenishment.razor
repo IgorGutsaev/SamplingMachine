@@ -8,9 +8,9 @@
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
-@inject NavigationManager _uriHelper
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject KioskStateContainer kioskStateContainer
 
 <PageTitle>Replenishment</PageTitle>
@@ -117,6 +117,11 @@ else {
     private HubConnection hubConnectionEditBelt;
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         if (!limited) {
             kiosk = kioskStateContainer.Value ?? await _client.GetKioskAsync(uid);
             planogram = await _client.GetPlanogramAsync(uid);
@@ -124,7 +129,8 @@ else {
 
         Task.Run(async () => {
             hubConnectionEditBelt = new HubConnectionBuilder()
-               .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+               .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
+               .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
                .Build();
 
             hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (x) => {

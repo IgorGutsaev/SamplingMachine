@@ -13,9 +13,9 @@
 @using Portal.StateContainers;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client
-@inject NavigationManager _uriHelper
 @inject KioskStateContainer kioskStateContainer
 @inject ProductStateContainer productStateContainer
 
@@ -260,27 +260,19 @@ else {
     private HubConnection hubConnectionEditBelt;
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         kiosk = kioskStateContainer.Value;
         await JSRuntime.InvokeVoidAsync("console.log", DateTime.Now.ToString("HH:mm:ss.fff") + " kiosk extracted");
         StateHasChanged();
 
         Task.Run(async () => {
             hubConnectionEditBelt = new HubConnectionBuilder()
-               .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
+               .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
                .Build();
-
-            // hubConnectionEditBelt.On<string>("OnNewTransaction", async (trData) => {
-            //     Transaction transaction = JsonSerializer.Deserialize<Transaction>(trData);
-
-            //     foreach (var link in transaction.Items) {
-            //         KioskProductLink? existingLink = kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == link.Product.Sku);
-            //         if (existingLink != null)
-            //             existingLink.RemainingQuantity -= link.Count;
-            //     }
-
-            //     await InvokeAsync(() => StateHasChanged());
-            //     await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
-            // });
 
             hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (planogram) => {
                 PlanogramHook planogramChange = JsonSerializer.Deserialize<PlanogramHook>(planogram);

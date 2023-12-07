@@ -6,10 +6,10 @@
 @using System.Text.Json;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
 @inject TransactionStateContainer transactionStateContainer
 @inject SamplingMachineApiClient _client
-@inject NavigationManager _uriHelper
 @inject ProductStateContainer productStateContainer
 
 <PageTitle>Transaction</PageTitle>
@@ -87,6 +87,11 @@ else {
     private List<Product> products = new List<Product>();
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("signin");
+            return;
+        }
+
         transaction = transactionStateContainer.Value;
 
         loading = transaction.Items.Any(x => x.Product.Names == null || x.Product.Picture == null);

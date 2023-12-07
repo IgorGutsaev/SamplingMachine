@@ -6,9 +6,8 @@
 @using Portal.StateContainers;
 @using System.Web;
 @inject IJSRuntime JSRuntime
-@inject NavigationManager _uriHelper
-@inject SamplingMachineApiClient _client
-@inject AppState State;
+@inject AppState State
+@inject NavigationManager navigationManager
 
 <div aria-live="polite" aria-atomic="true" class="position-relative">
     <div class="toast-container position-absolute top-0 end-0 p-3">
@@ -25,27 +24,30 @@
     </div>
 </div>
 
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Email</span>
-    <input type="text" class="form-control" aria-label="Email" aria-describedby="basic-addon1" @bind="Email" />
-</div>
+<div class="jumbotron vertical-center">
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div>
 
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Password</span>
-    <input type="text" class="form-control" aria-label="Password" aria-describedby="basic-addon1" @bind="Password">
-</div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" aria-label="Email" placeholder="Email" aria-describedby="basic-addon1" @oninput="x => { Email = x.Value?.ToString(); LoginButtonEnabled = IsLoginButtonEnabled(); }" />
+                </div>
 
-@if (Email.IsEmail() && !string.IsNullOrWhiteSpace(Password)) {
-    <button type="button" class="btn btn-primary" @onclick="OnLogin">
-        @if (Loading) {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        }
-        Login
-    </button>
-}
-else {
-    <button type="button" class="btn btn-primary" disabled>Login</button>
-}
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control pwd" id="password" name="password" placeholder="Password" @oninput="x => { Password = x.Value?.ToString(); LoginButtonEnabled = IsLoginButtonEnabled(); }">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-eye-slash reveal" id="togglePassword"></i></span>
+                </div>
+
+                <button type="button" class="btn btn-primary" @onclick="OnLogin" disabled="@(!LoginButtonEnabled)">
+                    @if (Loading) {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
+                    Login
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     window.showLoginAlert = () => {
@@ -53,11 +55,21 @@ else {
         var bsAlert = new bootstrap.Toast(myAlert);//inizialize it
         bsAlert.show();
     };
+
+    $(".reveal").on('click', function () {
+        var $pwd = $(".pwd");
+        if ($pwd.attr('type') === 'password') {
+            $pwd.attr('type', 'text');
+        } else {
+            $pwd.attr('type', 'password');
+        }
+    });
 </script>
 
 @code {
     private string Email;
     private string Password;
+    private bool LoginButtonEnabled = false;
     private string Error;
     private bool Loading;
 
@@ -65,28 +77,32 @@ else {
     public string redirectUrl { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (await State.FetchUserAsync()) {
+        if (firstRender && await State.FetchUserAsync()) {
             if (string.IsNullOrWhiteSpace(redirectUrl))
-                _uriHelper.NavigateTo("/");
-            else _uriHelper.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+                navigationManager.NavigateTo("/");
+            else navigationManager.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
         }
+
+        LoginButtonEnabled = IsLoginButtonEnabled();
     }
 
+    private bool IsLoginButtonEnabled()
+        => Email.IsEmail() && !string.IsNullOrWhiteSpace(Password);
+
     private async Task OnLogin(MouseEventArgs e) {
-        try
-        {
+        try {
             Loading = true;
             await State.LoginAsync(Email, Password);
-            Loading = false;
 
             if (string.IsNullOrWhiteSpace(redirectUrl))
-                _uriHelper.NavigateTo("/");
-            else _uriHelper.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+                navigationManager.NavigateTo("/");
+            else navigationManager.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
         }
         catch (Exception ex) {
             Error = ex.Message;
             Password = string.Empty;
             await JSRuntime.InvokeVoidAsync("showLoginAlert");
         }
+        finally { Loading = false; }
     }
 }

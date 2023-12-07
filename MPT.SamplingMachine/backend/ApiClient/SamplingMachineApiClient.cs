@@ -2,12 +2,9 @@
 using Filuet.Infrastructure.Abstractions.Converters;
 using Microsoft.Extensions.Caching.Memory;
 using MPT.Vending.API.Dto;
-using System.Collections.Concurrent;
-using System.Data;
-using System.Diagnostics;
+using MPT.Vending.API.Dto.exceptions;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime;
 using System.Text;
 using System.Text.Json;
 
@@ -69,12 +66,16 @@ namespace MPT.SamplingMachine.ApiClient
             string token = _memCache.Get<string>("jwt")!;
 
             if (string.IsNullOrWhiteSpace(token)) {
-                if (_settings == null)
-                    throw new Exception("Login ang password are mandatory");
+                if (string.IsNullOrWhiteSpace(_settings.Url))
+                    throw new Exception("Url is mandatory");
+
+                if (string.IsNullOrWhiteSpace(_settings.Email) || string.IsNullOrWhiteSpace(_settings.Password))
+                    throw new UnauthorizedException();
+
                 var httpContent = new StringContent(JsonSerializer.Serialize(new { _settings.Email, _settings.Password }, _options), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), "signin"), httpContent);
                 if (response.StatusCode != HttpStatusCode.OK)
-                    throw new Exception("Authorization failed");
+                    throw new UnauthorizedException();
 
                 token = await response.Content.ReadAsStringAsync();
 
@@ -82,6 +83,14 @@ namespace MPT.SamplingMachine.ApiClient
             }
 
             return token;
+        }
+
+        public bool TokenHaxExpired => string.IsNullOrWhiteSpace(_memCache.Get("jwt")?.ToString());
+
+        public void Logout() {
+            _settings.Email = string.Empty;
+            _settings.Password = string.Empty;
+            _memCache.Clear();
         }
 
         public async Task<User> GetUserAsync() {
