@@ -19,6 +19,8 @@
     <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.9" />
     <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.0" />
   </ItemGroup>
