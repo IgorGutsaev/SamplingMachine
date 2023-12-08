@@ -42,10 +42,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.MapHub<HookHub>("/hookhub");
+//app.MapHub<HookHub>("/hookhub");
 app.MapControllers();
 
-app.MapBlazorHub();
+//app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
