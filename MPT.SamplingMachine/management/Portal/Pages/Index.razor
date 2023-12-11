@@ -13,7 +13,7 @@
 
     protected override void OnAfterRender(bool firstRender) {
         if (State.User == null) {
-            navigationManager.NavigateTo("signin");
+            navigationManager.NavigateTo("login");
         }
 
         base.OnAfterRender(firstRender);

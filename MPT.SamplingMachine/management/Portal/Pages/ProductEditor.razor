@@ -159,7 +159,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         if (State.User == null) {
-            navigationManager.NavigateTo("signin");
+            navigationManager.NavigateTo("login");
             return;
         }
 

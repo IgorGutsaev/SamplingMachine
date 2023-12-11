@@ -85,6 +85,19 @@ namespace MPT.SamplingMachine.ApiClient
             return token;
         }
 
+        public async Task SignUpAsync(string email, string password) {
+            SetCredentials(email, password);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), "signup"));
+
+            var httpContent = new StringContent(JsonSerializer.Serialize(new { _settings.Email, _settings.Password }, _options), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(new Uri(new Uri(_settings.Url), "signup"), httpContent);
+            if (response.StatusCode != HttpStatusCode.OK) {
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                    throw new InvalidOperationException("Failed to sign up. User already exists");
+                else throw new Exception("Failed to sign up. Please try later");
+            }
+        }
+
         public bool TokenHaxExpired => string.IsNullOrWhiteSpace(_memCache.Get("jwt")?.ToString());
 
         public void Logout() {

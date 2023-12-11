@@ -1,0 +1,160 @@
+﻿@page "/login/{redirectUrl?}"
+@using Filuet.Infrastructure.Abstractions.Helpers;
+@using MPT.SamplingMachine.ApiClient;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.JSInterop;
+@using Portal.StateContainers;
+@using System.Web;
+@inject IJSRuntime JSRuntime
+@inject AppState State
+@inject NavigationManager navigationManager
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-absolute top-0 end-0 p-3">
+        <div id="signInToastError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto"><i class="bi bi-exclamation-triangle-fill text-warning"></i> OgmentO</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Unable to authorize. Please try again
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-absolute top-0 end-0 p-3">
+        <div id="signUpToastError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto"><i class="bi bi-exclamation-triangle-fill text-warning"></i> OgmentO</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @_failedSugnUpReason
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="jumbotron vertical-center">
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div>
+
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" aria-label="Email" placeholder="Email" aria-describedby="basic-addon1" @oninput="x => { Email = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }" />
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control pwd" id="password" name="password" placeholder="Password" @oninput="x => { Password = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-eye-slash reveal" id="togglePassword"></i></span>
+                </div>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-warning" @onclick="OnSignUpAsync" disabled="@(!_buttonsEnabled)">
+                                @if (SignUpInProgress) {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                }
+                                Sign Up
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary" @onclick="OnSignInAsync" disabled="@(!_buttonsEnabled)">
+                                @if (SignInInProgress) {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                }
+                                Sign In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.showSignInAlert = () => {
+        var myAlert = document.getElementById('signInToastError');
+        var bsAlert = new bootstrap.Toast(myAlert);
+        bsAlert.show();
+    };
+
+    window.showSignUpAlert = () => {
+        var myAlert = document.getElementById('signUpToastError');
+        var bsAlert = new bootstrap.Toast(myAlert);
+        bsAlert.show();
+    };
+
+    $(".reveal").on('click', function () {
+        var $pwd = $(".pwd");
+        if ($pwd.attr('type') === 'password') {
+            $pwd.attr('type', 'text');
+        } else {
+            $pwd.attr('type', 'password');
+        }
+    });
+</script>
+
+@code {
+    private string Email;
+    private string Password;
+    private bool _buttonsEnabled = false;
+    private string Error;
+    private bool SignInInProgress;
+    private bool SignUpInProgress;
+    private string _failedSugnUpReason = string.Empty;
+
+    [Parameter]
+    public string redirectUrl { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender && await State.FetchUserAsync()) {
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+                navigationManager.NavigateTo("/");
+            else navigationManager.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+        }
+
+        _buttonsEnabled = IsLoginButtonEnabled();
+    }
+
+    private bool IsLoginButtonEnabled()
+        => Email.IsEmail() && !string.IsNullOrWhiteSpace(Password);
+
+    private async Task OnSignInAsync(MouseEventArgs e) {
+        try {
+            SignInInProgress = true;
+            await State.LoginAsync(Email, Password);
+
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+                navigationManager.NavigateTo("/");
+            else navigationManager.NavigateTo(HttpUtility.HtmlDecode(redirectUrl));
+        }
+        catch (Exception ex) {
+            Error = ex.Message;
+            await JSRuntime.InvokeVoidAsync("showSignInAlert");
+        }
+        finally { SignInInProgress = false; }
+    }
+
+    private async Task OnSignUpAsync(MouseEventArgs e) {
+        try {
+            SignUpInProgress = true;
+            await State.SignUpAsync(Email, Password);
+
+            navigationManager.NavigateTo("/");
+        }
+        catch (Exception ex) {
+            Error = ex.Message;
+            _failedSugnUpReason = ex.Message;
+            await JSRuntime.InvokeVoidAsync("showSignUpAlert");
+        }
+        finally { SignUpInProgress = false; }
+    }
+}
