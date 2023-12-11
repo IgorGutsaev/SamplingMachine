@@ -20,6 +20,8 @@ namespace MPT.Vending.Domains.Identity.Services
 #endif
             }, ServiceLifetime.Transient, ServiceLifetime.Transient)
             .AddTransient<UserRepository>()
+            .AddTransient<ClaimRepository>()
+            .AddTransient<UserClaimRepository>()
             .AddTransient<IIdentityService, IdentityService>();
     }
 }

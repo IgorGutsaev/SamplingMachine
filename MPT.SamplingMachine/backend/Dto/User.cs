@@ -15,5 +15,8 @@ namespace MPT.Vending.API.Dto
         public string Password { get; set; }
         [JsonPropertyName("admin")]
         public bool Admin { get; set; }
+        [JsonPropertyName("claims")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
+        public IEnumerable<string> Claims { get; set; }
     }
 }

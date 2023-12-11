@@ -9,7 +9,7 @@ namespace MPT.Vending.Domains.Identity.Infrastructure.Configurations
             builder.ToTable("User");
             builder.HasKey(x => x.Id);
             //builder.Property(x => x.Uid);
-            //builder.HasMany(x => x.Settings);//.WithOne(x => x.Kiosk);
+            builder.HasMany(x => x.Claims);
             //builder.HasMany(x => x.Links);
         }
     }

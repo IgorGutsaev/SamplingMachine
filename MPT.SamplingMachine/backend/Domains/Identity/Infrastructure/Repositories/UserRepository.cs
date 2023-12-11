@@ -1,4 +1,5 @@
-﻿using MPT.Vending.Domains.Identity.Infrastructure.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MPT.Vending.Domains.Identity.Infrastructure.Entities;
 using MPT.Vending.Domains.Kiosks.Infrastructure;
 using MPT.Vending.Domains.SharedContext;
 
@@ -11,7 +12,7 @@ namespace MPT.Vending.Domains.Identity.Infrastructure.Repositories
         }
 
         public override IEnumerable<UserEntity> Get(Func<UserEntity, bool> predicate)
-            => _context.Users.Where(predicate);
+            => _context.Users.Include(x => x.Claims).ThenInclude(x => x.Claim).Where(predicate);
 
         public void Put(UserEntity user) {
             _context.Users.Update(user);
