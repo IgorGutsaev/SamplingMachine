@@ -1,5 +1,7 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MPT.Vending.Domains.Identity.Abstractions;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 
 namespace API.Controllers
@@ -22,6 +24,7 @@ namespace API.Controllers
         public PoG GetPlanogram(string uid)
             => _replenishmentService.GetPlanogram(uid);
 
+        [Authorize(Policy = IdentityData.AdminUserPolicyName)]
         [HttpPut("planogram")]
         public void PutPlanogram([FromBody] PoG planogram, string uid)
             => _replenishmentService.PutPlanogram(uid, planogram);

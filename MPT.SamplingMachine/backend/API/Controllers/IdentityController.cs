@@ -41,6 +41,9 @@ namespace API.Controllers
             if (user.Claims.Any(x=> string.Equals(x, "kiosk", StringComparison.InvariantCultureIgnoreCase)))
                 tokenGenRequest.CustomClaims.Add("kiosk", new MailAddress(user.Email).User);
 
+            if (user.Claims.Any(x => string.Equals(x, "manager", StringComparison.InvariantCultureIgnoreCase)))
+                tokenGenRequest.CustomClaims.Add("manager", new MailAddress(user.Email).User);
+
             return Ok(GenerateToken(tokenGenRequest));
         }
 

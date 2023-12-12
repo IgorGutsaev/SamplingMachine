@@ -9,7 +9,6 @@ namespace MPT.Vending.Domains.Identity.Infrastructure.Entities
         [Column(TypeName = "nvarchar(250)")]
         public string Password { get; set; } = null;
         public bool Admin { get; set; }
-
         public IEnumerable<UserClaimEntity> Claims { get; set; }
     }
 }
