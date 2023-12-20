@@ -8,7 +8,7 @@ using webapi.Communication;
 using webapi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.ConfigureKestrel((context, serverOptions) => {
+builder.WebHost.ConfigureKestrel((context, serverOptions) => { // comment if debug locally
     serverOptions.Listen(IPAddress.Loopback, 7244, listenOptions => {
         listenOptions.UseHttps();
     });

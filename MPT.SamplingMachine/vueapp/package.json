@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@aspnet/signalr": "^1.0.27",
+    "@fortawesome/fontawesome-common-types": "^6.5.1",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
