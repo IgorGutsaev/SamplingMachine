@@ -6,6 +6,7 @@ using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Identity.Abstractions;
 using MPT.Vending.Domains.SharedContext;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 
@@ -25,7 +26,7 @@ namespace API.Controllers
         public IActionResult SignIn([FromBody] SignInRequest request) {
             User user = _identityService.Get(x => x.Email == request.Email.ToLower() && x.Password == request.Password.Trim()).FirstOrDefault()!;
 
-            if (user == null)
+            if (user == null || (!user.Admin && !user.Claims.Any()))
                 return Unauthorized();
 
             var tokenGenRequest = new TokenGenerationRequest {
@@ -36,6 +37,12 @@ namespace API.Controllers
 
             if (user.Admin)
                 tokenGenRequest.CustomClaims.Add("admin", user.Admin);
+
+            if (user.Claims.Any(x=> string.Equals(x, "kiosk", StringComparison.InvariantCultureIgnoreCase)))
+                tokenGenRequest.CustomClaims.Add("kiosk", new MailAddress(user.Email).User);
+
+            if (user.Claims.Any(x => string.Equals(x, "manager", StringComparison.InvariantCultureIgnoreCase)))
+                tokenGenRequest.CustomClaims.Add("manager", new MailAddress(user.Email).User);
 
             return Ok(GenerateToken(tokenGenRequest));
         }

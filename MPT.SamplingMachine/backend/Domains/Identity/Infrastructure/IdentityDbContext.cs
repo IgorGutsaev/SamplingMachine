@@ -7,6 +7,8 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure
     public class IdentityDbContext : DbContext
     {
         public virtual DbSet<UserEntity> Users { get; set; }
+        public virtual DbSet<ClaimEntity> Claims { get; set; }
+        public virtual DbSet<UserClaimEntity> UserClaims { get; set; }
 
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
             : base(options) { }

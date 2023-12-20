@@ -13,7 +13,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
         public IEnumerable<User> Get(Func<User, bool> predicate)
             => _userRepository.Get(x => predicate(new User { Email = x.Email, Password = x.Password, UID = x.Id, Admin = x.Admin })).ToList()
-            .Select(x => new User { Email = x.Email, Password = x.Password, UID = x.Id, Admin = x.Admin });
+            .Select(x => new User { Email = x.Email, Password = x.Password, UID = x.Id, Admin = x.Admin, Claims = x.Claims?.Select(c => c.Claim.Name).Distinct() });
 
         public void Create(string email, string password) {
             email = email.Trim().ToLower();

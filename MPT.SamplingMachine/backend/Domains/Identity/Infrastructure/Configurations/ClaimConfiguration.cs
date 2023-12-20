@@ -4,11 +4,10 @@ using MPT.Vending.Domains.Identity.Infrastructure.Entities;
 
 namespace MPT.Vending.Domains.Identity.Infrastructure.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<UserEntity> {
-        public void Configure(EntityTypeBuilder<UserEntity> builder) {
-            builder.ToTable("User");
+    public class ClaimConfiguration : IEntityTypeConfiguration<ClaimEntity> {
+        public void Configure(EntityTypeBuilder<ClaimEntity> builder) {
+            builder.ToTable("Claim");
             builder.HasKey(x => x.Id);
-            builder.HasMany(x => x.Claims);
         }
     }
 }
