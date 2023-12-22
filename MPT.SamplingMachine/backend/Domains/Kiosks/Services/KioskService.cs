@@ -241,7 +241,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
             => Get(x => _kioskProductLinkViewRepository.Get(x => x.Sku == sku).Select(x => x.Kiosk.Uid).ToList().Distinct().Contains(x.UID));
 
         public void Dispense(string kioskUid, string address) {
-            KioskEntity? kiosk = _kioskRepository.Get(x => x.Uid == kioskUid).FirstOrDefault();
+            KioskEntity? kiosk = _kioskRepository.Get(x => x.Uid == kioskUid.ToUpper()).FirstOrDefault();
             if (kiosk == null)
                 return;
 
@@ -251,8 +251,10 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
             PoG poG = PoG.Read(planogramEntity.Planogram);
             PoGRoute route = poG.GetRoute(address);
-            if (route != null)
+            if (route != null && route.Quantity > 0)
                 route.Quantity--;
+            else throw new ArgumentException("The address is empty");
+
             planogramEntity.Planogram = poG.ToString(false);
             _planogramRepository.Put(planogramEntity);
 

@@ -115,9 +115,7 @@
                 listOfTransactions.Insert(0, transaction);
                 transactions = listOfTransactions;
 
-                await InvokeAsync(() => {
-                    StateHasChanged();
-                });
+                await InvokeAsync(() => StateHasChanged());
 
                 await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
             });

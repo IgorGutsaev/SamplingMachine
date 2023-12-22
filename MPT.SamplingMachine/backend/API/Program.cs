@@ -90,17 +90,20 @@ builder.Services.AddKiosk(x => {
     x.onPlanogramChanged += async (sender, e) => { // notify portal about planogram changes
         int index = 0;
         while (true) {
-            string? portalUrl = builder.Configuration[$"Portal:{index++}"];
-            if (!string.IsNullOrWhiteSpace(portalUrl)) {
-                HttpClient client = new HttpClient();
-                var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
-                    Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
-                    JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
-                }), Encoding.UTF8, "application/json");
+            try {
+                string? portalUrl = builder.Configuration[$"Portal:{index++}"];
+                if (!string.IsNullOrWhiteSpace(portalUrl)) {
+                    HttpClient client = new HttpClient();
+                    var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
+                        Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
+                        JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid.ToUpper(), Planogram = e.Planogram }))
+                    }), Encoding.UTF8, "application/json");
 
-                await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
+                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
+                }
+                else break;
             }
-            else break;
+            catch { }
         }
     };
 },

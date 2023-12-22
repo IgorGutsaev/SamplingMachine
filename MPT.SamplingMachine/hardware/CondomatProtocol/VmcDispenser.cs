@@ -85,7 +85,7 @@ namespace FutureTechniksProtocols
                 case '3':
                     onDispensing?.Invoke(this, new DispensingAckEventArgs {
                         Dispensed = data[1] == 0x4F,
-                        MotorId = _motorIdToByte(data[0]),
+                        MotorId = _byteToMotorId_FromExtractionEvent(data[0]),
                         Response = data
                     });
                     break;

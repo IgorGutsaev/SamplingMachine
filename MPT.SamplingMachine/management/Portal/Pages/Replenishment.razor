@@ -130,13 +130,12 @@ else {
         Task.Run(async () => {
             hubConnectionEditBelt = new HubConnectionBuilder()
                .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
-               .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
                .Build();
 
             hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (x) => {
                 PlanogramHook planogramChange = JsonSerializer.Deserialize<PlanogramHook>(x);
 
-                if (planogramChange.KioskUid == uid)
+                if (string.Equals(planogramChange.KioskUid, uid, StringComparison.InvariantCultureIgnoreCase ))
                     planogram = planogramChange.Planogram;
 
                 await InvokeAsync(() => StateHasChanged());
