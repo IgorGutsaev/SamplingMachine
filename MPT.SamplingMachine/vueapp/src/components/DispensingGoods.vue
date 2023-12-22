@@ -33,14 +33,17 @@
             }
         },
         async extract(products) {
+            console.log("Emulation mode: " + KioskSettings.isEmulation);
             if (KioskSettings.isEmulation) {
                 new Promise(() => {
                     setTimeout(() => Sampling.toExit(), 5000)
                 });
             }
-
-            await commitTransactionAsync(Transaction.info.phone, products);
-            await dispenseAsync(products);
+            else {
+                await commitTransactionAsync(Transaction.info.phone, products);
+                await dispenseAsync(products);
+                Sampling.toExit();
+            }
         }
     });
 </script>

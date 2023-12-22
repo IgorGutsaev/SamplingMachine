@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.9" />
+    <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.11" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
   </ItemGroup>
 

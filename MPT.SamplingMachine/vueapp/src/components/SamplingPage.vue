@@ -94,7 +94,7 @@
 
             KioskSettings.languages = [];
             KioskSettings.canLogOff = false;
-            KioskSettings.isEmulation = true;
+            KioskSettings.isEmulation = false;
         },
         watch: {
             // call again the method if the route changes

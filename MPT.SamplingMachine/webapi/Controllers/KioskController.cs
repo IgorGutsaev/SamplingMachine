@@ -1,6 +1,7 @@
 ﻿using FutureTechniksProtocols;
 using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
+using System.Text.Json;
 using webapi.Services;
 
 namespace webapi.Controllers;
@@ -35,8 +36,15 @@ public class KioskController : ControllerBase
 
     [HttpPut("dispense")]
     public async Task DispenseAsync([FromBody] IEnumerable<TransactionProductLink> products) {
-        IEnumerable<string> addresses = await _kioskService.GetDispensingList(products);
-        await _vendingMachineService.SendExtractAsync(addresses.Select(x => Convert.ToInt32(x)));
+        Console.WriteLine(JsonSerializer.Serialize(products));
+        try {
+            IEnumerable<string> addresses = await _kioskService.GetDispensingList(products);
+            await _vendingMachineService.SendExtractAsync(addresses.Select(x => Convert.ToInt32(x)));
+        }
+        catch (Exception ex) {
+
+            Console.WriteLine(ex.Message);
+        }
     }
 
     [HttpPost("loginService")]

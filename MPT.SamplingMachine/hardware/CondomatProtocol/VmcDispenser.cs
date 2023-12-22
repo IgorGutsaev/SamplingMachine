@@ -49,6 +49,7 @@ namespace FutureTechniksProtocols
                 Console.WriteLine("Invalid motor number!");
                 return;
             }
+            else Console.WriteLine($"Extract from {motorId}");
 
             byte[] command = new byte[3] { 0xAA, 0x55, _motorIdToByte(motorId) };
             onEvent?.Invoke(this, new DataEventArgs { Response = command, Comment = $"Dispense from {motorId}", IsCommand = true });
@@ -60,6 +61,7 @@ namespace FutureTechniksProtocols
                 Console.WriteLine("Invalid motor number!");
                 return;
             }
+            else Console.WriteLine($"Extract from {motorIds.Count()} adress(es)");
 
             foreach (int motorId in motorIds) {
                 byte[] command = new byte[3] { 0xAA, 0x55, _motorIdToByte(motorId) };

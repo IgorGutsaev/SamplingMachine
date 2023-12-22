@@ -52,9 +52,9 @@ else {
     </p>
 
     <div class="container">
-        @for (int i = 0; i < (int)Math.Ceiling(planogram.Addresses.Count() / 4m); i++) {
+        @for (int i = 0; i < (int)Math.Ceiling(planogram.ActiveAddresses.Count() / 4m); i++) {
             <div class="row">
-                @foreach (var address in planogram.Addresses.Skip(i * 4).Take(4)) {
+                @foreach (var address in planogram.ActiveAddresses.Skip(i * 4).Take(4)) {
                     <div class="col-3">
                         <div class="card" style="max-width: 18rem; align-items: center">
                             <img class="card-img-top card-img-top_1 lowbrightness" src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' />
@@ -178,6 +178,8 @@ else {
     private string GetStockLevel(PoGRoute route) {
         if (route.Quantity == route.MaxQuantity)
             return "success";
+        else if (route.Quantity > route.MaxQuantity)
+            return "info";
         else if (route.Quantity > route.MaxQuantity / 2m)
             return "primary";
         else if (route.Quantity <= route.MaxQuantity / 2m && route.Quantity >= route.MaxQuantity / 4m)

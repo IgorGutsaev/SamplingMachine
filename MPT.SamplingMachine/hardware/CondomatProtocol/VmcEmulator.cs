@@ -25,6 +25,7 @@
                 Console.WriteLine("Invalid motor number!");
                 return;
             }
+            else Console.WriteLine($"[Emulation] Extract from {motorId}");
 
             onEvent?.Invoke(this, new DataEventArgs { Response = new byte[3] { 0xAA, 0x55, _motorIdToByte(motorId) }, Comment = $"Dispense from {motorId}", IsCommand = true });
             Task.Delay(3000);
@@ -39,6 +40,7 @@
                 Console.WriteLine("Invalid motor number!");
                 return;
             }
+            else Console.WriteLine($"[Emulation] Extract from {motorIds.Count()} adress(es)");
 
             foreach (int motorId in motorIds) {
                 byte[] command = new byte[3] { 0xAA, 0x55, _motorIdToByte(motorId) };
