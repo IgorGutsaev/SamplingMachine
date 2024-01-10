@@ -1,5 +1,7 @@
 ﻿using Filuet.Hardware.Dispensers.Abstractions.Models;
+using MessagingServices;
 using Microsoft.AspNetCore.Mvc;
+using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Kiosks.Abstractions;
 
 namespace API.Controllers
@@ -8,8 +10,9 @@ namespace API.Controllers
     [ApiController]
     public class ReplenishmentController : ControllerBase
     {
-        public ReplenishmentController(IReplenishmentService replenishmentService, ILogger<ReplenishmentController> logger) {
+        public ReplenishmentController(IReplenishmentService replenishmentService, StockBalance stockBalance, ILogger<ReplenishmentController> logger) {
             _replenishmentService = replenishmentService;
+            _stockBalance = stockBalance;
             _logger = logger;
         }
 
@@ -26,7 +29,12 @@ namespace API.Controllers
         public void PutPlanogram([FromBody] PoG planogram, string uid)
             => _replenishmentService.PutPlanogram(uid, planogram);
 
+        [HttpGet("stock")]
+        public IEnumerable<KioskStock>? GetStock()
+            => _stockBalance.Stock;
+
         private readonly IReplenishmentService _replenishmentService;
+        private readonly StockBalance _stockBalance;
         private readonly ILogger<ReplenishmentController> _logger;
     }
 }

@@ -2,6 +2,7 @@
 using MPT.Vending.Domains.Kiosks.Abstractions;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Entities;
 using MPT.Vending.Domains.Kiosks.Infrastructure.Repositories;
+using System.Linq.Expressions;
 
 namespace MPT.Vending.Domains.Kiosks.Services
 {
@@ -9,8 +10,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
     {
         public event EventHandler<PoG> onPlanogramChanged;
 
-        public ReplenishmentService(PlanogramRepository planogramRepository, PlanogramViewRepository planogramViewRepository)
-        {
+        public ReplenishmentService(PlanogramRepository planogramRepository, PlanogramViewRepository planogramViewRepository) {
             _planogramRepository = planogramRepository;
             _planogramViewRepository = planogramViewRepository;
         }
@@ -23,6 +23,11 @@ namespace MPT.Vending.Domains.Kiosks.Services
 
             return PoG.Read(planogram.Planogram);
         }
+
+        public Dictionary<string, PoG> GetPlanograms()
+            => _planogramViewRepository.Get(x => true)
+            .Select(x => new KeyValuePair<string, PoG>(x.KioskUid, PoG.Read(x.Planogram)))
+            .ToDictionary(x => x.Key, x => x.Value);
 
         public void PutPlanogram(string kioskUid, PoG planogram) {
             PlanogramViewEntity? viewEntity = _planogramViewRepository.Get(x => x.KioskUid == kioskUid).FirstOrDefault();

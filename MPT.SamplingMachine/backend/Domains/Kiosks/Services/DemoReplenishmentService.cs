@@ -10,6 +10,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public PoG GetPlanogram(string kioskUid)
             => DemoData._planogram;
 
+        public Dictionary<string, PoG> GetPlanograms() => throw new NotImplementedException();
         public void PutPlanogram(string kioskUid, PoG planogram) {
             DemoData._planogram = planogram;
         }

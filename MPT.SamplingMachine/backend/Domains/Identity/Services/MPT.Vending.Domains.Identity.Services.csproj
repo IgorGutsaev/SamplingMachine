@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Filuet.Infrastructure.DataProvider" Version="1.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\SharedContext\MPT.Vending.Domains.SharedContext.csproj" />
+    <ProjectReference Include="..\Abstractions\MPT.Vending.Domains.Identity.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

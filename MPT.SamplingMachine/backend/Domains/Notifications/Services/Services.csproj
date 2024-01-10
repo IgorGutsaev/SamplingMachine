@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.15" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Dto\MPT.Vending.API.Dto.csproj" />
+    <ProjectReference Include="..\Abstractions\MPT.Vending.Domains.Notifications.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
