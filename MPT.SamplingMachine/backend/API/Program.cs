@@ -27,13 +27,14 @@ using API.Swagger;
 using MPT.Vending.Domains.SharedContext;
 using MPT.Vending.Domains.Identity.Abstractions;
 using Filuet.Hardware.Dispensers.Abstractions.Helpers;
+using MPT.Vending.Domains.Kiosks.Abstractions.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 IKioskService _mediatorKioskService = null;
 IReplenishmentService _mediatorReplenishmentService = null;
 IProductService _mediatorProductService = null;
 IMediaService _mediatorMediaService = null;
-StockBalance stockBalance = null;
+StockCache _stockBalance = null;
 
 // bind common json converters
 builder.Services.AddControllers(options =>
@@ -86,38 +87,42 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
     SqlConnection.RegisterColumnEncryptionKeyStoreProviders(providers);
 }
 
+// update stock cache
+Action<PlanogramChangeEventArgs> whenPlanogramChanged = e => {
+    _stockBalance?.Update(e.KioskUid, e.Planogram.GetStock().Select(x => new ProductStock {
+        ProductUid = x.productUid,
+        Quantuty = x.count,
+        MaxQuantuty = x.maxCount
+    }));
+};
+
 builder.Services.AddLocalIdentity(connectionString);
 builder.Services.AddKiosk(x => {
-    x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
+        x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
 
-    x.onPlanogramChanged += async (sender, e) => {
-        // notify portal about planogram changes
-        int index = 0;
-        while (true) {
-            string? portalUrl = builder.Configuration[$"Portal:{index++}"];
-            if (!string.IsNullOrWhiteSpace(portalUrl)) {
-                HttpClient client = new HttpClient();
-                var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
-                    Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
-                    JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid.ToUpper(), Planogram = e.Planogram }))
-                }), Encoding.UTF8, "application/json");
+        x.onPlanogramChanged += async (sender, e) => {
+            // notify portal about planogram changes
+            int index = 0;
+            while (true) {
+                string? portalUrl = builder.Configuration[$"Portal:{index++}"];
+                if (!string.IsNullOrWhiteSpace(portalUrl)) {
+                    HttpClient client = new HttpClient();
+                    var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
+                        Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
+                        JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid.ToUpper(), Planogram = e.Planogram }))
+                    }), Encoding.UTF8, "application/json");
 
-                await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
+                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
+                }
+                else break;
             }
-            else break;
-        }
 
-        // update stock keeper
-        var runningLowProducts = e.Planogram.GetStock();
-        stockBalance.Update(e.KioskUid, runningLowProducts.Select(x => new ProductStock {
-            ProductUid = x.productUid,
-            Quantuty = x.count,
-            MaxQuantuty = x.maxCount
-        }));
-    };
-},
+            whenPlanogramChanged(e);
+        };
+    },
     x => x.onPlanogramChanged += async (sender, e) => {
         /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */
+        whenPlanogramChanged(e);
     },
     x => _mediatorProductService.GetAsync(x.Distinct()).ToBlockingEnumerable().ToList(),
     x => _mediatorMediaService.GetByKiosks(x),
@@ -132,7 +137,7 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
 }))
 .AddAdvertisement(connectionString);
 
-builder.Services.AddSingleton(sp => new StockBalance(() => sp.GetService<IReplenishmentService>().GetPlanograms()
+builder.Services.AddSingleton(sp => new StockCache(() => sp.GetService<IReplenishmentService>().GetPlanograms()
     .Select(x => new KioskStock {
         KioskUid = x.Key,
         Balance = x.Value.GetStock().Select(p => new ProductStock {
@@ -155,6 +160,7 @@ _mediatorKioskService = app.Services.GetService<IKioskService>();
 _mediatorReplenishmentService = app.Services.GetService<IReplenishmentService>();
 _mediatorProductService = app.Services.GetService<IProductService>();
 _mediatorMediaService = app.Services.GetService<IMediaService>();
+_stockBalance = app.Services.GetService<StockCache>();
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();

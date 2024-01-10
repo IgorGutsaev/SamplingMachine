@@ -12,7 +12,7 @@ namespace API.Controllers
     [ApiController]
     public class ReplenishmentController : ControllerBase
     {
-        public ReplenishmentController(IReplenishmentService replenishmentService, StockBalance stockBalance, ILogger<ReplenishmentController> logger) {
+        public ReplenishmentController(IReplenishmentService replenishmentService, StockCache stockBalance, ILogger<ReplenishmentController> logger) {
             _replenishmentService = replenishmentService;
             _stockBalance = stockBalance;
             _logger = logger;
@@ -37,7 +37,7 @@ namespace API.Controllers
             => _stockBalance.Stock;
 
         private readonly IReplenishmentService _replenishmentService;
-        private readonly StockBalance _stockBalance;
+        private readonly StockCache _stockBalance;
         private readonly ILogger<ReplenishmentController> _logger;
     }
 }

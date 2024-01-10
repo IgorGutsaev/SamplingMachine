@@ -50,11 +50,10 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
 
             foreach (var p in kiosk.ProductLinks)
                 result.Add(new KioskProductLink { Product = p.Product,
-                    Credit= p.Credit,
-                    Disabled= p.Disabled,
-                    MaxCountPerTransaction= p.MaxCountPerTransaction,
-                    RemainingQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?
-                    .Routes.Sum(x=>x.Quantity) ?? 0
+                    Credit = p.Credit,
+                    Disabled = p.Disabled,
+                    MaxCountPerTransaction = p.MaxCountPerTransaction,
+                    RemainingQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?.Quantity ?? 0
                 });
 
             kiosk.ProductLinks = result;

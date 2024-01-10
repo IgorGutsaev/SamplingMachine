@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace MessagingServices
 {
-    public class StockBalance
+    public class StockCache
     {
         private ConcurrentDictionary<string, IEnumerable<ProductStock>> _stock; // (kioskUid, stock)
 
@@ -23,7 +23,7 @@ namespace MessagingServices
         /// Bind runningLow balance on start
         /// </summary>
         /// <param name="getRunningLowProducts"></param>
-        public StockBalance(Func<IEnumerable<KioskStock>> getStock)
+        public StockCache(Func<IEnumerable<KioskStock>> getStock)
         {
             _stock = new ConcurrentDictionary<string, IEnumerable<ProductStock>>();
             var runningLowProducts = getStock();
