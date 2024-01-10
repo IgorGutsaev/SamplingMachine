@@ -6,9 +6,9 @@
 @using System.Text.Json;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client
-@inject NavigationManager _uriHelper
 @inject TransactionStateContainer transactionStateContainer
 
 <PageTitle>Transactions</PageTitle>
@@ -90,7 +90,7 @@
 
 @code {
     private List<Transaction> transactions;
-    private HubConnection hubConnectionEditBelt;
+    private HubConnection hubConnectionFetchNewTransaction;
 
     CancellationTokenSource loadingTokenSource;
     bool stillReceivingProducts = false;
@@ -99,24 +99,30 @@
     DateTime to = DateTime.Now.Date.AddDays(1);
 
     protected override async Task OnInitializedAsync() {
-        hubConnectionEditBelt = new HubConnectionBuilder()
-           .WithUrl(_uriHelper.ToAbsoluteUri("/hookhub"))
-           .Build();
+        if (State.User == null) {
+            navigationManager.NavigateTo("login");
+            return;
+        }
 
-        hubConnectionEditBelt.On<string>("OnNewTransaction", async (data) => {
-            Transaction transaction = JsonSerializer.Deserialize<Transaction>(data);
-            List<Transaction> listOfTransactions = transactions.ToList();
-            listOfTransactions.Insert(0, transaction);
-            transactions = listOfTransactions;
+        Task.Run(async () => {
+            hubConnectionFetchNewTransaction = new HubConnectionBuilder()
+            .WithUrl(navigationManager.ToAbsoluteUri("/hookhub"))
+            .Build();
 
-            await InvokeAsync(() => {
-                StateHasChanged();
+            hubConnectionFetchNewTransaction.On<string>("OnNewTransaction", async (data) => {
+                Transaction transaction = JsonSerializer.Deserialize<Transaction>(data);
+                List<Transaction> listOfTransactions = transactions.ToList();
+                listOfTransactions.Insert(0, transaction);
+                transactions = listOfTransactions;
+
+                await InvokeAsync(() => StateHasChanged());
+
+                await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
             });
 
-            await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
+            await hubConnectionFetchNewTransaction.StartAsync();
         });
 
-        await hubConnectionEditBelt.StartAsync();
         await SearchTransactions();
         await JSRuntime.InvokeVoidAsync("ui.htmlizePopover");
     }
@@ -144,26 +150,26 @@
         loadingTokenSource = new CancellationTokenSource();
 
         IAsyncEnumerator<Transaction> e = _client.GetTransactionsAsync(new TransactionRequest { From = from, To = to, MobileNumber = phoneNumber }, loadingTokenSource.Token);
-         try {
-             while (await e.MoveNextAsync()) {
-                 transactions.Add(e.Current);
-                 stillReceivingProducts = true;
+        try {
+            while (await e.MoveNextAsync()) {
+                transactions.Add(e.Current);
+                stillReceivingProducts = true;
 
-                 try {
-                     await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
-                 }
-                 catch { }
+                try {
+                    await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
+                }
+                catch { }
 
-                 StateHasChanged();
-             }
-         }
-         finally {
-             if (e != null)
-                 await e.DisposeAsync();
+                StateHasChanged();
+            }
+        }
+        finally {
+            if (e != null)
+                await e.DisposeAsync();
 
-             stillReceivingProducts = false;
-             StateHasChanged();
-         }
+            stillReceivingProducts = false;
+            StateHasChanged();
+        }
     }
 
     private void Cancel() {

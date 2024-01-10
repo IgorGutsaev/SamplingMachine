@@ -7,8 +7,9 @@
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 @inject KioskStateContainer kioskStateContainer
 
 <PageTitle>Planogram</PageTitle>
@@ -40,7 +41,7 @@ else {
                         <div class="card" style="max-width: 18rem; align-items: center">
                             <label><b>Motor @address</b></label>
                             <div class="form-check form-switch" style="padding-top: 0.5rem">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="route.Active" />
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@route.Active" @onchange="(x) => onRouteEnabled(x, route)" />
                                 <label class="form-check-label" for="flexSwitchCheckDefault">@(route.Active.HasValue && route.Active.Value ? "On" : "Off")</label>
                             </div>
 
@@ -48,16 +49,16 @@ else {
                                 <label class="input-group-text" for="inputGroupSelect01">Max quantity</label>
                                 <input type="text" class="form-control" placeholder="Credit" aria-label="Max quantity" @bind="route.MaxQuantity" disabled>
                                 @if (route.MaxQuantity > 1) {
-                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity > 1) route.MaxQuantity--; }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity > 1) route.MaxQuantity--; OnPlanogramChanged(); }"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
                                 }
                                 @if (route.MaxQuantity < 10) {
-                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity < 10) route.MaxQuantity++; }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="() => { if (route.MaxQuantity < 10) route.MaxQuantity++; OnPlanogramChanged(); }"><i class="oi oi-plus smallicon" aria-hidden="true" /></button>
                                 }
                             </div>
 
                             <div class="input-group mb-3 ps-3 pe-3">
                                 <label class="input-group-text" for="inputGroupSelect01">Product</label>
-                                <select class="form-select" id="inputGroupSelect01" @onchange="(e) => onProductChanged(e, address)">
+                                <select class="form-select" id="inputGroupSelect01" @onchange="(e) => onProductChanged(e, route)">
                                     <option selected value="empty">Choose...</option>
                                     @foreach (var p in Products()) {
                                         var product = planogram.GetProduct(address);
@@ -98,6 +99,11 @@ else {
     private Guid actualCommandUid = new Guid();
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("login");
+            return;
+        }
+
         kiosk = kioskStateContainer.Value;
         planogram = await _client.GetPlanogramAsync(uid);
     }
@@ -106,8 +112,18 @@ else {
         return kiosk.ProductLinks.Select(x => x.Product).Distinct();
     }
 
-    private void onProductChanged(ChangeEventArgs e, string address) {
-        Debug.Print($"product/address: > {e.Value}/{address}");
+    private void onProductChanged(ChangeEventArgs e, PoGRoute route) {
+        Debug.Print($"product/address: > {e.Value}/{route}");
+        if (e.Value != null)
+        {
+            planogram.UpdateRoute(route, e.Value.ToString());
+            OnPlanogramChanged();
+        }
+    }
+
+    private void onRouteEnabled(ChangeEventArgs e, PoGRoute route) {
+        route.Active = Convert.ToBoolean(e.Value);
+        OnPlanogramChanged();
     }
 
     private async void OnPlanogramChanged() {
@@ -122,7 +138,7 @@ else {
                 if (token == actualCommandUid) {
                     //await JSRuntime.InvokeVoidAsync("alert", JsonSerializer.Serialize(planogram));
                     Debug.Print(JsonSerializer.Serialize(planogram));
-                    //await _client.PutPlanogramAsync(uid, planogram);
+                    await _client.PutPlanogramAsync(uid, planogram);
                     saving = false;
                     await InvokeAsync(StateHasChanged);
                 }

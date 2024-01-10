@@ -1,4 +1,6 @@
+using Blazored.LocalStorage;
 using Filuet.Infrastructure.Abstractions.Converters;
+using Microsoft.AspNetCore.Components;
 using MPT.SamplingMachine.ApiClient;
 using Portal.Hubs;
 using Portal.StateContainers;
@@ -12,6 +14,8 @@ builder.Services.AddSingleton<KioskStateContainer>();
 builder.Services.AddSingleton<ProductStateContainer>();
 builder.Services.AddSingleton<TransactionStateContainer>();
 builder.Services.AddSingleton<HookHub>();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<AppState>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts => {
@@ -21,8 +25,7 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.Converters.Add(new N2JsonConverter());
     });
 
-builder.Services.AddSingleton(sp => 
-new SamplingMachineApiClient(sp.GetService<IConfiguration>()["ApiUrl"]));// "https://localhost:7189/"
+builder.Services.AddSingleton(sp => new SamplingMachineApiClient(builder.Configuration["ApiUrl"]));
 
 var app = builder.Build();
 

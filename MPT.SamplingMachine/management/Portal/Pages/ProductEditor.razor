@@ -13,6 +13,8 @@
 @inject IJSRuntime JSRuntime
 @inject SamplingMachineApiClient _client
 @inject ProductStateContainer productStateContainer
+@inject AppState State
+@inject NavigationManager navigationManager
 
 <PageTitle>@sku</PageTitle>
 
@@ -156,6 +158,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (State.User == null) {
+            navigationManager.NavigateTo("login");
+            return;
+        }
+
         product = productStateContainer.Value;
 
         newLanguage = EnumHelpers.GetValues<Language>().Where(x => !product.Names.Select(n => n.Language).Contains(x)).OrderBy(x => x.ToString()).First();

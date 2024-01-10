@@ -77,6 +77,8 @@ export async function commitTransactionAsync(phone, products) {
 }
 
 export async function dispenseAsync(products) {
+    console.log("Dispense products: " + JSON.stringify(products));
+
     return await fetch('kiosk/dispense', {
         method: 'PUT',
         headers: {

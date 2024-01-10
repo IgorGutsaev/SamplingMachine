@@ -7,15 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Content Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Backend\ApiClient\MPT.SamplingMachine.ApiClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.15" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
     <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.13" />
   </ItemGroup>

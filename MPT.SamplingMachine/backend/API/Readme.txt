@@ -1,0 +1,1 @@
+﻿1. JWT Authentication & authorization https://www.youtube.com/watch?v=mgeuh8k3I4g

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MPT.Vending.API.Dto;
 using MPT.Vending.Domains.Advertisement.Abstractions;
+using MPT.Vending.Domains.Identity.Abstractions;
 using MPT.Vending.Domains.SharedContext.Abstractions;
 using MPT.Vending.Domains.SharedContext.Models;
 using System.Security.Cryptography;
@@ -19,6 +21,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpGet]
         public IEnumerable<AdMedia> Get()
             => _mediaService.Get();
@@ -27,14 +30,17 @@ namespace API.Controllers
         public IEnumerable<KioskMediaLink> GetByKiosk(string uid)
             => _mediaService.GetByKiosk(uid).OrderBy(x => x.Start).ToList();
 
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpPut]
         public void Put([FromBody] NewMediaRequest request)
             => _mediaService.Put(request);
 
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpDelete("{hash}")]
         public void Delete(string hash)
             => _mediaService.Delete(hash);
 
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpPost("upload")]
         public async Task<string> Upload(IFormFile file, CancellationToken cancellationToken) {
             using MemoryStream stream = new MemoryStream();
@@ -52,6 +58,7 @@ namespace API.Controllers
             return uid;
         }
 
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpGet("find/{format}/{hash}")]
         public async Task<IActionResult> GetByHash(string format, string hash) {
             if (string.Equals(hash, "undefined", StringComparison.InvariantCultureIgnoreCase))

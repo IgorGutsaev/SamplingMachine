@@ -33,7 +33,7 @@
                         <Terms />
                     </div>
                     <div class="carousel-item" id="identification-screen">
-                        <img src="https://images.hindustantimes.com/img/2022/08/07/550x309/cat_1659882617172_1659882628989_1659882628989.jpg" class="d-block w-100">
+                        <img src="https://www.m24.ru/b/d/nBkSUhL2hFYikMm-Lr6BrNOp2Z3z8Zj21iDEh_fH_nKUPXuaDyXTjHou4MVO6BCVoZKf9GqVe5Q_CPawk214LyWK9G1N5ho=mdhxAlb3poduu5yzsYPDtQ.jpg" class="d-block w-100">
                         <br>
                         <Identification />
                     </div>
@@ -94,7 +94,7 @@
 
             KioskSettings.languages = [];
             KioskSettings.canLogOff = false;
-            KioskSettings.isEmulation = true;
+            KioskSettings.isEmulation = false;
         },
         watch: {
             // call again the method if the route changes

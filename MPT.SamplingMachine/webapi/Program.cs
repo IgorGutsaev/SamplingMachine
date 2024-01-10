@@ -25,7 +25,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
-builder.Services.AddSingleton(sp => new SamplingMachineApiClient(sp.GetService<IConfiguration>()["ApiUrl"]));
+builder.Services.AddSingleton(sp =>
+    new SamplingMachineApiClient(x => {
+        x.Url = builder.Configuration["ApiUrl"] ?? "https://ogmento-api.azurewebsites.net/";
+        x.Email = "smytten1@filuet.com";
+        x.Password = "87UsQaYnXB";
+    }
+));
+
 builder.Services.AddSingleton(sp => {
     string kioskUid = sp.GetService<IConfiguration>()["KioskUid"];
     return new KioskService(sp.GetRequiredService<SamplingMachineApiClient>(), sp.GetRequiredService<IMemoryCachingService>(), kioskUid);
@@ -39,6 +46,7 @@ builder.Services.AddSingleton(sp => {
 
 builder.Services.AddSingleton(sp => {
     int portId = Convert.ToInt32(sp.GetService<IConfiguration>()["Hardware:DispensingUnit:SerialPort"]);
+    Console.WriteLine($"Com port: {portId}");
 
     IDispenser dispenser = portId > 0 ? new VmcDispenser(portId) : new VmcEmulator();
 
@@ -48,7 +56,10 @@ builder.Services.AddSingleton(sp => {
 
     KioskService kioskService = sp.GetRequiredService<KioskService>();
 
-    dispenser.onDispensing += (sender, e) => kioskService.DispenseAsync(e.MotorId);
+    dispenser.onDispensing += (sender, e) => {
+        kioskService.DispenseAsync(e.MotorId);
+        Console.WriteLine($"Dispensing event. Motor: {e.MotorId}, Dispensed: {e.Dispensed}");
+    };
 
     return dispenser;
 });

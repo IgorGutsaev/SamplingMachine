@@ -8,8 +8,9 @@
 @using System.Diagnostics;
 @attribute [StreamRendering(true)]
 @inject IJSRuntime JSRuntime
+@inject AppState State
 @inject NavigationManager navigationManager
-@inject SamplingMachineApiClient _client;
+@inject SamplingMachineApiClient _client
 
 <!-- Media max size toaster -->
 <div aria-live="polite" aria-atomic="true" class="position-relative">
@@ -159,6 +160,11 @@ else {
     private string _selectedResourceData;
 
     protected override async Task OnInitializedAsync() {
+        if (State.User == null) {
+            navigationManager.NavigateTo("login");
+            return;
+        }
+
         _media = await _client.GetMediaAsync();
         loading = false;
         StateHasChanged();

@@ -1,19 +1,54 @@
-﻿@inherits LayoutComponentBase
+﻿@using MPT.SamplingMachine.ApiClient;
+@using MPT.Vending.API.Dto.exceptions;
+@using Portal.StateContainers;
+@inherits LayoutComponentBase
+@inject AppState State
+@inject SamplingMachineApiClient Client
+@inject NavigationManager _uriHelper
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Portal</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div id="topRow" class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+    @if (State.Authorized) {
+        <div class="sidebar">
+            <NavMenu />
         </div>
+    }
+    <main>
+        @if (State.Authorized) {
+            <div id="topRow" class="top-row px-4">
+                <button class="btn btn-primary" @onclick="async (x) => await State.LogoutAsync()">Logout</button>
+            </div>
+        }
 
         <article class="content px-4">
-            @Body
+            <ErrorBoundary @ref="errorBoundary">
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent Context="Exception">
+                    @if (Exception is UnauthorizedException) {
+                        errorBoundary.Recover();
+                        State.LogoutAsync();
+                    }
+                </ErrorContent>
+            </ErrorBoundary>
         </article>
     </main>
 </div>
+
+@code {
+    private ErrorBoundary errorBoundary;
+
+    protected override void OnInitialized() {
+        errorBoundary = new ErrorBoundary();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            await State.FetchUserAsync();
+            this.StateHasChanged();
+        }
+    }
+}

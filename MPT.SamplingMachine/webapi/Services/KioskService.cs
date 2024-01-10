@@ -53,7 +53,7 @@ namespace webapi.Services
             foreach (var product in products) {
                 for (int i = 0; i < product.Count; i++) {
                     PoGProduct poGProduct = planogram[product.Product.Sku];
-                    PoGRoute? route = poGProduct.Routes.OrderByDescending(x => x.Quantity).FirstOrDefault();
+                    PoGRoute? route = poGProduct.Routes.Where(x => x.Active.HasValue && x.Active.Value).OrderByDescending(x => x.Quantity).FirstOrDefault();
                     if (route != null) {
                         result.Add(route.Address);
                         route.Quantity--;
