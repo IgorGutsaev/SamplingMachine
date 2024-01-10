@@ -56,12 +56,14 @@ builder.Services.AddKiosk(x => {
                         JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid, Planogram = e.Planogram }))
                     }), Encoding.UTF8, "application/json");
 
-                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
-                }
-                else break;
+                await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
             }
-        };
-    },
+            else break;
+        }
+
+        
+    };
+},
     x => x.onPlanogramChanged += async (sender, e) => {
         /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */
     },
