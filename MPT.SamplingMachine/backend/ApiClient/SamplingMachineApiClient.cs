@@ -375,6 +375,15 @@ namespace MPT.SamplingMachine.ApiClient
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(planogram), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
         }
+
+        public async Task<IEnumerable<KioskStock>> GetStockAsync() {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_settings.Url), $"/api/replenishment/stock"));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+
+            using HttpResponseMessage response = await _client.SendAsync(requestMessage);
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<KioskStock>>(result);
+        }
         #endregion
 
         #region media

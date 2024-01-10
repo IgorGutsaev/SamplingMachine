@@ -28,13 +28,13 @@ namespace MessagingServices
             _stock = new ConcurrentDictionary<string, IEnumerable<ProductStock>>();
             var runningLowProducts = getStock();
             foreach (var kiosk in runningLowProducts)
-                Update(kiosk.KioskUid, kiosk.Balance);
+                Update(kiosk.KioskUid, kiosk.Stock);
         }
 
         public IEnumerable<KioskStock>? Stock
             => _stock?.Select(x => new KioskStock {
                 KioskUid = x.Key,
-                Balance = x.Value
+                Stock = x.Value
             });
     }
 }

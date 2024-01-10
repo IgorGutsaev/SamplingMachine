@@ -140,7 +140,7 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
 builder.Services.AddSingleton(sp => new StockCache(() => sp.GetService<IReplenishmentService>().GetPlanograms()
     .Select(x => new KioskStock {
         KioskUid = x.Key,
-        Balance = x.Value.GetStock().Select(p => new ProductStock {
+        Stock = x.Value.GetStock().Select(p => new ProductStock {
             ProductUid = p.productUid,
             Quantuty = p.count,
             MaxQuantuty = p.maxCount

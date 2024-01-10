@@ -20,6 +20,6 @@ namespace MPT.Vending.API.Dto
         public string KioskUid { get; set; }
 
         [JsonPropertyName("stock")]
-        public IEnumerable<ProductStock> Balance { get; set; }
+        public IEnumerable<ProductStock> Stock { get; set; }
     }
 }
