@@ -56,6 +56,7 @@
                 }, 1000);
             },
             async loginAsync() {
+                alert(this.pin);
                 let loginResult = await loginServiceAsync(this.pin);
                 if (loginResult.url) {
                     window.location.href = loginResult.url + '/true';

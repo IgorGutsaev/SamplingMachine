@@ -190,7 +190,7 @@
                     this.creditUsed -= product.credit;
                 }
 
-                console.info(ShoppingCart.items.length == 0 ? "Cart is empty" : "Cart changed: " + JSON.stringify(ShoppingCart.items));
+            console.log(ShoppingCart.items.length == 0 ? "Cart is empty" : "Cart changed: " + JSON.stringify(ShoppingCart.items));
             },
             async issueProducts() {
                 this.$emit('homeButtonEnabled', false);
@@ -207,7 +207,7 @@
                 ShoppingCart.items.filter(x => x.sku == product.sku)[0].count++;
                 this.creditUsed += product.credit;
 
-                console.info("Cart changed: " + JSON.stringify(ShoppingCart.items));
+                console.log("Cart changed: " + JSON.stringify(ShoppingCart.items));
 
                 // if (this.creditUsed >= this.credit)
                 //     await this.issueProducts();

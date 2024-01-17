@@ -66,6 +66,7 @@
     import Dispensing from './DispensingGoods.vue'
     import EndTransaction from './EndTransaction.vue'
     import i18n from '../i18n'
+    import { } from '/src/http-logger.js'
 
     export default defineComponent({
         data() {
@@ -103,23 +104,23 @@
         toAgreement() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#agreement-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         toIdentification() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#identification-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         toCatalog() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#catalog-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
             $($("#productCarousel .carousel-item")[0]).addClass("active");
         },
         toExit() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#exit-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
 
             new Promise(() => {
                 setTimeout(() => {
@@ -130,7 +131,7 @@
         toDispensing() {
             $("#globalCarousel .carousel-item.active").removeClass("active");
             $("#dispensing-screen").addClass("active");
-            console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+            console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
         },
         toLanguages() {
             if (KioskSettings.languages.length <= 1) {
@@ -139,7 +140,7 @@
             else {
                 $("#globalCarousel .carousel-item.active").removeClass("active");
                 $("#languages-screen").addClass("active");
-                console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+                console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
             }
         },
         mounted() {
@@ -186,14 +187,14 @@
             setLanguage(lang, goNextScreen) {
                 this.currentLang = lang.code;
                 KioskSettings.currentLanguage = lang;
-                console.info("Selected language: " + KioskSettings.currentLanguage.code);
+                console.log("Selected language: " + KioskSettings.currentLanguage.code);
                 i18n.global.locale = KioskSettings.currentLanguage.code;
 
                 if (goNextScreen)
                 {
                     $("#globalCarousel .carousel-item.active").removeClass("active");
                     $("#agreement-screen").addClass("active");
-                    console.info("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
+                    console.log("Current screen is " + $("#globalCarousel .carousel-item.active").attr('id'));
                     this.changeHomeButton(true);
                 }
             },

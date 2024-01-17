@@ -6,6 +6,7 @@ using MPT.SamplingMachine.ApiClient;
 using System.Net;
 using webapi.Communication;
 using webapi.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,23 @@ builder.Services.AddSingleton(sp =>
         x.Password = "87UsQaYnXB";
     }
 ));
+
+builder.Services.AddLogging(builder => {
+    var logger = new LoggerConfiguration()
+        .MinimumLevel.Information()
+        .WriteTo.File(@"c:\ogmento\logs\ui\ui-.txt",
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] : {Message}{NewLine}{Exception}", // add {SourceContext:u2} if use a score of filters
+            rollingInterval: RollingInterval.Day,
+            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, retainedFileCountLimit: 92)
+        .CreateLogger();
+
+    builder.ClearProviders();
+#if DEBUG
+    builder.AddDebug();
+    builder.AddConsole(c => c.TimestampFormat = "[HH:mm:ss.fff] ");
+#endif
+    builder.AddSerilog(logger);
+});
 
 builder.Services.AddSingleton(sp => {
     string kioskUid = sp.GetService<IConfiguration>()["KioskUid"];
@@ -67,7 +85,7 @@ builder.Services.AddSingleton(sp => {
 builder.Services.AddCors(options => {
     options.AddPolicy("CorsPolicy",
         builder => {
-            builder.WithOrigins("https://localhost:5002/")
+            builder.WithOrigins("http://localhost:5002/")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

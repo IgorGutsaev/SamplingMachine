@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Identit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPT.Vending.Domains.Identity.Services", "backend\Domains\Identity\Services\MPT.Vending.Domains.Identity.Services.csproj", "{A9FED109-73A2-43AC-81A0-01737B845695}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp", "backend\FunctionApp\FunctionApp.csproj", "{50B2A5A2-A9BA-4ADB-BE5E-CB14BA0CCDE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionApp", "backend\FunctionApp\FunctionApp.csproj", "{50B2A5A2-A9BA-4ADB-BE5E-CB14BA0CCDE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

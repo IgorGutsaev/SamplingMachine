@@ -29,6 +29,7 @@
     import KioskSettings from '/src/modules/settings.module.js'
     import CatalogModule from '/src/modules/catalog.module.js'
     import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr';
+    import {} from '/src/http-logger.js'
 
     export default {
         name: 'UI',
@@ -42,7 +43,7 @@
             }
         },
         created() {
-             const connection = new HubConnectionBuilder()
+            const connection = new HubConnectionBuilder()
                 .withUrl('https://localhost:7244/notificationhub', {
                     skipNegotiation: true,
                     transport: HttpTransportType.WebSockets
