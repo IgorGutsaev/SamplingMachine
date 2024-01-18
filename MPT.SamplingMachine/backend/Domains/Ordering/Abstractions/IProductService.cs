@@ -9,6 +9,7 @@ namespace MPT.Vending.Domains.Ordering.Abstractions
 
         event EventHandler<KioskProductsChangedEventArgs> onLinksChanged;
         Task<Product?> GetAsync(string sku);
+        Task<IEnumerable<Product>> GetScopeAsync(IEnumerable<string> sku);
         IAsyncEnumerable<Product> GetAsync(IEnumerable<string> sku);
         IAsyncEnumerable<Product> GetByFilterAsync(string filter);
         Task PutAsync(Product product);
