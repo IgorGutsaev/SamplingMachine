@@ -62,7 +62,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options => {
     options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
     options.AddPolicy(IdentityData.KioskUserPolicyName, p => p.RequireClaim(IdentityData.KioskUserPolicyName));
-    options.AddPolicy(IdentityData.ManagerPolicyName, p => p.RequireAssertion(context => 
+    options.AddPolicy(IdentityData.ManagerPolicyName, p => p.RequireAssertion(context =>
         context.User.HasClaim(c => c.Type == IdentityData.AdminUserClaimName || c.Type == IdentityData.ManagerClaimName))); // AdminUser is a manager as well
 });
 
@@ -89,37 +89,41 @@ if (!string.Equals(mode, "demo", StringComparison.InvariantCultureIgnoreCase)) {
 
 // update stock cache
 Action<PlanogramChangeEventArgs> whenPlanogramChanged = e => {
+    var planograms = _mediatorReplenishmentService.GetPlanograms();
+    IEnumerable<Product> products = _mediatorProductService.GetScopeAsync(planograms.Values.SelectMany(x => x.Products.Select(p => p.ProductUid)).Distinct()).Result;
+
     _stockBalance?.Update(e.KioskUid, e.Planogram.GetStock().Select(x => new ProductStock {
-        ProductUid = x.productUid,
-        Quantuty = x.count,
+        Uid = x.productUid,
+        Name = products.FirstOrDefault(k => k.Sku == x.productUid)?.Names?.FirstOrDefault()?.Value ?? x.productUid,
+        Quantity = x.count,
         MaxQuantuty = x.maxCount
     }));
 };
 
 builder.Services.AddLocalIdentity(connectionString);
 builder.Services.AddKiosk(x => {
-        x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
+    x.onKioskChanged += async (sender, e) => await p2kMediator.OnKioskHasChanged(sender, e); // notify ui of changes
 
-        x.onPlanogramChanged += async (sender, e) => {
-            // notify portal about planogram changes
-            int index = 0;
-            while (true) {
-                string? portalUrl = builder.Configuration[$"Portal:{index++}"];
-                if (!string.IsNullOrWhiteSpace(portalUrl)) {
-                    HttpClient client = new HttpClient();
-                    var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
-                        Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
-                        JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid.ToUpper(), Planogram = e.Planogram }))
-                    }), Encoding.UTF8, "application/json");
+    x.onPlanogramChanged += async (sender, e) => {
+        // notify portal about planogram changes
+        int index = 0;
+        while (true) {
+            string? portalUrl = builder.Configuration[$"Portal:{index++}"];
+            if (!string.IsNullOrWhiteSpace(portalUrl)) {
+                HttpClient client = new HttpClient();
+                var httpContent = new StringContent(JsonSerializer.Serialize(new TransactionHookRequest {
+                    Message = HookHelpers.Encrypt(AzureKeyVaultReader.GetSecret("ogmentoportal-hook-secret"),
+                    JsonSerializer.Serialize(new PlanogramHook { KioskUid = e.KioskUid.ToUpper(), Planogram = e.Planogram }))
+                }), Encoding.UTF8, "application/json");
 
-                    await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
-                }
-                else break;
+                await client.PostAsync(new Uri(new Uri(portalUrl), "/api/hook/planogram"), httpContent);
             }
+            else break;
+        }
 
-            whenPlanogramChanged(e);
-        };
-    },
+        whenPlanogramChanged(e);
+    };
+},
     x => x.onPlanogramChanged += async (sender, e) => {
         /* to be done  await mediator.OnPlanogramHasChanged(sender, e) */
         whenPlanogramChanged(e);
@@ -137,16 +141,21 @@ builder.Services.AddTransient<IBlobRepository>(sp => new AzureBlobRepository(x =
 }))
 .AddAdvertisement(connectionString);
 
-builder.Services.AddSingleton(sp => new StockCache(() => sp.GetService<IReplenishmentService>().GetPlanograms()
-    .Select(x => new KioskStock {
+builder.Services.AddSingleton( sp => {
+    IProductService productService = sp.GetRequiredService<IProductService>();
+    var planograms = sp.GetService<IReplenishmentService>().GetPlanograms();
+    IEnumerable<Product> products = productService.GetScopeAsync(planograms.Values.SelectMany(x => x.Products.Select(p => p.ProductUid)).Distinct()).Result;
+
+    return new StockCache(() => planograms.Select(x => new KioskStock {
         KioskUid = x.Key,
         Stock = x.Value.GetStock().Select(p => new ProductStock {
-            ProductUid = p.productUid,
-            Quantuty = p.count,
+            Uid = p.productUid,
+            Name = products.FirstOrDefault(k => k.Sku == p.productUid)?.Names?.FirstOrDefault()?.Value ?? p.productUid,
+            Quantity = p.count,
             MaxQuantuty = p.maxCount
         })
-    }))
-);
+    }));
+});
 
 builder.Services.AddSingleton<IMemoryCachingService, MemoryCachingService>();
 builder.Services.AddEndpointsApiExplorer();

@@ -4,11 +4,14 @@ namespace MPT.Vending.API.Dto
 {
     public class ProductStock
     {
-        [JsonPropertyName("product")]
-        public string ProductUid { get; set; }
+        [JsonPropertyName("uid")]
+        public string Uid { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
         [JsonPropertyName("qty")]
-        public int Quantuty { get; set; }
+        public int Quantity { get; set; }
 
         [JsonPropertyName("max")]
         public int MaxQuantuty { get; set; }

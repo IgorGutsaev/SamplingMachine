@@ -12,6 +12,8 @@ namespace MPT.Vending.Domains.Ordering.Services
 
         public async Task<Product?> GetAsync(string sku)
             => DemoData._products.FirstOrDefault(x => x.Sku == sku);
+        public async Task<IEnumerable<Product>> GetScopeAsync(IEnumerable<string> sku)
+            => DemoData._products.Where(x => sku.Contains(x.Sku));
 
         public async IAsyncEnumerable<Product> GetAsync(IEnumerable<string> sku) {
             foreach (var p in DemoData._products.Where(x => sku.Contains(x.Sku)))
