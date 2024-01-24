@@ -39,44 +39,49 @@
     </div>
 </div>
 
-<div class="jumbotron vertical-center">
+<div class="jumbotron vertical-center" style="margin-top: -2em">
     <div class="container d-flex align-items-center justify-content-center">
         <div class="text-center">
             <div>
+                <img src="/img/logof.png" style="height: 5.5em; padding-bottom: 1em" />
 
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" aria-label="Email" placeholder="Email" aria-describedby="basic-addon1" @oninput="x => { Email = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }" />
+                    <input type="text" class="form-control" id="email" aria-label="Email" placeholder="Email" aria-describedby="basic-addon1" @oninput="x => { Email = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }" />
                 </div>
 
                 <div class="input-group mb-3">
-                    <input type="password" class="form-control pwd" id="password" name="password" placeholder="Password" @oninput="x => { Password = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }">
+                    <input type="password" class="form-control pwd" autocomplete="do-not-autofill" id="password" name="password" placeholder="Password" @oninput="x => { Password = x.Value?.ToString(); _buttonsEnabled = IsLoginButtonEnabled(); }">
                     <span class="input-group-text" id="addon-wrapping"><i class="bi bi-eye-slash reveal" id="togglePassword"></i></span>
                 </div>
 
                 <div class="container">
                     <div class="row">
-                        <div class="col-6">
-                            <button type="button" class="btn btn-warning" @onclick="OnSignUpAsync" disabled="@(!_buttonsEnabled)">
+                        <div class="col-5" style="--bs-gutter-x: 0">
+                            <button type="button" class="btn btn-dark w-100 h-100 signUpButton" @onclick="OnSignUpAsync" disabled="@(!_buttonsEnabled)">
                                 @if (SignUpInProgress) {
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 }
-                                Sign Up
+                                Sign up
                             </button>
                         </div>
-                        <div class="col-6">
-                            <button type="button" class="btn btn-primary" @onclick="OnSignInAsync" disabled="@(!_buttonsEnabled)">
+                        <div class="col-1" style="--bs-gutter-x: 0"/>
+                        <div class="col-6" style="--bs-gutter-x: 0">
+                            <button type="button" class="btn btn-primary w-100 h-100 ooButton" id="signInButton" @onclick="OnSignInAsync" disabled="@(!_buttonsEnabled)">
                                 @if (SignInInProgress) {
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 }
-                                Sign In
+                                Sign in
                             </button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
+</div>
+
+<div id="footer" class="align-items-center text-center">
+    <p class="fw-light"><a href="https://ogmento.io/" class="ooLabel">OgmentO</a> ©, @DateTime.Now.Year</p>
 </div>
 
 <script>
@@ -93,11 +98,11 @@
     };
 
     $(".reveal").on('click', function () {
-        var $pwd = $(".pwd");
-        if ($pwd.attr('type') === 'password') {
-            $pwd.attr('type', 'text');
+        var pwd = $(".pwd");
+        if (pwd.attr('type') === 'password') {
+            pwd.attr('type', 'text');
         } else {
-            $pwd.attr('type', 'password');
+            pwd.attr('type', 'password');
         }
     });
 </script>

@@ -1,7 +1,11 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Roboto", "Montserrat", sans-serif;
+}
+
+:root {
+    --main-color: #4f8ced;
 }
 
 h1:focus {
@@ -154,4 +158,28 @@ img.lowbrightness {
 
     display: flex;
     align-items: center;
+}
+
+.ooButton {
+    background: linear-gradient(90deg, #fe2aa9, #29a1fc);
+    border: 0px;
+    font-weight: 500;
+}
+
+.ooLabel {
+    background: linear-gradient(90deg, #fe2aa9, #29a1fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+}
+
+.signUpButton {
+    font-weight: 500;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
 }
