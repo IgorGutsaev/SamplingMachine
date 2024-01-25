@@ -149,6 +149,10 @@ namespace MPT.Vending.Domains.Ordering.Services
             }
         }
 
+        public async Task<IEnumerable<Product>> GetScopeAsync(IEnumerable<string> sku) {
+            return null;
+        }
+
         private readonly PictureRepository _pictureRepository;
         private readonly ProductRepository _productRepository;
         private readonly ProductLocalizationRepository _productLocalizationRepository;

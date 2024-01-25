@@ -69,7 +69,9 @@ else {
                             }
                         </td>
                         <td>
-                            @kiosk.ProductLinks.Sum(x=>x.RemainingQuantity) / @kiosk.ProductLinks.Sum(x=>x.MaxQuantity)
+                            <div class="progress w-75">
+                                <div class="progress-bar bg-@_stockLevel(kiosk)" role="progressbar" style="width: @_stockPercent(kiosk)%;" aria-valuenow="@_stockPercent(kiosk)" aria-valuemin="0" aria-valuemax="100">@_stockPercent(kiosk)%</div>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -82,6 +84,9 @@ else {
     private bool loading = false;
     private IEnumerable<Kiosk> kiosks;
     protected string _newUid;
+
+    private int _stockPercent(Kiosk k)
+        => (int)(100 * (decimal)k.ProductLinks.Sum(x => x.RemainingQuantity) / (decimal)k.ProductLinks.Sum(x => x.MaxQuantity));
 
     protected override async Task OnInitializedAsync() {
         if (State.User == null) {
@@ -103,8 +108,20 @@ else {
     }
 
     private async Task Edit(string uid) {
-        Kiosk kiosk = kiosks.First(x => x.UID == uid);       
+        Kiosk kiosk = kiosks.First(x => x.UID == uid);
         kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/kiosk/{uid}");
+    }
+
+    private string _stockLevel(Kiosk k) {
+        int level = _stockPercent(k);
+        if (level >= 50)
+            return "success";
+        else if (level >= 25 && level < 50)
+            return "warning";
+        else if (level < 25)
+            return "danger";
+
+        return string.Empty;
     }
 }
