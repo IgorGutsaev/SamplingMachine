@@ -186,7 +186,7 @@ else {
                         </td>
                         <td>
                             <div>
-                                <input type="number" min="1" max="10" value="@link.MaxCountPerTransaction" @oninput="(e) => { link.MaxCountPerTransaction = Convert.ToInt32(e.Value); SetMaxCountPerTransaction(link.Product.Sku, link.MaxCountPerTransaction); }">
+                                <input type="number" min="1" max="10" value="@link.MaxQtyPerTransaction" @oninput="(e) => { link.MaxQtyPerTransaction = Convert.ToInt32(e.Value); SetMaxCountPerTransaction(link.Product.Sku, link.MaxQtyPerTransaction); }">
                             </div>
                         </td>
                         <td>
@@ -352,7 +352,7 @@ else {
     private async Task AddProductLinkAsync(string sku) {
         await _client.LinkProductAsync(kiosk.UID, sku);
         var links = kiosk.ProductLinks?.ToList() ?? new List<KioskProductLink>();
-        links.Insert(0, new KioskProductLink { Credit = 1, MaxCountPerTransaction = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku), Disabled = true });
+        links.Insert(0, new KioskProductLink { Credit = 1, MaxQtyPerTransaction = 1, RemainingQuantity = 0, Product = products.First(x => x.Sku == sku), Disabled = true });
 
         kiosk.ProductLinks = new List<KioskProductLink>(); // this crutch helps render
         this.StateHasChanged(); // tooltip images correctly

@@ -20,7 +20,7 @@
 }
 else {
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKioskModal">
-        New
+        Create a new one
     </button>
 
     <!-- Modal -->
@@ -46,17 +46,30 @@ else {
     </div>
 
     if (kiosks != null && kiosks.Any()) {
-        <table class="table">
+        <table class="table mt-4">
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Online</th>
+                    <th>Stock</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var kiosk in kiosks) {
                     <tr>
                         <td>
-                            <button class="btn btn-light btn-lg" @onclick="() => Edit(kiosk.UID)">@kiosk.UID</button>
+                            <button class="btn btn-light btn-sm" @onclick="() => Edit(kiosk.UID)">@kiosk.UID</button>
+                        </td>
+                        <td>
+                            @if (kiosk.IsOn) {
+                                <i class="oi oi-media-record" aria-hidden="true" style="color: #26aa5e; font-size: 1.6em; padding-left: 0.45em" />
+                            }
+                            else {
+                                <i class="oi oi-media-record" aria-hidden="true" style="color: #808080; font-size: 1.6em; padding-left: 0.45em" />
+                            }
+                        </td>
+                        <td>
+                            @kiosk.ProductLinks.Sum(x=>x.RemainingQuantity) / @kiosk.ProductLinks.Sum(x=>x.MaxQuantity)
                         </td>
                     </tr>
                 }

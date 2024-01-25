@@ -26,7 +26,7 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
             kiosk.ProductLinks = entity.Links.Select(x => new KioskProductLink {
                 Product = products?.FirstOrDefault(p => p.Sku == x.Sku) ?? new Product { Sku = x.Sku },
                 Credit = x.Credit,
-                MaxCountPerTransaction = x.MaxCountPerTransaction,
+                MaxQtyPerTransaction = x.MaxCountPerTransaction,
                 Disabled = x.Disabled
             });
             return this;
@@ -52,8 +52,9 @@ namespace MPT.Vending.Domains.Kiosks.Infrastructure.Builders
                 result.Add(new KioskProductLink { Product = p.Product,
                     Credit = p.Credit,
                     Disabled = p.Disabled,
-                    MaxCountPerTransaction = p.MaxCountPerTransaction,
-                    RemainingQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?.Quantity ?? 0
+                    MaxQtyPerTransaction = p.MaxQtyPerTransaction,
+                    RemainingQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?.Quantity ?? 0,
+                    MaxQuantity = planogram.Products.FirstOrDefault(x => x.ProductUid == p.Product.Sku)?.MaxQuantity ?? 0
                 });
 
             kiosk.ProductLinks = result;

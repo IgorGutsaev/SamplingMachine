@@ -4,10 +4,12 @@ namespace MPT.Vending.API.Dto
 {
     public class KioskProductLink
     {
-        [JsonPropertyName("maxQty")]
-        public int MaxCountPerTransaction { get; set; }
+        [JsonPropertyName("maxTransQty")]
+        public int MaxQtyPerTransaction { get; set; }
         [JsonPropertyName("remains")]
         public int RemainingQuantity { get; set; }
+        [JsonPropertyName("maxQty")]
+        public int MaxQuantity { get; set; }
         [JsonPropertyName("credit")]
         public int Credit { get; set; }
         [JsonPropertyName("product")]

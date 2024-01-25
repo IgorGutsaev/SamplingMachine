@@ -97,7 +97,7 @@ namespace MPT.Vending.Domains.Kiosks.Services
         public void SetMaxCountPerTransaction(string kioskUid, string sku, int limit) {
             KioskProductLink link = DemoData._kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks.FirstOrDefault(x => x.Product.Sku == sku);
             if (link != null)
-                link.MaxCountPerTransaction = limit;
+                link.MaxQtyPerTransaction = limit;
         }
 
         public void SetMedia(string kioskUid, IEnumerable<KioskMediaLink> links) {

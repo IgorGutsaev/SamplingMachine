@@ -99,73 +99,73 @@ namespace MPT.Vending.Domains.SharedContext
                 ProductLinks = new KioskProductLink[] {
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 2,
+                        MaxQtyPerTransaction = 2,
                         RemainingQuantity = 10,
                         Product = _products.First(x => x.Sku == "Aby")
                     },
                     new KioskProductLink {
                         Credit = 2,
-                        MaxCountPerTransaction = 1,
+                        MaxQtyPerTransaction = 1,
                         RemainingQuantity = 5,
                         Product = _products.First(x => x.Sku == "Ori")
                     },
                     new KioskProductLink {
                         Credit = 3,
-                        MaxCountPerTransaction = 1,
+                        MaxQtyPerTransaction = 1,
                         RemainingQuantity = 3,
                         Product = _products.First(x => x.Sku == "Sav")
                     },
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 3,
+                        MaxQtyPerTransaction = 3,
                         RemainingQuantity = 10,
                         Product = _products.First(x => x.Sku == "Rus")
                     },
                     new KioskProductLink {
                         Credit = 3,
-                        MaxCountPerTransaction = 1,
+                        MaxQtyPerTransaction = 1,
                         RemainingQuantity = 1,
                         Product = _products.First(x => x.Sku == "Ben")
                     },
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 5,
+                        MaxQtyPerTransaction = 5,
                         RemainingQuantity = 6,
                         Product = _products.First(x => x.Sku == "Ang")
                     },
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 2,
+                        MaxQtyPerTransaction = 2,
                         RemainingQuantity = 3,
                         Product = _products.First(x => x.Sku == "Bir")
                     },
                     new KioskProductLink {
                         Credit = 2,
-                        MaxCountPerTransaction = 2,
+                        MaxQtyPerTransaction = 2,
                         RemainingQuantity = 2,
                         Product = _products.First(x => x.Sku == "Bom")
                     },
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 2,
+                        MaxQtyPerTransaction = 2,
                         RemainingQuantity = 4,
                         Product = _products.First(x => x.Sku == "Brt")
                     },
                     new KioskProductLink {
                         Credit = 3,
-                        MaxCountPerTransaction = 1,
+                        MaxQtyPerTransaction = 1,
                         RemainingQuantity = 1,
                         Product = _products.First(x => x.Sku == "Mnc")
                     },
                     new KioskProductLink {
                         Credit = 2,
-                        MaxCountPerTransaction = 1,
+                        MaxQtyPerTransaction = 1,
                         RemainingQuantity = 2,
                         Product = _products.First(x => x.Sku == "Sbr")
                     },
                     new KioskProductLink {
                         Credit = 1,
-                        MaxCountPerTransaction = 2,
+                        MaxQtyPerTransaction = 2,
                         RemainingQuantity = 4,
                         Product = _products.First(x => x.Sku == "Sco")
                     },
@@ -219,7 +219,7 @@ namespace MPT.Vending.Domains.SharedContext
                 return;
             else
             {
-                links.Add(new KioskProductLink { Credit = 1, MaxCountPerTransaction = 1, Product = _products.First(x => x.Sku == sku), RemainingQuantity = 0 });
+                links.Add(new KioskProductLink { Credit = 1, MaxQtyPerTransaction = 1, Product = _products.First(x => x.Sku == sku), RemainingQuantity = 0 });
                 _kiosks.FirstOrDefault(x => x.UID == kioskUid).ProductLinks = links;
             }
         }
