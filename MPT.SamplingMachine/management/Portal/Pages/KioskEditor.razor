@@ -92,10 +92,8 @@ else {
         </div>
     </div>
 
-    <h5>Products</h5>
-
     @if (productsToLink != null && productsToLink.Any()) {
-        <button type="button" class="button-64" data-bs-toggle="modal" data-bs-target="#addLinkModal">
+        <button type="button" class="button-63 mt-4 mb-4" data-bs-toggle="modal" data-bs-target="#addLinkModal">
             <span class="text">Add product</span>            
         </button>
 
@@ -146,10 +144,10 @@ else {
         <thead>
             <tr>
                 <th>Sku</th>
-                <th>Name</th>
+                <th class="d-none d-md-table-cell">Name</th>
                 <th>Credit</th>
-                <th>Max quantity in order</th>
-                <th>Stock</th>
+                <th>Order limit</th>
+                <th class="d-none d-sm-table-cell">Stock</th>
                 <th></th>
             </tr>
         </thead>
@@ -160,27 +158,31 @@ else {
                         <td>
                             <button class="btn btn-light" @onclick="() => EditProduct(link.Product.Sku)">@link.Product.Sku</button>
                         </td>
-                        <td>
+                        <td class="d-none d-md-table-cell text-nowrap mt-2" style="padding-top: 1em">
                             <a data-toggle="tooltip" data-bs-html="true" title="<img src='data:image/*;base64,@link.Product.Picture' width='150' />">
                                 @link.Product.Names.FirstOrDefault().Value
                             </a>
                         </td>
-                        <td>
+                        <td class="col-2">
                             <div>
-                                <input type="number" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); SetCredit(link.Product.Sku, link.Credit); }">
+                                <input type="number" class="form-control" min="1" max="10" value="@link.Credit" @oninput="(e) => { link.Credit = Convert.ToInt32(e.Value); SetCredit(link.Product.Sku, link.Credit); }">
                             </div>
                         </td>
-                        <td>
+                        <td class="col-2">
                             <div>
-                                <input type="number" min="1" max="10" value="@link.MaxQtyPerTransaction" @oninput="(e) => { link.MaxQtyPerTransaction = Convert.ToInt32(e.Value); SetMaxCountPerTransaction(link.Product.Sku, link.MaxQtyPerTransaction); }">
+                                <input type="number" class="form-control" min="1" max="10" value="@link.MaxQtyPerTransaction" @oninput="(e) => { link.MaxQtyPerTransaction = Convert.ToInt32(e.Value); SetMaxCountPerTransaction(link.Product.Sku, link.MaxQtyPerTransaction); }">
                             </div>
                         </td>
-                        <td>
-                            @link.RemainingQuantity
+                        <td class="d-none d-sm-table-cell">
+                            <div class="progress w-100 mt-2">
+                                <div class="progress-bar progress-bar-oo-info" role="progressbar" style="width: @_stockPercent(link)%;" aria-valuenow="@_stockPercent(link)" aria-valuemin="0" aria-valuemax="100">@link.RemainingQuantity / @link.MaxQuantity</div>
+                            </div>
                         </td>
-                        <td class="col-md-3">
+                        <td class="col-2">
                             @if (!link.Disabled) {
-                                <button role="button" class="button-64-dng" @onclick="() => DisableProduct(link.Product.Sku)"><span class="text">Disable</span></button>
+                                <div class="text-center">
+                                    <button role="button" class="button-64" @onclick="() => DisableProduct(link.Product.Sku)"><span class="text">Disable</span></button>
+                                </div>
                             }
                             else {
                                 
@@ -400,4 +402,7 @@ else {
         kioskStateContainer.SetValue(kiosk);
         navigationManager.NavigateTo($"/screensaver/{uid}");
     }
+
+    private int _stockPercent(KioskProductLink link)
+        => (int)(100 * (decimal)link.RemainingQuantity / (decimal)link.MaxQuantity);
 }

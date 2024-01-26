@@ -27,7 +27,7 @@ namespace API.Controllers
         public PoG GetPlanogram(string uid)
             => _replenishmentService.GetPlanogram(uid);
 
-        [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+        [Authorize(Policy = IdentityData.ManagerPolicyName)]
         [HttpPut("planogram")]
         public void PutPlanogram([FromBody] PoG planogram, string uid)
             => _replenishmentService.PutPlanogram(uid, planogram);

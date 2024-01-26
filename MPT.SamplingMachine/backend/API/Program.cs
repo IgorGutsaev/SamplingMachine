@@ -61,6 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options => {
     options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
+
     options.AddPolicy(IdentityData.KioskUserPolicyName, p => p.RequireClaim(IdentityData.KioskUserPolicyName));
     options.AddPolicy(IdentityData.ManagerPolicyName, p => p.RequireAssertion(context =>
         context.User.HasClaim(c => c.Type == IdentityData.AdminUserClaimName || c.Type == IdentityData.ManagerClaimName))); // AdminUser is a manager as well

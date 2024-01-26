@@ -188,3 +188,19 @@ img.lowbrightness {
     left: 0;
     width: 100%;
 }
+
+.progress-bar-oo-info {
+    background: linear-gradient(90deg, #fe2aa9, #29a1fc) !important;
+}
+
+.progress-bar-oo-warning {
+    background: linear-gradient(90deg, #FFB000, #FD6F01) !important;
+}
+
+.progress-bar-oo-error {
+    background: linear-gradient(90deg, #EE5A24, #EA2027) !important;
+}
+
+.navbar-toggler {
+    font-size: 0.75em !important;
+}

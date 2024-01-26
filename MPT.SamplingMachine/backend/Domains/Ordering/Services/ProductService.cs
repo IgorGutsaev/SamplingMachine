@@ -42,6 +42,34 @@ namespace MPT.Vending.Domains.Ordering.Services
             return builder.Build();
         }
 
+        public async Task<IEnumerable<Product>> GetScopeAsync(IEnumerable<string> skus) {
+            List<Product> result = new List<Product>();
+            var products = _productRepository.Get(x => skus.Contains(x.Sku)).ToList();
+            IEnumerable<ProductLocalizationEntity> allNameLocalizations = _productLocalizationRepository.Get(x => x.Attribute == "name" && products.Select(p => p.Id).Contains(x.ProductId)).ToList();
+
+            foreach (var sku in skus) {
+                ProductBuilder builder = new ProductBuilder();
+
+                var p = products.FirstOrDefault(x => x.Sku == sku);
+                if (p == null)
+                    continue;
+
+                builder.WithData(p);
+                var pic = _pictureRepository.Get(x => x.Id == p.PictureId).FirstOrDefault();
+                if (pic != null) {
+                    string picture = await _pictureRepository.GetPictureAsBase64Async(pic.Uid);
+                    builder.WithPicture(picture);
+                }
+
+                IEnumerable<ProductLocalizationEntity> localizations = allNameLocalizations.Where(x => x.ProductId == p.Id);
+                builder.WithNames(localizations);
+
+                result.Add(builder.Build());
+            }
+
+            return result;
+        }
+
         public async IAsyncEnumerable<Product> GetAsync(IEnumerable<string> sku) {
             IEnumerable<ProductEntity> entities = _productRepository.Get(x => sku.Contains(x.Sku)).ToList();
 
@@ -147,10 +175,6 @@ namespace MPT.Vending.Domains.Ordering.Services
 
                 yield return builder.Build();
             }
-        }
-
-        public async Task<IEnumerable<Product>> GetScopeAsync(IEnumerable<string> sku) {
-            return null;
         }
 
         private readonly PictureRepository _pictureRepository;
