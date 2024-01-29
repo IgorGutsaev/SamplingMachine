@@ -29,10 +29,10 @@
     <p><em>Loading...</em></p>
 }
 else {
-    <div class="btn-group mt-2 mb-3" role="group" aria-label="Basic mixed styles example">
-        <button type="button" class="btn btn-primary" @onclick="() => Replenish()">Replenishment</button>
-        <button type="button" class="btn btn-warning" @onclick="() => SetPlanogram()">Planogram</button>
-        <button type="button" class="btn btn-info" @onclick="() => Screensaver()">Screensaver</button>
+    <div class="btn-group mt-2 mb-3 kioskBtnGrp" role="group" aria-label="Basic mixed styles example">
+        <button type="button" class="btn btn-primary w-100" @onclick="() => Replenish()">Replenishment</button>
+        <button type="button" class="btn btn-secondary w-100" @onclick="() => Screensaver()">Screensaver</button>
+        <button type="button" class="btn btn-warning w-100" @onclick="() => SetPlanogram()">Planogram</button>        
     </div>
 
     <div class="form-check form-switch mt-2 mb-3">
@@ -93,7 +93,7 @@ else {
     </div>
 
     @if (productsToLink != null && productsToLink.Any()) {
-        <button type="button" class="button-63 mt-4 mb-4" data-bs-toggle="modal" data-bs-target="#addLinkModal">
+        <button type="button" class="btn btn-primary mt-4 mb-4" data-bs-toggle="modal" data-bs-target="#addLinkModal">
             <span class="text">Add product</span>            
         </button>
 
@@ -136,7 +136,7 @@ else {
     }
     else {
         <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Nothing to add">
-            <button class="button-64" style="pointer-events: none;" type="button" disabled><span class="text">Add product</span></button>
+            <button class="btn btn-secondary mt-4 mb-4" style="pointer-events: none;" type="button" disabled><span class="text">Add product</span></button>
         </span>
     }
 
@@ -187,8 +187,8 @@ else {
                             else {
                                 
                                 <div style="display: flex">
-                                    <button type="button" class="button-63" @onclick="() => EnableProduct(link.Product.Sku)"><span class="text">Enable</span></button>
-                                    <button type="button" class="button-64-dng" style="margin-left: 1em" @onclick="() => UnlinkProduct(link.Product.Sku)"><span class="text">Unlink</span></button>
+                                    <button type="button" class="btn-oo-prim-fill" @onclick="() => EnableProduct(link.Product.Sku)"><span class="text">Enable</span></button>
+                                    <button type="button" class="btn-oo-dng-fill" style="margin-left: 1em" @onclick="() => UnlinkProduct(link.Product.Sku)"><span class="text">Unlink</span></button>
                                 </div>  
                             }
                         </td>
@@ -404,5 +404,5 @@ else {
     }
 
     private int _stockPercent(KioskProductLink link)
-        => (int)(100 * (decimal)link.RemainingQuantity / (decimal)link.MaxQuantity);
+        => link.MaxQuantity == 0 ? 0 : (int)(100 * (decimal)link.RemainingQuantity / (decimal)link.MaxQuantity);
 }

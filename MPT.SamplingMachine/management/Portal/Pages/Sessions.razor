@@ -26,7 +26,7 @@
                 <input type="datetime-local" class="form-control" @bind-value="to" />
                 <input id="phone" type="tel" class="form-control" placeholder="Phone number" @bind-value="phoneNumber" aria-label="Number" aria-describedby="filterGroup">
 
-                @if (stillReceivingProducts) {
+                @if (stillReceivingTransactions) {
                     <button class="btn btn-secondary btn-large" onclick="@Cancel">Stop</button>
                 }
                 else {
@@ -38,6 +38,7 @@
     </div>
 </div>
 
+@if (!stillReceivingTransactions) {
 <table class="table">
     <thead>
         <tr>
@@ -74,6 +75,7 @@
         }
     </tbody>
 </table>
+}
 
 <script>
     window.onload = () => {
@@ -93,7 +95,7 @@
     private HubConnection hubConnectionFetchNewTransaction;
 
     CancellationTokenSource loadingTokenSource;
-    bool stillReceivingProducts = false;
+    bool stillReceivingTransactions = false;
     string phoneNumber;
     DateTime from = DateTime.Now.Date;
     DateTime to = DateTime.Now.Date.AddDays(1);
@@ -151,10 +153,11 @@
 
         IAsyncEnumerator<Transaction> e = _client.GetTransactionsAsync(new TransactionRequest { From = from, To = to, MobileNumber = phoneNumber }, loadingTokenSource.Token);
         try {
+            stillReceivingTransactions = true;
+
             while (await e.MoveNextAsync()) {
                 transactions.Add(e.Current);
-                stillReceivingProducts = true;
-
+ 
                 try {
                     await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
                 }
@@ -167,7 +170,7 @@
             if (e != null)
                 await e.DisposeAsync();
 
-            stillReceivingProducts = false;
+            stillReceivingTransactions = false;
             StateHasChanged();
         }
     }
