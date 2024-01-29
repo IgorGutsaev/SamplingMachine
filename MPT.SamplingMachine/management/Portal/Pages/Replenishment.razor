@@ -12,6 +12,7 @@
 @inject NavigationManager navigationManager
 @inject SamplingMachineApiClient _client
 @inject KioskStateContainer kioskStateContainer
+@inject BrowserService browserService
 
 <PageTitle>Replenishment</PageTitle>
 
@@ -51,11 +52,11 @@ else {
         }
     </p>
 
-    <div class="container">
-        @for (int i = 0; i < (int)Math.Ceiling(planogram.ActiveAddresses.Count() / 4m); i++) {
+    <div class="container" id="replenishmentContainer">
+        @for (int i = 0; i < (int)Math.Ceiling(planogram.ActiveAddresses.Count() / (decimal)divider); i++) {
             <div class="row">
-                @foreach (var address in planogram.ActiveAddresses.Skip(i * 4).Take(4)) {
-                    <div class="col-3">
+                @foreach (var address in planogram.ActiveAddresses.Skip(i * divider).Take(divider)) {
+                    <div class="col-@(12/divider)">
                         <div class="card" style="max-width: 18rem; align-items: center">
                             <img class="card-img-top card-img-top_1 lowbrightness" src='data:image/*;base64,@kiosk.ProductLinks.FirstOrDefault(x => x.Product.Sku == planogram.GetProduct(address)?.ProductUid)?.Product.Picture' />
                             <div class="labelOnPicture display-6" align="center">
@@ -65,11 +66,14 @@ else {
                                 <div class="progress">
                                     <div class="progress-bar bg-@GetStockLevel(planogram.GetRoute(address))" style="width: @((100 * planogram.GetRoute(address).Quantity)/planogram.GetRoute(address).MaxQuantity)%" role="progressbar" aria-valuenow="@planogram.GetRoute(address).Quantity" aria-valuemin="0" aria-valuemax="@planogram.GetRoute(address).MaxQuantity">@planogram.GetRoute(address).Quantity / @planogram.GetRoute(address).MaxQuantity</div>
                                 </div>
+                                <div align="center" style="width: 100%"><strong>@products.FirstOrDefault(x => x.Sku == planogram.GetProduct(address).ProductUid)?.Names.FirstOrDefault()?.Value</strong></div>
                                 <div class="input-group" style="padding: 7px 0 7px 0 !important">
                                     <button disabled="@(planogram.GetRoute(address).Quantity < 1)" class="btn btn-outline-primary" type="button" @onclick="() => { if (0 < planogram.GetRoute(address).Quantity) { planogram.GetRoute(address).Quantity--; OnPlanogramChanged(); }}"><i class="oi oi-minus smallicon" aria-hidden="true" /></button>
                                     <button disabled="@(planogram.GetRoute(address).Quantity >= planogram.GetRoute(address).MaxQuantity)" class="btn btn-primary" type="button" @onclick="() => { planogram.GetRoute(address).Quantity = planogram.GetRoute(address).MaxQuantity; OnPlanogramChanged(); }">
-                                        @if (limited) {
+                                        @if (limited || shrinkFillToMaxButton) {
+                                            @:&ensp;
                                             <i class="oi oi-arrow-thick-top" aria-hidden="true" />
+                                            @:&ensp;
                                         }
                                         else {
                                             <div>Fill to maximum</div>
@@ -108,9 +112,14 @@ else {
 
     private bool saving;
 
+    private int divider = 4;
+    private bool shrinkFillToMaxButton = false;
+
     private Kiosk kiosk;
 
     private PoG planogram;
+
+    private List<Product> products;
 
     private Guid actualCommandUid = new Guid();
 
@@ -122,9 +131,34 @@ else {
             return;
         }
 
+        Task.Factory.StartNew(async () => {
+            while (true) {
+                int newDivider = divider;
+                bool newShrinkFillToMaxButton = shrinkFillToMaxButton;
+                int width = await browserService.GetReplenishmentScreenWidthAsync();
+
+                if (width > 1280)
+                    newDivider = 4;
+                else if (width <= 768)
+                    newDivider = 2;
+                else newDivider = 3;
+
+                newShrinkFillToMaxButton = width < 475;
+
+                if (newDivider != divider || newShrinkFillToMaxButton != shrinkFillToMaxButton) {
+                    divider = newDivider;
+                    shrinkFillToMaxButton = newShrinkFillToMaxButton;
+                    await InvokeAsync(() => StateHasChanged());
+                }
+
+                await Task.Delay(250);
+            }
+        });
+
         if (!limited) {
             kiosk = kioskStateContainer.Value ?? await _client.GetKioskAsync(uid);
             planogram = await _client.GetPlanogramAsync(uid);
+            await onPlanogramChanged();
         }
 
         Task.Run(async () => {
@@ -135,8 +169,10 @@ else {
             hubConnectionEditBelt.On<string>("OnPlanogramChanged", async (x) => {
                 PlanogramHook planogramChange = JsonSerializer.Deserialize<PlanogramHook>(x);
 
-                if (string.Equals(planogramChange.KioskUid, uid, StringComparison.InvariantCultureIgnoreCase ))
+                if (string.Equals(planogramChange.KioskUid, uid, StringComparison.InvariantCultureIgnoreCase)) {
                     planogram = planogramChange.Planogram;
+                    await onPlanogramChanged();
+                }
 
                 await InvokeAsync(() => StateHasChanged());
             });
@@ -169,7 +205,8 @@ else {
         if (firstRender && limited) { // this means the page is ready for replenishment on the kiosk
             await JSRuntime.InvokeVoidAsync("toLimited");
             kiosk = await _client.GetKioskAsync(uid);
-            planogram =  await _client.GetPlanogramAsync(uid);
+            planogram = await _client.GetPlanogramAsync(uid);
+            await onPlanogramChanged();
             StateHasChanged();
         }
     }
@@ -184,5 +221,20 @@ else {
         else if (route.Quantity <= route.MaxQuantity / 2m && route.Quantity >= route.MaxQuantity / 4m)
             return "warning";
         else return "danger";
+    }
+
+    private async Task onPlanogramChanged() {
+        products = new List<Product>();
+
+        IAsyncEnumerator<Product> e = _client.GetProductsAsync(planogram.Products.Select(x => x.ProductUid).Distinct(), default(CancellationToken));
+        try {
+            while (await e.MoveNextAsync()) {
+                products.Add(e.Current);
+            }
+        }
+        finally {
+            if (e != null)
+                await e.DisposeAsync();
+        }
     }
 }

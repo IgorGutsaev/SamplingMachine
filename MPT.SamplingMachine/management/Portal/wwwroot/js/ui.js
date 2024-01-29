@@ -32,5 +32,14 @@
     },
     redirect(url) {
         window.location.href = 'url';
+    },
+    getDimensions() {
+        return {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+    },
+    getReplenishmentScreenWidth() {
+        return $("#replenishmentContainer").width();
     }
 }

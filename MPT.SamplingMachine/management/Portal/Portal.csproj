@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.16" />
+    <PackageReference Include="Filuet.Hardware.Dispensers.Abstractions" Version="0.0.17" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
     <PackageReference Include="Filuet.Infrastructure.Communication" Version="1.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.13" />

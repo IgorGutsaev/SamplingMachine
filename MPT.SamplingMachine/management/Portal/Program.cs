@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using Filuet.Infrastructure.Abstractions.Converters;
-using Microsoft.AspNetCore.Components;
 using MPT.SamplingMachine.ApiClient;
 using Portal.Hubs;
 using Portal.StateContainers;
@@ -16,6 +15,7 @@ builder.Services.AddSingleton<TransactionStateContainer>();
 builder.Services.AddSingleton<HookHub>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<BrowserService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts => {
