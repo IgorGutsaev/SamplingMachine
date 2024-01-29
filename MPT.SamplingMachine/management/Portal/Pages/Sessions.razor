@@ -38,43 +38,56 @@
     </div>
 </div>
 
-@if (!stillReceivingTransactions) {
-<table class="table">
-    <thead>
-        <tr>
-            <th>Number</th>
-            <th>Date</th>
-            <th>Credit used</th>
-        </tr>
-    </thead>
-    <tbody>
+@if (!stillReceivingTransactions && transactions.Any()) {
+    <div class="bd-callout bd-callout-info">
+        @foreach (var p in _getProductsSummary()) {
+            <code>@p.qty</code>
 
-        @if (transactions != null) {
-            foreach (var transaction in transactions) {
-                string popoverId = PopoverContentId(transaction);
-                <tr>
-                    <td>
-                        <button id="@TransactionId(transaction)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToTransactionDetails(transaction)" data-bs-trigger="hover" title="Transaction @transaction.PhoneNumber" data-bs-content-id="@popoverId">@transaction.PhoneNumber</button>
-                        <div id="@popoverId" class="d-none">
-                            @foreach (var item in transaction.Items) {
-                                <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
-                                <strong>&nbsp;@item.Product.Sku</strong>
-                                <span>&nbsp;x&nbsp;@item.Count</span>
-                                <br>
-                            }
-                        </div>
-                    </td>
-                    <td>
-                        @transaction.Date.ToString("HH:mm:ss dd/MMM/yyyy")
-                    </td>
-                    <td>
-                        <span class="badge bg-warning text-dark">@transaction.Items.Sum(x => x.UnitCredit * x.Count)</span>
-                    </td>
-                </tr>
-            }
+            <code>x</code>
+
+            <strong>@p.sku</strong> <span class="badge bg-warning text-dark">@p.credit</span>
+
+            @:&emsp;
         }
-    </tbody>
-</table>
+        &emsp;<strong>Total credit:</strong> <span class="badge bg-warning text-dark">@transactions.SelectMany(x=>x.Items).Sum(x=>x.UnitCredit * x.Count)</span>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>Date</th>
+                <th>Credit used</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (transactions != null) {
+                foreach (var transaction in transactions) {
+                    string popoverId = PopoverContentId(transaction);
+                    <tr>
+                        <td>
+                            <button id="@TransactionId(transaction)" type="button" class="btn btn-sm btn-dark" data-bs-toggle="popover" @onclick="() => GoToTransactionDetails(transaction)" data-bs-trigger="hover" title="Transaction @transaction.PhoneNumber" data-bs-content-id="@popoverId">@transaction.PhoneNumber</button>
+                            <div id="@popoverId" class="d-none">
+                                @foreach (var item in transaction.Items) {
+                                    <span class="badge bg-warning text-dark">Credit: @(item.UnitCredit * item.Count)</span>
+                                    <strong>&nbsp;@item.Product.Sku</strong>
+                                    <span>&nbsp;x&nbsp;@item.Count</span>
+                                    <br>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @transaction.Date.ToString("HH:mm:ss dd/MMM/yyyy")
+                        </td>
+                        <td>
+                            <span class="badge bg-warning text-dark">@transaction.Items.Sum(x => x.UnitCredit * x.Count)</span>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 }
 
 <script>
@@ -157,7 +170,7 @@
 
             while (await e.MoveNextAsync()) {
                 transactions.Add(e.Current);
- 
+
                 try {
                     await JSRuntime.InvokeVoidAsync("console.info", $"Transaction received: {e.Current.PhoneNumber}");
                 }
@@ -178,5 +191,25 @@
     private void Cancel() {
         loadingTokenSource.Cancel();
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// (sku, qty, credit)
+    /// </summary>
+    /// <returns></returns>
+    private List<sellGroup> _getProductsSummary()
+        => transactions.SelectMany(x => x.Items)
+            .Select(x => new { x.Product.Sku, x.Count, x.UnitCredit }).GroupBy(x => x.Sku,
+            (key, group) => new sellGroup {
+                    sku = key,
+                    qty = group.ToList().Sum(i => i.Count),
+                    credit = group.ToList().Sum(i => i.UnitCredit)
+                }).ToList();
+
+    class sellGroup
+    {
+        public string sku { get; set; }
+        public int qty { get; set; }
+        public int credit { get; set; }
     }
 }

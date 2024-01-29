@@ -228,3 +228,8 @@ img.lowbrightness {
     width: 28em;
 }
 
+code {
+    font-size: 1.1em;
+    color: #ab296a;
+    word-wrap: break-word;
+}
