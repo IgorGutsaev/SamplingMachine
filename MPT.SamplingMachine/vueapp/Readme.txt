@@ -11,7 +11,7 @@ To run app in release mode
 If error 'npm install exit code -1' run on vueapp:
 npm install --force @microsoft/signalr
 
-If not starts, do the following:
+If it doesn't start, do the following:
 
 1) copy src folder, babel.config.js and vue.config.js
 2) npm install --force @microsoft/signalr
