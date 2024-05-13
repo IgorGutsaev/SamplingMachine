@@ -11,8 +11,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MediaController : ControllerBase
-    {
+    public class MediaController : ControllerBase {
         public MediaController(IMediaService mediaService,
             IBlobRepository blobRepository,
             ILogger<MediaController> logger) {
@@ -21,7 +20,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        [Authorize(Policy = IdentityData.ManagerPolicyName)]
+        [Authorize(Policy = IdentityData.InsiderPolicyName)]
         [HttpGet]
         public IEnumerable<AdMedia> Get()
             => _mediaService.Get();
@@ -35,12 +34,12 @@ namespace API.Controllers
         public void Put([FromBody] NewMediaRequest request)
             => _mediaService.Put(request);
 
-        [Authorize(Policy = IdentityData.ManagerPolicyName)]
+        [Authorize(Policy = IdentityData.InsiderPolicyName)]
         [HttpDelete("{hash}")]
         public void Delete(string hash)
             => _mediaService.Delete(hash);
 
-        [Authorize(Policy = IdentityData.ManagerPolicyName)]
+        [Authorize(Policy = IdentityData.InsiderPolicyName)]
         [HttpPost("upload")]
         public async Task<string> Upload(IFormFile file, CancellationToken cancellationToken) {
             using MemoryStream stream = new MemoryStream();
@@ -58,7 +57,7 @@ namespace API.Controllers
             return uid;
         }
 
-        [Authorize(Policy = IdentityData.ManagerPolicyName)]
+        [Authorize(Policy = IdentityData.InsiderPolicyName)]
         [HttpGet("find/{format}/{hash}")]
         public async Task<IActionResult> GetByHash(string format, string hash) {
             if (string.Equals(hash, "undefined", StringComparison.InvariantCultureIgnoreCase))

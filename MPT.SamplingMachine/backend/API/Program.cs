@@ -65,6 +65,8 @@ builder.Services.AddAuthorization(options => {
     options.AddPolicy(IdentityData.KioskUserPolicyName, p => p.RequireClaim(IdentityData.KioskUserPolicyName));
     options.AddPolicy(IdentityData.ManagerPolicyName, p => p.RequireAssertion(context =>
         context.User.HasClaim(c => c.Type == IdentityData.AdminUserClaimName || c.Type == IdentityData.ManagerClaimName))); // AdminUser is a manager as well
+    options.AddPolicy(IdentityData.InsiderPolicyName, p => p.RequireAssertion(context =>
+        context.User.HasClaim(c => c.Type == IdentityData.AdminUserClaimName || c.Type == IdentityData.ManagerClaimName || c.Type == IdentityData.KioskClaimName))); // AdminUser is a manager as well
 });
 
 var p2kMediator = new Portal2KioskMessagesSender(AzureKeyVaultReader.GetSecret("ogmento-servicebus"));

@@ -10,5 +10,8 @@
 
         public const string ManagerClaimName = "manager";
         public const string ManagerPolicyName = "Manager";
+
+        public const string InsiderClaimName = "insider";
+        public const string InsiderPolicyName = "Insider";
     }
 }
